@@ -19,15 +19,20 @@ namespace machine
       Word_template(const Word_template&);
       Word_template(Word_template&&) = delete;
 
+      // Assignments.
+      Word_template& operator=(const Word_template&);
+      Word_template& operator=(Word_template&&) = delete;
+
       // Accessors.
       const Sign& sign() const { return _sign; }
       Sign& sign() { return _sign; }
-
       const std::vector<Byte>& bytes() const { return _bytes; }
       std::vector<Byte>& bytes() { return _bytes; }
-
       const Byte& operator[](int) const;
       Byte& operator[](int);
+
+      // Mutators.
+      void sign(Sign);
 
     private:
       Sign _sign;
@@ -53,6 +58,18 @@ namespace machine
   }
 
   /*
+  * Copy assignment.
+  */
+  template<unsigned int Size>
+  Word_template<Size>& Word_template<Size>::operator=(
+      const Word_template<Size>& wt)
+  {
+    _sign = wt._sign;
+    _bytes = wt._bytes;
+    return *this;
+  }
+
+  /*
   * Get the byte at the given index.
   */
   template<unsigned int Size>
@@ -72,6 +89,17 @@ namespace machine
     if(index < 0 || num_bytes <= index)
       throw std::invalid_argument{"Index out of bounds"};
     return _bytes[index];
+  }
+
+  /*
+  * Set the sign to the given sign value.
+  */
+  template<unsigned int Size>
+  void Word_template<Size>::sign(Sign s)
+  {
+    if(s != Sign::Plus && s != Sign::Minus)
+      throw std::invalid_argument{"Unknown sign value"};
+    _sign = s;
   }
 
 }
