@@ -1,11 +1,19 @@
 #ifndef MIX_SIM_WORD_H
 #define MIX_SIM_WORD_H
 
-#include "Word_template.h"
+#include "Basic_word.h"
 
 namespace machine
 {
-  using Word = Word_template<5>;
+  class Word : public Basic_word<5>
+  {
+    public:
+      // Word parts.
+      unsigned int address() const;
+      unsigned int field() const;
+      unsigned int code() const;
+      unsigned int index() const;
+  };
 }
 #endif
 

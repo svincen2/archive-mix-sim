@@ -32,6 +32,12 @@ namespace machine
       void jump_register(const Half_word& j) { _jump = j; }
       void index_register(int, const Word&);
 
+      // Methods to read instructions.
+      const unsigned int address_specification(const Word&) const;
+      const unsigned int index_specification(const Word&) const;
+      const unsigned int modification_specification(const Word&) const;
+      const unsigned int op_code(const Word&) const;
+
     private:
       Word _accumulator;                        // Accumulator register (A).
       Word _extension;                          // Extension register (X).

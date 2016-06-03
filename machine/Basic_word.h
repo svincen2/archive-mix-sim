@@ -1,5 +1,5 @@
-#ifndef MIX_SIM_MACHINE_WORD_TEMPLATE_H
-#define MIX_SIM_MACHINE_WORD_TEMPLATE_H
+#ifndef MIX_SIM_MACHINE_BASIC_WORD_H
+#define MIX_SIM_MACHINE_BASIC_WORD_H
 
 #include "Byte.h"
 #include "Sign.h"
@@ -9,19 +9,19 @@
 namespace machine
 {
   template<unsigned int Size>
-  class Word_template
+  class Basic_word
   {
     public:
       static const unsigned int num_bytes = Size;
 
       // Constructors.
-      Word_template();
-      Word_template(const Word_template&);
-      Word_template(Word_template&&) = delete;
+      Basic_word();
+      Basic_word(const Basic_word&);
+      Basic_word(Basic_word&&) = delete;
 
       // Assignments.
-      Word_template& operator=(const Word_template&);
-      Word_template& operator=(Word_template&&) = delete;
+      Basic_word& operator=(const Basic_word&);
+      Basic_word& operator=(Basic_word&&) = delete;
 
       // Accessors.
       const Sign& sign() const { return _sign; }
@@ -44,7 +44,7 @@ namespace machine
   * and the sign set to plus (+).
   */
   template<unsigned int Size>
-  Word_template<Size>::Word_template() : _sign{Sign::Plus}, _bytes(num_bytes)
+  Basic_word<Size>::Basic_word() : _sign{Sign::Plus}, _bytes(num_bytes)
   {
   }
 
@@ -52,7 +52,7 @@ namespace machine
   * Copy the given word.
   */
   template<unsigned int Size>
-  Word_template<Size>::Word_template(const Word_template<Size>& copy)
+  Basic_word<Size>::Basic_word(const Basic_word<Size>& copy)
     : _sign{copy._sign}, _bytes{copy._bytes}
   {
   }
@@ -61,8 +61,8 @@ namespace machine
   * Copy assignment.
   */
   template<unsigned int Size>
-  Word_template<Size>& Word_template<Size>::operator=(
-      const Word_template<Size>& wt)
+  Basic_word<Size>& Basic_word<Size>::operator=(
+      const Basic_word<Size>& wt)
   {
     _sign = wt._sign;
     _bytes = wt._bytes;
@@ -73,7 +73,7 @@ namespace machine
   * Get the byte at the given index.
   */
   template<unsigned int Size>
-  const Byte& Word_template<Size>::operator[](int index) const
+  const Byte& Basic_word<Size>::operator[](int index) const
   {
     if(index < 0 || num_bytes <= index)
       throw std::invalid_argument{"Index out of bounds"};
@@ -84,7 +84,7 @@ namespace machine
   * Get the byte at the given index.
   */
   template<unsigned int Size>
-  Byte& Word_template<Size>::operator[](int index)
+  Byte& Basic_word<Size>::operator[](int index)
   {
     if(index < 0 || num_bytes <= index)
       throw std::invalid_argument{"Index out of bounds"};
@@ -95,7 +95,7 @@ namespace machine
   * Set the sign to the given sign value.
   */
   template<unsigned int Size>
-  void Word_template<Size>::sign(Sign s)
+  void Basic_word<Size>::sign(Sign s)
   {
     if(s != Sign::Plus && s != Sign::Minus)
       throw std::invalid_argument{"Unknown sign value"};
