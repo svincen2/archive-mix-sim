@@ -5,15 +5,18 @@
 
 namespace machine
 {
-  class Word : public Basic_word<5>
-  {
-    public:
-      // Word parts.
-      unsigned int address() const;
-      unsigned int field() const;
-      unsigned int code() const;
-      unsigned int index() const;
-  };
+  using Word = Basic_word<5>;
+
+  // Most significant byte of address specification of instruction.
+  const unsigned int address_msb{0};
+  // Least significant byte of address specification of instruction.
+  const unsigned int address_lsb{1};
+  // Index specification of instruction.
+  const unsigned int index{2};
+  // Modification specification of instruction.
+  const unsigned int modification{3};
+  // Operation code of instruction.
+  const unsigned int op_code{4};
 }
 #endif
 

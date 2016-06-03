@@ -1,11 +1,11 @@
-objs = Machine.o Word.o
+objs = Machine.o Field.o
 compile = g++ -std=c++11 -c
 
-Machine.o : Machine.h Machine.cpp Byte.h Word.o Half_word.h
+Machine.o : Machine.h Machine.cpp Word.h Half_word.h Field.o
 	$(compile) Machine.cpp
 
-Word.o : Word.h Word.cpp Basic_word.h
-	$(compile) Word.cpp
+Field.o : Field.h Field.cpp
+	$(compile) Field.cpp
 
 clean:
 	rm $(objs)

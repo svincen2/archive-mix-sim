@@ -5,10 +5,7 @@
 
 namespace machine
 {
-  // Half word has two bytes and a sign.
-  class Half_word : public Basic_word<2>
-  {
-  };
+  using Half_word = Basic_word<2>;
 }
 
 #endif

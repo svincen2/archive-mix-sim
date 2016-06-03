@@ -39,6 +39,48 @@ namespace machine
     if(index < 0 || memory_size <= index)
       throw std::invalid_argument{"Memory index out of bounds"};
   }
+
+  /*
+  * Return the address specification of the given instruction word.
+  */
+  const int Machine::read_address(const Word& instruction) const
+  {
+    int a{(instruction[address_msb] & bit_mask) << byte_size};
+    a |= instruction[address_lsb];
+    return (instruction.sign() == Sign::Plus ? a : -a);
+  }
+
+  /*
+  * Return the index specification of the given instruction word.
+  */
+  const unsigned int Machine::read_index(const Word& instruction) const
+  {
+    return instruction[index];
+  }
+
+  /*
+  * Return the modification specification of the given instruction word.
+  */
+  const unsigned int Machine::read_modification(const Word& instruction) const
+  {
+    return instruction[modification];
+  }
+
+  /*
+  * Return the field specification of the given instruction word.
+  */
+  const Instruction::Field Machine::read_field(const Word& instruction) const
+  {
+    return Instruction::to_field_spec(instruction[modification]);
+  }
+
+  /*
+  * Return the operation code of the given instruction word.
+  */
+  const unsigned int Machine::read_op_code(const Word& instruction) const
+  {
+    return instruction[op_code];
+  }
 }
 
 #endif

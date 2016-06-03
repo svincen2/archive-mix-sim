@@ -3,6 +3,7 @@
 
 #include "Half_word.h"
 #include "Word.h"
+#include "Field.h"
 #include <vector>
 
 namespace machine
@@ -32,11 +33,12 @@ namespace machine
       void jump_register(const Half_word& j) { _jump = j; }
       void index_register(int, const Word&);
 
-      // Methods to read instructions.
-      const unsigned int address_specification(const Word&) const;
-      const unsigned int index_specification(const Word&) const;
-      const unsigned int modification_specification(const Word&) const;
-      const unsigned int op_code(const Word&) const;
+      // Methods to read parts of instructions.
+      const int read_address(const Word&) const;
+      const unsigned int read_index(const Word&) const;
+      const unsigned int read_modification(const Word&) const;
+      const Instruction::Field read_field(const Word&) const;
+      const unsigned int read_op_code(const Word&) const;
 
     private:
       Word _accumulator;                        // Accumulator register (A).
@@ -45,6 +47,21 @@ namespace machine
       std::vector<Half_word> _index_registers;  // Index registers (I1-I6).
       std::vector<Word> _memory;                // 4000 word memory (0-3999).
   };
+
+  /* Information pertaining to machine instructions. */
+  namespace Instruction
+  {
+    // Most significant byte of address specification of instruction.
+    const unsigned int address_msb{0};
+    // Least significant byte of address specification of instruction.
+    const unsigned int address_lsb{1};
+    // Index specification of instruction.
+    const unsigned int index{2};
+    // Modification specification of instruction.
+    const unsigned int modification{3};
+    // Operation code of instruction.
+    const unsigned int op_code{4};
+  }
 }
 #endif
 
