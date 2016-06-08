@@ -1,6 +1,8 @@
 #ifndef MIX_INSTRUCTION_FIELD_H
 #define MIX_INSTRUCTION_FIELD_H
 
+#include "Byte.h"
+
 namespace MIX
 {
     namespace Instruction
@@ -23,7 +25,7 @@ namespace MIX
         Field to_field_spec(const unsigned int);
 
         // Convert a field specification to a number.
-        unsigned int to_uint(const Field&);
+        Byte to_byte(const Field&);
     }
 }
 #endif

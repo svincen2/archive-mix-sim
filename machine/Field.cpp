@@ -41,9 +41,9 @@ namespace MIX
         /*
         * Convert the given field specification into an unsigned int.
         */
-        unsigned int to_uint(const Field& fs)
+        Byte to_byte(const Field& fs)
         {
-            return fs.left * left_scale + fs.right;
+            return static_cast<Byte>(fs.left * left_scale + fs.right);
         }
     }
 }
