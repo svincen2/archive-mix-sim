@@ -34,8 +34,8 @@ namespace MIX
         void accumulator(const Word& a) { _accumulator = a; }
         void extension(const Word& x) { _extension = x; }
         void jump_register(const Half_word& j) { _jump = j; }
-        void index_register(int, const Half_word&);
-        void memory(int, const Word&);
+        Half_word& index_register(int);
+        Word& memory(int);
 
         // Methods to read parts of instructions.
         const int read_address(const Word&) const;

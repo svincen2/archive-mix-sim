@@ -31,15 +31,16 @@ namespace MIX
     }
 
     /*
-    * Set the index register at the given index to the given half word.
+    * Return the index register at the given index.
+    * Allows the index register to be modified.
     * Index is 1 based because register names are [I1, I6].
     * Register names are defined by Knuth, Volum 1, Chapter 3.1
     */
-    void Machine::index_register(int index, const Half_word& hw)
+    Half_word& Machine::index_register(int index)
     {
         if(index < 1 || num_index_registers < index)
             throw std::invalid_argument{"Index register invalid"};
-        _index_registers[index - 1] = hw;
+        return _index_registers[index - 1];
     }
 
 
@@ -54,13 +55,14 @@ namespace MIX
     }
 
     /*
-    *
+    * Return a reference to the memory word at the given address.
+    * Allows the reference to be modified.
     */
-    void Machine::memory(int address, const Word& w)
+    Word& Machine::memory(int address)
     {
         if(address < 0 || memory_size <= address)
             throw std::invalid_argument{"Memory address out of bounds"};
-        _memory[address] = w;
+        return _memory[address];
     }
 
     /*
