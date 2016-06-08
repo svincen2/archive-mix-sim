@@ -51,7 +51,7 @@ SCENARIO("Reading address specifications")
   {
     Half_word hw{Sign::Plus, 0, 1};
     Word instruction{Sign::Plus, 0, 1, 1};
-    mix.index_register(1, hw);
+    mix.index_register(1) = hw;
     WHEN("The address is read by the machine")
     {
       const int address{mix.read_address(instruction)};
