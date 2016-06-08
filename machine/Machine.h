@@ -7,6 +7,7 @@
 #include "Field.h"
 #include "Comparison.h"
 #include "Instruction.h"
+#include <functional>
 #include <vector>
 
 namespace MIX
@@ -22,6 +23,15 @@ namespace MIX
         Machine();
         Machine(const Machine&) = delete;
         Machine(Machine&&) = delete;
+
+
+        // Execute the instruction.
+        void execute_instruction(const Word&);
+        // Get the contents of memory at the given address.
+        const Word contents(unsigned int, const Instruction::Field&) const;
+        // Get the bytes from the given word in the field, right shifted.
+        const Word get_bytes(const Word&, const Instruction::Field&) const;
+
 
         // Accessors.
         const Word& accumulator() const { return _accumulator; }
@@ -45,6 +55,9 @@ namespace MIX
         const unsigned int read_op_code(const Word&) const;
 
     private:
+        // Pointer to a machine operation.
+        using operation = void(Machine::*)(const Word&);
+
         Bit _overflow;                            // Overflow bit (on/off).
         Comparison _comparison_indicator;         // Comparison flag.
         Word _accumulator;                        // Accumulator register (A).
@@ -52,6 +65,13 @@ namespace MIX
         Half_word _jump;                          // Jump register (J).
         std::vector<Half_word> _index_registers;  // Index registers (I1-I6).
         std::vector<Word> _memory;                // 4000 word memory (0-3999).
+        std::vector<operation> _operation_table;  // Operation dispatch table.
+
+        // Set up the operation table.
+        void setup_operation_table();
+
+        // Machine operations.
+        void lda(const Word&);
     };
 }
 #endif

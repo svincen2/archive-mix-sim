@@ -1,5 +1,7 @@
 #include "Machine.h"
 
+#include <iostream>
+
 namespace MIX
 {
     /*
@@ -14,8 +16,54 @@ namespace MIX
           _extension{},
           _jump{},
           _index_registers(num_index_registers),
-          _memory(memory_size)
+          _memory(memory_size),
+          _operation_table{}
     {
+        setup_operation_table();
+    }
+
+    /*
+    * Adds pointers to all machine operations to operation table.
+    */
+    void Machine::setup_operation_table()
+    {
+        _operation_table.push_back(&Machine::lda);
+    }
+
+    /*
+    * Execute the given instruction word.
+    */
+    void Machine::execute_instruction(const Word& instruction)
+    {
+        operation op = _operation_table[read_op_code(instruction)];
+        (this->*op)(instruction);
+    }
+
+    /*
+    *
+    */
+    const Word Machine::contents(unsigned int address,
+                                 const Instruction::Field& field) const
+    {
+        const Word& mem = memory(address);
+        return get_bytes(mem, field);
+    }
+
+    /*
+    * Get the bytes in the given field from the given word, right shifted.
+    */
+    const Word Machine::get_bytes(const Word& word,
+                                  const Instruction::Field& field) const
+    {
+        Word destination_word{};
+        int destination_byte = Word::num_bytes;
+        for(int i = field.right; i >= field.left && i > 0; --i)
+        {
+            destination_word.byte(destination_byte--) = word.byte(i);
+        }
+        if(field.left == 0)
+            destination_word.sign(word.sign());
+        return destination_word;
     }
 
     /*
@@ -99,6 +147,22 @@ namespace MIX
         return Instruction::to_field_spec(
             instruction.byte(Instruction::modification)
         );
+    }
+
+    /*
+    * Read the operation code part of the given instruction word.
+    */
+    const unsigned int Machine::read_op_code(const Word& instruction) const
+    {
+        return instruction.byte(Instruction::op_code);
+    }
+
+    /*
+    * Load the accumulator according to the given instruction.
+    */
+    void Machine::lda(const Word& instruction)
+    {
+        std::cout << "this: " << this << '\n';
     }
 }
 

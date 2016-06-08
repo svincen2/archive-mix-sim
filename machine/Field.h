@@ -16,9 +16,13 @@ namespace MIX
             unsigned int left;
             unsigned int right;
 
+            // Constructors.
             Field();
             Field(unsigned int, unsigned int);
             Field(const Field&);
+
+            // Number of bytes in range specified by field.
+            unsigned int range_size() { return right - left + 1; }
         };
 
         // Convert a number to a field specification.

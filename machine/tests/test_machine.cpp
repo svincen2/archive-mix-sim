@@ -80,3 +80,26 @@ SCENARIO("Reading the field specification")
     }
   }
 }
+
+SCENARIO("Reading a field of a word")
+{
+    Machine mix{};
+    GIVEN("A word and a field")
+    {
+        Word w{Sign::Minus, 1, 2, 3, 4, 5};
+        Instruction::Field f{0, 3};
+        WHEN("Machine gets the bytes within the specified field")
+        {
+            const Word w2{mix.get_bytes(w, f)};
+            THEN("All bytes are copied, and right shifted")
+            {
+                REQUIRE(w2.sign() == Sign::Minus);
+                REQUIRE(w2.byte(1) == 0);
+                REQUIRE(w2.byte(2) == 0);
+                REQUIRE(w2.byte(3) == 1);
+                REQUIRE(w2.byte(4) == 2);
+                REQUIRE(w2.byte(5) == 3);
+            }
+        }
+    }
+}

@@ -9,10 +9,10 @@ namespace MIX
         : Basic_word{}
     {
         sign(s);
-        byte(0) = b1;
-        byte(1) = b2;
-        byte(2) = b3;
-        byte(3) = b4;
-        byte(4) = b5;
+        byte(1) = b1;
+        byte(2) = b2;
+        byte(3) = b3;
+        byte(4) = b4;
+        byte(5) = b5;
     }
 }

@@ -8,9 +8,9 @@ namespace MIX
     */
     namespace Instruction
     {
-        const unsigned int index{2};
-        const unsigned int modification{3};
-        const unsigned int op_code{4};
+        const unsigned int index{3};
+        const unsigned int modification{4};
+        const unsigned int op_code{5};
     }
 }
 #endif

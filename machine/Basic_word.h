@@ -9,12 +9,13 @@
 namespace MIX
 {
     // Most significant byte of address specification of instruction.
-    const unsigned int address_msb{0};
+    const unsigned int address_msb{1};
     // Least significant byte of address specification of instruction.
-    const unsigned int address_lsb{1};
+    const unsigned int address_lsb{2};
 
     /*
     * Template for the basic format of MIX machine words.
+    * Bytes are indexed starting at 1.
     */
     template<unsigned int Size>
     class Basic_word
@@ -83,9 +84,9 @@ namespace MIX
     template<unsigned int Size>
     const Byte& Basic_word<Size>::byte(int index) const
     {
-        if(index < 0 || num_bytes <= index)
+        if(index < 1 || num_bytes < index)
             throw std::invalid_argument{"Index out of bounds"};
-        return _bytes[index];
+        return _bytes[index - 1];
     }
 
     /*
@@ -94,9 +95,9 @@ namespace MIX
     template<unsigned int Size>
     Byte& Basic_word<Size>::byte(int index)
     {
-        if(index < 0 || num_bytes <= index)
+        if(index < 1 || num_bytes < index)
             throw std::invalid_argument{"Index out of bounds"};
-        return _bytes[index];
+        return _bytes[index - 1];
     }
 
     /*
