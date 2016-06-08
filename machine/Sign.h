@@ -1,7 +1,7 @@
-#ifndef MIX_SIM_MACHINE_SIGN_H
-#define MIX_SIM_MACHINE_SIGN_H
+#ifndef MIX_SIGN_H
+#define MIX_SIGN_H
 
-namespace machine
+namespace MIX
 {
   enum class Sign {Plus, Minus};
 }

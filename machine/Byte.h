@@ -1,9 +1,9 @@
-#ifndef MIX_SIM_BYTE_H
-#define MIX_SIM_BYTE_H
+#ifndef MIX_BYTE_H
+#define MIX_BYTE_H
 
 #include <cmath>
 
-namespace machine
+namespace MIX
 {
   // Alias for a Byte.
   using Byte = unsigned char;

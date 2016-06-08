@@ -1,17 +1,16 @@
 #include "catch.hpp"
 #include "../Machine.h"
 #include "../Word.h"
+#include "../Field.h"
 
-using namespace machine;
+using namespace MIX;
 
 SCENARIO("Reading address specifications")
 {
   Machine mix{};
-  GIVEN("An Instruction of [+|1|0|0|0|0]")
+  GIVEN("An Instruction of .byte(+|1|0|0|0|0)")
   {
-    Word instruction{};
-    instruction[Instruction::address_msb] = 1;
-    instruction[Instruction::address_lsb] = 0;
+    Word instruction{Sign::Plus, 1, 0};
     WHEN("The address is read by the machine")
     {
       const int address{mix.read_address(instruction)};
@@ -22,11 +21,9 @@ SCENARIO("Reading address specifications")
     }
   }
 
-  GIVEN("An Instruction of [+|3f|3f|0|0|0]")
+  GIVEN("An Instruction of .byte(+|3f|3f|0|0|0)")
   {
-    Word instruction{};
-    instruction[Instruction::address_msb] = 0x3f;
-    instruction[Instruction::address_lsb] = 0x3f;
+    Word instruction{Sign::Plus, 0x3f, 0x3f};
     WHEN("The address is read by the machine")
     {
       const int address{mix.read_address(instruction)};
@@ -37,17 +34,30 @@ SCENARIO("Reading address specifications")
     }
   }
 
-  GIVEN("And Instruction of [+|ff|ff|0|0|0]")
+  GIVEN("And Instruction of .byte(+|ff|ff|0|0|0)")
   {
-    Word instruction{};
-    instruction[Instruction::address_msb] = 0xff;
-    instruction[Instruction::address_lsb] = 0xff;
+    Word instruction{Sign::Plus, 0xff, 0xff};
     WHEN("The address is read by the machine")
     {
       const int address{mix.read_address(instruction)};
       THEN("Address read is 0xfff")
       {
         REQUIRE(address == 0xfff);
+      }
+    }
+  }
+
+  GIVEN("An instruction with an index specification")
+  {
+    Half_word hw{Sign::Plus, 0, 1};
+    Word instruction{Sign::Plus, 0, 1, 1};
+    mix.index_register(1, hw);
+    WHEN("The address is read by the machine")
+    {
+      const int address{mix.read_address(instruction)};
+      THEN("Address read is 2")
+      {
+        REQUIRE(address == 2);
       }
     }
   }
@@ -56,10 +66,9 @@ SCENARIO("Reading address specifications")
 SCENARIO("Reading the field specification")
 {
   Machine mix{};
-  GIVEN("An Instruction of [+|0|0|0|5|0]")
+  GIVEN("An Instruction of .byte(+|0|0|0|5|0)")
   {
-    Word instruction{};
-    instruction[Instruction::modification] = 5;
+    Word instruction{Sign::Plus, 0, 0, 0, 5};
     WHEN("Machine reads field specification")
     {
       const Instruction::Field f{mix.read_field(instruction)};

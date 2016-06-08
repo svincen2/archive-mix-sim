@@ -2,7 +2,7 @@
 #include "../Half_word.h"
 #include "../Word.h"
 
-using namespace machine;
+using namespace MIX;
 
 SCENARIO("Invalid byte indexing")
 {
@@ -14,7 +14,7 @@ SCENARIO("Invalid byte indexing")
       int index{-1};
       THEN("Invalid argument is thrown")
       {
-        REQUIRE_THROWS_AS(hw[index], std::invalid_argument);
+        REQUIRE_THROWS_AS(hw.byte(index), std::invalid_argument);
       }
     }
     WHEN("Byte index is greater than num_bytes")
@@ -22,7 +22,7 @@ SCENARIO("Invalid byte indexing")
       int index{Half_word::num_bytes + 1};
       THEN("Invalid argument is thrown")
       {
-        REQUIRE_THROWS_AS(hw[index], std::invalid_argument);
+        REQUIRE_THROWS_AS(hw.byte(index), std::invalid_argument);
       }
     }
   }
@@ -35,7 +35,7 @@ SCENARIO("Invalid byte indexing")
       int index{-1};
       THEN("Invalid argument is thrown")
       {
-        REQUIRE_THROWS_AS(w[index], std::invalid_argument);
+        REQUIRE_THROWS_AS(w.byte(index), std::invalid_argument);
       }
     }
     WHEN("Byte index is greater than num_bytes")
@@ -43,7 +43,7 @@ SCENARIO("Invalid byte indexing")
       int index{Word::num_bytes + 1};
       THEN("Invalid argument is thrown")
       {
-        REQUIRE_THROWS_AS(w[index], std::invalid_argument);
+        REQUIRE_THROWS_AS(w.byte(index), std::invalid_argument);
       }
     }
   }
