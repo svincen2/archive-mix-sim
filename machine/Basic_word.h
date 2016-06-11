@@ -35,8 +35,6 @@ namespace MIX
         // Accessors.
         const Sign& sign() const { return _sign; }
         Sign& sign() { return _sign; }
-        const std::vector<Byte>& bytes() const { return _bytes; }
-        std::vector<Byte>& bytes() { return _bytes; }
         const Byte& byte(int) const;
         Byte& byte(int);
 
