@@ -40,7 +40,9 @@ namespace MIX
     }
 
     /*
-    *
+    * Get the contents of memory at the given address.
+    * Only those bytes specified by the given field are copied
+    * to the word returned.
     */
     const Word Machine::contents(unsigned int address,
                                  const Instruction::Field& field) const
@@ -162,7 +164,7 @@ namespace MIX
     */
     void Machine::lda(const Word& instruction)
     {
-        std::cout << "this: " << this << '\n';
+
     }
 }
 
