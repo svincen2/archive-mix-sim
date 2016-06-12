@@ -5,18 +5,17 @@
 
 namespace MIX
 {
-    // A word has a sign and 5 bytes.
-    class Word : public Basic_word<5>
-    {
-    public:
-        // Parameterized constructor with default values.
-        Word(Sign s = Sign::Plus,
-             Byte b1 = 0,
-             Byte b2 = 0,
-             Byte b3 = 0,
-             Byte b4 = 0,
-             Byte b5 = 0);
-        };
+	// A word has a sign and 5 bytes.
+	class Word : public Basic_word<5>
+	{
+	public:
+		// Parameterized constructor with default values.
+		Word(Sign s = Sign::Plus,
+			 Byte b1 = 0,
+			 Byte b2 = 0,
+			 Byte b3 = 0,
+			 Byte b4 = 0,
+			 Byte b5 = 0);
+		};
 }
 #endif
-
