@@ -39,6 +39,7 @@ namespace MIX
 		void sign(Sign);
 		Byte& byte(int);
 		void set_bytes(int, int, const std::vector<Byte>&);
+		void negate();
 
 	private:
 		Sign _sign;
@@ -174,5 +175,14 @@ namespace MIX
 		return result;
 	}
 
+	/*
+	* Negates the sign of this basic word.
+	*/
+	template<unsigned int Size>
+	void Basic_word<Size>::negate()
+	{
+		if(_sign == Sign::Plus) _sign = Sign::Minus;
+		else _sign = Sign::Plus;
+	}
 }
 #endif
