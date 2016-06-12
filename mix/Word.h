@@ -9,6 +9,9 @@ namespace MIX
 	class Word : public Basic_word<5>
 	{
 	public:
+		// Inherit constructors.
+		using Basic_word<5>::Basic_word;
+	
 		// Parameterized constructor with default values.
 		Word(Sign s = Sign::Plus,
 			 Byte b1 = 0,

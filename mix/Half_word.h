@@ -10,6 +10,9 @@ namespace MIX
 	class Half_word : public Basic_word<2>
 	{
 	public:
+		// Inherit constructors.
+		using Basic_word<2>::Basic_word;
+		
 		// Parameterized constructor with default values.
 		Half_word(Sign s = Sign::Plus,
 				  Byte b1 = 0,
