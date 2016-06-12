@@ -30,6 +30,10 @@ namespace MIX
 		// Register codes.
 		const unsigned int accumulator{0};
 		const unsigned int extension{7};
+
+		// Get register codes from operation code.
+		const unsigned int load_register(const unsigned int);
+		const unsigned int load_neg_register(const unsigned int);
 	}
 }
 #endif
