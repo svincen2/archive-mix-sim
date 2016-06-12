@@ -21,7 +21,7 @@ namespace MIX
 		Field(const Field&);
 
 		// Number of bytes in range specified by field.
-		unsigned int size() { return right - left + 1; }
+		unsigned int size() const { return right - left + 1; }
 
 		// Static factory methods.
 		static const Field address();

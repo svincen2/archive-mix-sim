@@ -79,7 +79,7 @@ namespace MIX
 	*/
 	const int Machine::read_address(const Word& instruction) const
 	{
-		int a{to_int(instruction, Field::address());
+		int a{to_int(instruction, Field::address())};
 		const unsigned int i{read_index(instruction)};
 		if(i > 0)
 			a += to_int(index_register(i), Field::address());
