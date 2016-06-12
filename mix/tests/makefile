@@ -2,7 +2,7 @@ src_dir = ..
 test_objs = test_machine_words.o test_machine.o test_basic_word.o
 
 src_objs = $(src_dir)/Machine.o $(src_dir)/Field.o $(src_dir)/Word.o \
-           $(src_dir)/Half_word.o
+           $(src_dir)/Half_word.o $(src_dir)/Instruction.o
 
 compile = g++ -std=c++11 -I/home/sean/Documents/cpp -c
 link = g++ -std=c++11 -I/home/sean/Documents/cpp -o
