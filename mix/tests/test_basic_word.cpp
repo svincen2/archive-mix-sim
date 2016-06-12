@@ -48,4 +48,17 @@ SCENARIO("Read a basic word field as an integer")
 			}
 		}
 	}
+
+	GIVEN("A basic word with 5 bytes")
+	{
+		Basic_word<5> bw{};
+		WHEN("The field to read is too large")
+		{
+			THEN("Invalid argument exception is thrown")
+			{
+				REQUIRE_THROWS_AS(to_int(bw, Field(0, 6)),
+								  std::invalid_argument);
+			}
+		}
+	}
 }
