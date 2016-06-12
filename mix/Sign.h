@@ -3,8 +3,7 @@
 
 namespace MIX
 {
-    // A sign has only two possible values: + or -
-    enum class Sign : Byte {Plus = '+', Minus = '-'};
+	// A sign has only two possible values: + or -
+	enum class Sign : Byte {Plus = '+', Minus = '-'};
 }
 #endif
-
