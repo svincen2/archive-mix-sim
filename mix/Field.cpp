@@ -1,5 +1,7 @@
 #include "Field.h"
+#include "Instruction.h"
 #include "Word.h"
+#include <stdexcept>
 
 namespace MIX
 {
@@ -43,9 +45,9 @@ namespace MIX
 	void Field::validate()
 	{
 		if(left < min || right < left)
-			throw std::invalid_state{"Left is invalid"};
+			throw std::range_error{"Left is invalid"};
 		if(right < min || max < right)
-			throw std::invalid_state{"Right is invalid"};
+			throw std::range_error{"Right is invalid"};
 	}
 
 	/*
