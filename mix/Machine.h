@@ -7,7 +7,6 @@
 #include "Field.h"
 #include "Comparison.h"
 #include "Instruction.h"
-#include <functional>
 #include <vector>
 
 namespace MIX
