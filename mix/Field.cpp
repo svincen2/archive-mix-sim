@@ -1,9 +1,18 @@
 #include "Field.h"
+#include "Word.h"
 
 namespace MIX
 {
 	// Field specification's left part scaling factor.
 	const unsigned int left_scale{8};
+	// Default left value.
+	const unsigned int default_left{0};
+	// Default right value.
+	const unsigned int default_right{Word::num_bytes};
+	// Maximum valid value.
+	const unsigned int max{Word::num_bytes};
+	// Minimum valid value.
+	const unsigned int min{0};
 
 	/*
 	* Return a field representing the address part of an instruction.
@@ -16,7 +25,7 @@ namespace MIX
 	/*
 	* Construct the default field specification of (0:5).
 	*/
-	Field::Field() : left{0}, right{5}
+	Field::Field() : left{default_left}, right{default_right}
 	{
 	}
 
@@ -25,6 +34,18 @@ namespace MIX
 	*/
 	Field::Field(unsigned int l, unsigned int r) : left{l}, right{r}
 	{
+		validate();
+	}
+
+	/*
+	* Ensure the field is valid.
+	*/
+	void Field::validate()
+	{
+		if(left < min || right < left)
+			throw std::invalid_state{"Left is invalid"};
+		if(right < min || max < right)
+			throw std::invalid_state{"Right is invalid"};
 	}
 
 	/*
