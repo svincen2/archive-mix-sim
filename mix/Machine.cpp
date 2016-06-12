@@ -88,7 +88,7 @@ namespace MIX
 	const unsigned int Machine::read_index(const Word& instruction) const
 	{
 		const unsigned int i{instruction.byte(Instruction::index)};
-		if(i < 0 || num_index_registers < i)
+		if(num_index_registers < i)
 			throw std::invalid_argument{"Index specification invalid"};
 		return i;
 	}

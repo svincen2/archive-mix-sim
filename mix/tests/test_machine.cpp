@@ -63,6 +63,23 @@ SCENARIO("Reading address specifications")
 	}
 }
 
+SCENARIO("Reading the index specification")
+{
+	Machine mix{};
+	GIVEN("An instruction with an index that is too big")
+	{
+		Word instruction{Sign::Plus, 0, 0, Machine::num_index_registers + 1};
+		WHEN("Machine reads the index specification")
+		{
+			THEN("Invalid argument is thrown")
+			{
+				REQUIRE_THROWS_AS(mix.read_index(instruction),
+								  std::invalid_argument);
+			}
+		}
+	}
+}
+
 SCENARIO("Reading the field specification")
 {
 	Machine mix{};
