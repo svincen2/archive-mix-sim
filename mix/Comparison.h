@@ -3,7 +3,6 @@
 
 namespace MIX
 {
-  enum class Comparison { Less, Equal, Greater };
+	enum class Comparison { Less, Equal, Greater };
 }
 #endif
-
