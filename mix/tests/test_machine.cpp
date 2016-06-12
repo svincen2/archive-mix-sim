@@ -10,7 +10,7 @@ SCENARIO("Reading address specifications")
 	Machine mix{};
 	GIVEN("An Instruction of [+|1|0|0|0|0]")
 	{
-		Word instruction{Sign::Plus, 1, 0};
+		Word instruction{1, 0};
 		WHEN("The address is read by the machine")
 		{
 			const int address{mix.read_address(instruction)};
@@ -23,7 +23,7 @@ SCENARIO("Reading address specifications")
 
 	GIVEN("An Instruction of [+|3f|3f|0|0|0]")
 	{
-		Word instruction{Sign::Plus, 0x3f, 0x3f};
+		Word instruction{0x3f, 0x3f};
 		WHEN("The address is read by the machine")
 		{
 			const int address{mix.read_address(instruction)};
@@ -36,7 +36,7 @@ SCENARIO("Reading address specifications")
 
 	GIVEN("And Instruction of [+|ff|ff|0|0|0]")
 	{
-		Word instruction{Sign::Plus, 0xff, 0xff};
+		Word instruction{0xff, 0xff};
 		WHEN("The address is read by the machine")
 		{
 			const int address{mix.read_address(instruction)};
@@ -49,8 +49,8 @@ SCENARIO("Reading address specifications")
 
 	GIVEN("An instruction with an index specification")
 	{
-		Half_word hw{Sign::Plus, 0, 1};
-		Word instruction{Sign::Plus, 0, 1, 1};
+		Half_word hw{0, 1};
+		Word instruction{0, 1, 1};
 		mix.index_register(1) = hw;
 		WHEN("The address is read by the machine")
 		{
@@ -68,7 +68,7 @@ SCENARIO("Reading the index specification")
 	Machine mix{};
 	GIVEN("An instruction with an index that is too big")
 	{
-		Word instruction{Sign::Plus, 0, 0, Machine::num_index_registers + 1};
+		Word instruction{0, 0, Machine::num_index_registers + 1};
 		WHEN("Machine reads the index specification")
 		{
 			THEN("Invalid argument is thrown")
@@ -85,7 +85,7 @@ SCENARIO("Reading the field specification")
 	Machine mix{};
 	GIVEN("An Instruction of [+|0|0|0|5|0]")
 	{
-		Word instruction{Sign::Plus, 0, 0, 0, 5};
+		Word instruction{0, 0, 0, 5};
 		WHEN("Machine reads field specification")
 		{
 			const Field f{mix.read_field(instruction)};

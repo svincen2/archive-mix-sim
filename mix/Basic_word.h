@@ -4,6 +4,7 @@
 #include "Byte.h"
 #include "Sign.h"
 #include "Field.h"
+#include <initializer_list>
 #include <stdexcept>
 #include <vector>
 
@@ -21,14 +22,8 @@ namespace MIX
 
 		// Constructors.
 		Basic_word();
-		Basic_word(const Basic_word&);
-		Basic_word(Basic_word&&) = delete;
-		Basic_word(const std::vector<Byte>&);
-		Basic_word(Sign, const std::vector<Byte>&);
-
-		// Assignments.
-		Basic_word& operator=(const Basic_word&);
-		Basic_word& operator=(Basic_word&&) = delete;
+		Basic_word(const std::initializer_list<Byte>&);
+		Basic_word(Sign, const std::initializer_list<Byte>&);
 
 		// Accessors.
 		const Sign& sign() const { return _sign; }
@@ -40,6 +35,7 @@ namespace MIX
 		void sign(Sign);
 		Byte& byte(int);
 		void set_bytes(int, int, const std::vector<Byte>&);
+		void set_right(const std::vector<Byte>&);
 		void negate();
 
 	private:
@@ -48,46 +44,37 @@ namespace MIX
 	};
 
 	/*
-	* Construct a word with all bits cleared to 0,
-	* and the sign set to plus (+).
+	* Empty constructor.
+	* Sets basic word to +0.
 	*/
 	template<unsigned int Size>
-	Basic_word<Size>::Basic_word() : _sign{Sign::Plus}, _bytes(num_bytes)
+	Basic_word<Size>::Basic_word()
+		: _sign{Sign::Plus}, _bytes(num_bytes)
 	{
 	}
 
 	/*
-	* Copy the given word.
+	* Variadic constructor with sign set to Sign::Plus.
 	*/
 	template<unsigned int Size>
-	Basic_word<Size>::Basic_word(const Basic_word<Size>& copy)
-		: _sign{copy._sign}, _bytes{copy._bytes}
+	Basic_word<Size>::Basic_word(const std::initializer_list<Byte>& b)
+		: Basic_word{Sign::Plus, b}
 	{
 	}
 
 	/*
-	* Construct a word with the sign set to plus (+),
-	* and the rightmost bytes set to the corresponding given bytes.
+	* Variadic constructor with sign.
 	*/
 	template<unsigned int Size>
-	Basic_word<Size>::Basic_word(const std::vector<Byte>& vb)
-		: _sign{Sign::Plus}, _bytes{vb}
+	Basic_word<Size>::Basic_word(Sign s, const std::initializer_list<Byte>& b)
+		: _sign{s}, _bytes{}
 	{
-		// Fill with zeros until full.
-		while(_bytes.size() < num_bytes)
+		if(Size < b.size())
+			throw std::invalid_argument{"Too many bytes given to constructor"};
+		for(auto pb = b.begin(); pb != b.end(); ++pb)
+			_bytes.push_back(*pb);
+		while(_bytes.size() < Size)
 			_bytes.push_back(0);
-	}
-
-	/*
-	* Copy assignment.
-	*/
-	template<unsigned int Size>
-	Basic_word<Size>& Basic_word<Size>::operator=(
-			const Basic_word<Size>& wt)
-	{
-		_sign = wt._sign;
-		_bytes = wt._bytes;
-		return *this;
 	}
 
 	/*
@@ -154,6 +141,19 @@ namespace MIX
 		{
 			byte(i) = vb[j];
 		}
+	}
+
+	/*
+	* Set the rightmost bytes to the given bytes.
+	*/
+	template<unsigned int Size>
+	void Basic_word<Size>::set_right(const std::vector<Byte>& vb)
+	{
+		if(Size < vb.size())
+			throw std::invalid_argument{"Too many bytes given"};
+		auto pb = vb.begin();
+		for(int i = Size - vb.size(); i < Size; ++i, ++pb)
+			_bytes[i] = *pb;
 	}
 
 	/*

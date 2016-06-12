@@ -157,7 +157,8 @@ namespace MIX
 	const Word Machine::right_shift(const Word& word, const Field& field)
 	{
 		unsigned int left{field.left == 0 ? 1 : field.left};
-		Word result{word.get_bytes(left, field.right)};
+		Word result{};
+		result.set_right(word.get_bytes(left, field.right));
 		if(field.left == 0) result.sign(word.sign());
 		return result;
 	}

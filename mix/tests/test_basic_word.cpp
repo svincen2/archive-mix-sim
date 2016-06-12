@@ -88,3 +88,57 @@ SCENARIO("Getting ranges of bytes")
 		}
 	}
 }
+
+SCENARIO("Constructing with a variable number of arguments")
+{
+	GIVEN("Argument list {1, 2, 3}")
+	{
+		std::initializer_list<Byte> list{1, 2, 3};
+		WHEN("Used to construct a basic word with 5 bytes")
+		{
+			Basic_word<5> bw{list};
+			THEN("The word [+|1|2|3|0|0] is constructed")
+			{
+				REQUIRE(bw.sign() == Sign::Plus);
+				REQUIRE(bw.byte(1) == 1);
+				REQUIRE(bw.byte(2) == 2);
+				REQUIRE(bw.byte(3) == 3);
+				REQUIRE(bw.byte(4) == 0);
+				REQUIRE(bw.byte(5) == 0);
+			}
+		}
+	}
+
+	GIVEN("An argument list of {1, 2, 3, 4, 5} and a sign of Sign::Minus")
+	{
+		std::initializer_list<Byte> list{1, 2, 3, 4, 5};
+		Sign s{Sign::Minus};
+		WHEN("Used to construct a basic word with 5 bytes")
+		{
+			Basic_word<5> bw{s, list};
+			THEN("The word [-|1|2|3|4|5] is constructed")
+			{
+				REQUIRE(bw.sign() == Sign::Minus);
+				REQUIRE(bw.byte(1) == 1);
+				REQUIRE(bw.byte(2) == 2);
+				REQUIRE(bw.byte(3) == 3);
+				REQUIRE(bw.byte(4) == 4);
+				REQUIRE(bw.byte(5) == 5);
+			}
+		}
+	}
+
+	GIVEN("An argument list that is too big")
+	{
+		std::initializer_list<Byte> list{1, 2, 3, 4, 5, 6};
+		WHEN("Used to construct a basic word that is too small")
+		{
+			THEN("An invalid argument exception is thrown")
+			{
+				REQUIRE_THROWS_AS(Basic_word<2>(Sign::Plus, list),
+								  std::invalid_argument);
+				REQUIRE_THROWS_AS((Basic_word<2>{list}), std::invalid_argument);
+			}
+		}
+	}
+}

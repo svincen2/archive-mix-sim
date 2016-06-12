@@ -3,6 +3,7 @@
 
 #include "Basic_word.h"
 #include "Word.h"
+#include <initializer_list>
 
 namespace MIX
 {
@@ -10,15 +11,10 @@ namespace MIX
 	class Half_word : public Basic_word<2>
 	{
 	public:
-		// Inherit constructors.
+		// Inherit base constructors.
 		using Basic_word<2>::Basic_word;
-		
-		// Parameterized constructor with default values.
-		Half_word(Sign s = Sign::Plus,
-				  Byte b1 = 0,
-				  Byte b2 = 0);
 
-		// Narrow to a half word.
+		// Narrowing conversion assignment.
 		Half_word& operator=(const Word&);
 	};
 }
