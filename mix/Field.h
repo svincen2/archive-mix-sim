@@ -20,7 +20,7 @@ namespace MIX
 		Field(const Field&);
 
 		// Number of bytes in range specified by field.
-		unsigned int range_size() { return right - left + 1; }
+		unsigned int size() { return right - left + 1; }
 	};
 
 	// Convert a number to a field specification.
