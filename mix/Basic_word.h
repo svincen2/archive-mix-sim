@@ -9,11 +9,6 @@
 
 namespace MIX
 {
-	// Most significant byte of address specification of instruction.
-	const unsigned int address_msb{1};
-	// Least significant byte of address specification of instruction.
-	const unsigned int address_lsb{2};
-
 	/*
 	* Template for the basic format of MIX machine words.
 	* Bytes are indexed starting at 1.
@@ -37,14 +32,13 @@ namespace MIX
 
 		// Accessors.
 		const Sign& sign() const { return _sign; }
-		Sign& sign() { return _sign; }
 		const Byte& byte(int) const;
-		Byte& byte(int);
 		std::vector<Byte> get_bytes(int, int) const;
-		void set_bytes(int, int, const std::vector<Byte>&);
 
 		// Mutators.
 		void sign(Sign);
+		Byte& byte(int);
+		void set_bytes(int, int, const std::vector<Byte>&);
 
 	private:
 		Sign _sign;
@@ -158,20 +152,24 @@ namespace MIX
 	}
 
 	/*
-	* Return the address part of the given basic word, if possible.
-	* If the basic word does not have an address (i.e. it is not big enough),
-	* an invalid argument exception is thrown.
+	* Reads the field of the given word as an integer value.
 	*/
 	template<unsigned int Size>
-	int address(const Basic_word<Size>& bw)
+	int to_int(const Basic_word<Size>& bw, const Field& field)
 	{
-		// Ensure word has at least 2 bytes.
-		if(Size < 2)
-			throw std::invalid_argument{"Basic_word does not have an address"};
-		int a{0};
-		a |= (bw.byte(address_msb) & bit_mask) << byte_size;
-		a |= (bw.byte(address_lsb) & bit_mask);
-		return (bw.sign() == Sign::Plus? a : -a);
+		// Ensure word has enough bytes.
+		if(Size < field.size())
+			throw std::invalid_argument{"Field is too big"};
+		int result{0};
+		unsigned int begin = (field.left == 0 ? 1 : field.left);
+		for(int i = begin; i <= field.right; ++i)
+		{
+			result |= (bw.byte(i) & bit_mask);
+			result <<= byte_size;
+		}
+		if(field.left == 0 && bw.sign() == Sign::Minus)
+			result = -result;
+		return result;
 	}
 
 }
