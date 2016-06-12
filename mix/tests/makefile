@@ -1,6 +1,6 @@
 src_dir = ..
 test_objs = test_machine_words.o test_machine.o test_basic_word.o \
-			test_field.o
+			test_field.o test_half_word.o
 
 src_objs = $(src_dir)/Machine.o $(src_dir)/Field.o \
            $(src_dir)/Half_word.o $(src_dir)/Instruction.o
@@ -22,6 +22,9 @@ test_machine.o : test_machine.cpp
 
 test_basic_word.o : test_basic_word.cpp
 	$(compile) test_basic_word.cpp
+
+test_half_word.o : test_half_word.cpp
+	$(compile) test_half_word.cpp
 
 test_field.o : test_field.cpp
 	$(compile) test_field.cpp
