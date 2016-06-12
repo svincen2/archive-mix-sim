@@ -158,14 +158,16 @@ namespace MIX
 	int to_int(const Basic_word<Size>& bw, const Field& field)
 	{
 		// Ensure word has enough bytes.
-		if(Size < field.size())
+		if(Size + 1 < field.size())
 			throw std::invalid_argument{"Field is too big"};
 		int result{0};
 		unsigned int begin = (field.left == 0 ? 1 : field.left);
+		unsigned int num_bytes{field.right - begin};
 		for(int i = begin; i <= field.right; ++i)
 		{
-			result |= (bw.byte(i) & bit_mask);
-			result <<= byte_size;
+			unsigned int bits{bw.byte(i) & bit_mask};
+			bits <<= (byte_size * num_bytes--);
+			result |= bits;
 		}
 		if(field.left == 0 && bw.sign() == Sign::Minus)
 			result = -result;
