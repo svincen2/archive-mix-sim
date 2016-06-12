@@ -62,3 +62,29 @@ SCENARIO("Read a basic word field as an integer")
 		}
 	}
 }
+
+SCENARIO("Getting ranges of bytes")
+{
+	GIVEN("A basic word with 5 bytes")
+	{
+		Basic_word<5> bw{};
+		bw.byte(1) = 1;
+		bw.byte(2) = 2;
+		bw.byte(3) = 3;
+		bw.byte(4) = 4;
+		bw.byte(5) = 5;
+		WHEN("Get bytes [1, 5]")
+		{
+			std::vector<Byte> vb{bw.get_bytes(1, 5)};
+			THEN("All bytes asked for are returned, in the right order")
+			{
+				REQUIRE(vb.size() == 5);
+				REQUIRE(vb[0] == 1);
+				REQUIRE(vb[1] == 2);
+				REQUIRE(vb[2] == 3);
+				REQUIRE(vb[3] == 4);
+				REQUIRE(vb[4] == 5);
+			}
+		}
+	}
+}

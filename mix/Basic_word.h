@@ -34,6 +34,7 @@ namespace MIX
 		const Sign& sign() const { return _sign; }
 		const Byte& byte(int) const;
 		std::vector<Byte> get_bytes(int, int) const;
+		std::vector<Byte> from_right(int) const;
 
 		// Mutators.
 		void sign(Sign);
@@ -121,6 +122,20 @@ namespace MIX
 	{
 		std::vector<Byte> vb{};
 		for(int i = begin; i <= end; ++i)
+			vb.push_back(byte(i));
+		return vb;
+	}
+
+	/*
+	* Return copies of the given amount of bytes, taken from the right.
+	*/
+	template<unsigned int Size>
+	std::vector<Byte> Basic_word<Size>::from_right(int amount) const
+	{
+		std::vector<Byte> vb{};
+		if(Size < amount)
+			throw std::invalid_argument{"Amount too large"};
+		for(int i = Size - amount + 1; i <= Size; ++i)
 			vb.push_back(byte(i));
 		return vb;
 	}
