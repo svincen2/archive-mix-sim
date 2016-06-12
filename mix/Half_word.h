@@ -2,6 +2,7 @@
 #define MIX_HALF_WORD_H
 
 #include "Basic_word.h"
+#include "Word.h"
 
 namespace MIX
 {
@@ -13,6 +14,9 @@ namespace MIX
 		Half_word(Sign s = Sign::Plus,
 				  Byte b1 = 0,
 				  Byte b2 = 0);
+
+		// Narrow to a half word.
+		Half_word& operator=(const Word&);
 	};
 }
 #endif
