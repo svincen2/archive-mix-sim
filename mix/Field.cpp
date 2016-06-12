@@ -6,6 +6,14 @@ namespace MIX
 	const unsigned int left_scale{8};
 
 	/*
+	* Return a field representing the address part of an instruction.
+	*/
+	const Field Field::address()
+	{
+		return Field{0, Instruction::address_lsb};
+	}
+
+	/*
 	* Construct the default field specification of (0:5).
 	*/
 	Field::Field() : left{0}, right{5}

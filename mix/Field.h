@@ -2,6 +2,7 @@
 #define MIX_FIELD_H
 
 #include "Byte.h"
+#include "Instruction.h"
 
 namespace MIX
 {
@@ -21,6 +22,9 @@ namespace MIX
 
 		// Number of bytes in range specified by field.
 		unsigned int size() { return right - left + 1; }
+
+		// Static factory methods.
+		static const Field address();
 	};
 
 	// Convert a number to a field specification.
