@@ -3,7 +3,6 @@
 
 namespace MIX
 {
-  enum class Bit { On, Off };
+	enum class Bit { On, Off };
 }
 #endif
-
