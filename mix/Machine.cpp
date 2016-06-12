@@ -4,10 +4,6 @@
 
 namespace MIX
 {
-	// Load op code range.
-	const unsigned int load_lower{8};
-	const unsigned int load_upper{23};
-
 	/*
 	* Construct a MIX machine.
 	* All registers are cleared to +0.
@@ -111,5 +107,58 @@ namespace MIX
 	const unsigned int Machine::read_op_code(const Word& instruction) const
 	{
 		return instruction.byte(Instruction::op_code);
+	}
+
+	/*
+	* Execute the given instruction.
+	*/
+	void Machine::execute_instruction(const Word& instruction)
+	{
+		const unsigned int op_code{read_op_code(instruction)};
+		if(Instruction::is_load(op_code))
+			load(Instruction::load_register(op_code), instruction);
+		else if(Instruction::is_load_neg(op_code))
+			load_neg(Instruction::load_neg_register(op_code), instruction);
+	}
+
+	/*
+	* Load the specified register according to the instruction.
+	*/
+	void Machine::load(unsigned int register_code, const Word& instruction)
+	{
+		const int address{read_address(instruction)};
+		const Field field{read_field(instruction)};
+		const Word contents{right_shift(memory(address), field)};
+		if(register_code == Instruction::accumulator)
+			accumulator() = contents;
+		else if(register_code == Instruction::extension)
+			extension() = contents;
+		else
+			index_register(register_code) = contents;
+	}
+
+	/*
+	* Same as load, except the opposite sign is used.
+	*/
+	void Machine::load_neg(unsigned int register_code, const Word& instruction)
+	{
+		load(register_code, instruction);
+		if(register_code == Instruction::accumulator)
+			accumulator().negate();
+		else if(register_code == Instruction::extension)
+			extension().negate();
+		else
+			index_register(register_code).negate();
+	}
+
+	/*
+	* Get the contents of the field of the given word, right shifted.
+	*/
+	const Word Machine::right_shift(const Word& word, const Field& field)
+	{
+		unsigned int left{field.left == 0 ? 1 : field.left};
+		Word result{word.get_bytes(left, field.right)};
+		if(field.left == 0) result.sign(word.sign());
+		return result;
 	}
 }

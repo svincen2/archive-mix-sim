@@ -31,9 +31,9 @@ namespace MIX
 		const Word& memory(int) const;
 
 		// Mutators.
-		void accumulator(const Word& a) { _accumulator = a; }
-		void extension(const Word& x) { _extension = x; }
-		void jump_register(const Half_word& j) { _jump = j; }
+		Word& accumulator() { return _accumulator; }
+		Word& extension() { return _extension; }
+		Half_word& jump_register() { return _jump; }
 		Half_word& index_register(int);
 		Word& memory(int);
 
@@ -43,6 +43,12 @@ namespace MIX
 		const unsigned int read_modification(const Word&) const;
 		const Field read_field(const Word&) const;
 		const unsigned int read_op_code(const Word&) const;
+
+		// Methods to execute instructions.
+		void execute_instruction(const Word&);
+		void load(unsigned int, const Word&);
+		void load_neg(unsigned int, const Word&);
+		const Word right_shift(const Word&, const Field&);
 
 	private:
 		Bit _overflow;								// Overflow bit (on/off).
