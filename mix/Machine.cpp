@@ -1,5 +1,4 @@
 #include "Machine.h"
-#include <iostream>
 
 namespace MIX
 {
