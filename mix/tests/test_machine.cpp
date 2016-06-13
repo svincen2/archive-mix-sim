@@ -97,3 +97,77 @@ SCENARIO("Reading the field specification")
 		}
 	}
 }
+
+SCENARIO("Loading registers")
+{
+	Machine mix{};
+	GIVEN("A instruction to load the accumulator with default field")
+	{
+		mix.memory(0) = Word{1, 2, 3, 4, 5};
+		Word instruction{0, 0, 0, to_byte(Field{}), Op_code::LDA};
+		WHEN("Instruction is executed")
+		{
+			mix.execute_instruction(instruction);
+			THEN("Contents of memory 0 are loaded into accumulator")
+			{
+				const Word& acc{mix.accumulator()};
+				REQUIRE(acc.byte(1) == 1);
+				REQUIRE(acc.byte(2) == 2);
+				REQUIRE(acc.byte(3) == 3);
+				REQUIRE(acc.byte(4) == 4);
+				REQUIRE(acc.byte(5) == 5);
+			}
+		}
+	}
+
+	GIVEN("An instruction to load accumulator with field of (3:4)")
+	{
+		mix.memory(0) = Word{1, 2, 3, 4, 5};
+		Word instruction{0, 0, 0, to_byte(Field{3, 4}), Op_code::LDA};
+		WHEN("Instruction is executed")
+		{
+			mix.execute_instruction(instruction);
+			THEN("Contents of memory 0 are loaded into accumulator")
+			{
+				const Word& acc{mix.accumulator()};
+				REQUIRE(acc.byte(1) == 0);
+				REQUIRE(acc.byte(2) == 0);
+				REQUIRE(acc.byte(3) == 0);
+				REQUIRE(acc.byte(4) == 3);
+				REQUIRE(acc.byte(5) == 4);
+			}
+		}
+	}
+
+	GIVEN("An instruction to load index register with default field")
+	{
+		mix.memory(0) = Word{1, 2, 3, 4, 5};
+		Word instruction{0, 0, 0, to_byte(Field{}), Op_code::LD1};
+		WHEN("Instruction is executed")
+		{
+			mix.execute_instruction(instruction);
+			THEN("Contents of memory 0 are loaded into index register")
+			{
+				const Half_word& i1{mix.index_register(1)};
+				REQUIRE(i1.byte(1) == 4);
+				REQUIRE(i1.byte(2) == 5);
+			}
+		}
+	}
+
+	GIVEN("An instruction to load index register with field of (1:3)")
+	{
+		mix.memory(0) = Word{1, 2, 3, 4, 5};
+		Word instruction{0, 0, 0, to_byte(Field{1, 3}), Op_code::LD3};
+		WHEN("Instruction is executed")
+		{
+			mix.execute_instruction(instruction);
+			THEN("Contents of memory 0 are loaded into index reg 3")
+			{
+				const Half_word& i3{mix.index_register(3)};
+				REQUIRE(i3.byte(1) == 2);
+				REQUIRE(i3.byte(2) == 3);
+			}
+		}
+	}
+}
