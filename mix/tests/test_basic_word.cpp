@@ -142,3 +142,34 @@ SCENARIO("Constructing with a variable number of arguments")
 		}
 	}
 }
+
+SCENARIO("Testing equality")
+{
+	GIVEN("Two identical basic words")
+	{
+		Basic_word<2> bw1{Sign::Plus, {1, 2}};
+		Basic_word<2> bw2{Sign::Plus, {1, 2}};
+		WHEN("Compared for equality")
+		{
+			bool equal{bw1 == bw2};
+			THEN("The two are equal")
+			{
+				REQUIRE(equal == true);
+			}
+		}
+	}
+
+	GIVEN("Two different basic words of the same size")
+	{
+		Basic_word<5> bw1{Sign::Plus, {1, 2, 3, 4, 5}};
+		Basic_word<5> bw2{};
+		WHEN("Compared for equality")
+		{
+			bool equal{bw1 == bw2};
+			THEN("The two are not equal")
+			{
+				REQUIRE(equal == false);
+			}
+		}
+	}
+}

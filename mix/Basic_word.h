@@ -25,6 +25,9 @@ namespace MIX
 		Basic_word(const std::initializer_list<Byte>&);
 		Basic_word(Sign, const std::initializer_list<Byte>&);
 
+		// Comparison operator.
+		bool operator==(const Basic_word&);
+
 		// Accessors.
 		const Sign& sign() const { return _sign; }
 		const Byte& byte(int) const;
@@ -75,6 +78,15 @@ namespace MIX
 			_bytes.push_back(*pb);
 		while(_bytes.size() < Size)
 			_bytes.push_back(0);
+	}
+
+	/*
+	* Returns whether or not the two basic words are identical.
+	*/
+	template<unsigned int Size>
+	bool Basic_word<Size>::operator==(const Basic_word<Size>& other)
+	{
+		return _sign == other._sign && _bytes == other._bytes;
 	}
 
 	/*
@@ -199,5 +211,6 @@ namespace MIX
 		if(_sign == Sign::Plus) _sign = Sign::Minus;
 		else _sign = Sign::Plus;
 	}
+
 }
 #endif
