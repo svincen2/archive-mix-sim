@@ -1,5 +1,6 @@
 #include "catch.hpp"
 #include "../Basic_word.h"
+#include <sstream>
 
 using namespace MIX;
 
@@ -169,6 +170,43 @@ SCENARIO("Testing equality")
 			THEN("The two are not equal")
 			{
 				REQUIRE(equal == false);
+			}
+		}
+	}
+}
+
+SCENARIO("Setting rightmost bytes")
+{
+	GIVEN("A word of +0")
+	{
+		Basic_word<5> bw{};
+		WHEN("{1, 2, 3} is set to right bytes of word")
+		{
+			bw.set_right(std::vector<Byte>{1, 2, 3});
+			THEN("The word becomes [+|0|0|1|2|3]")
+			{
+				REQUIRE(bw.byte(1) == 0);
+				REQUIRE(bw.byte(2) == 0);
+				REQUIRE(bw.byte(3) == 1);
+				REQUIRE(bw.byte(4) == 2);
+				REQUIRE(bw.byte(5) == 3);
+			}
+		}
+	}
+}
+
+SCENARIO("Outputing a basic word")
+{
+	GIVEN("A word with 5 bytes")
+	{
+		Basic_word<5> bw{Sign::Plus, {1, 2, 3, 4, 5}};
+		WHEN("Output to a string")
+		{
+			std::ostringstream oss{};
+			oss << bw;
+			THEN("[+|1|2|3|4|5] is output")
+			{
+				REQUIRE("[+|1|2|3|4|5]" == oss.str());
 			}
 		}
 	}

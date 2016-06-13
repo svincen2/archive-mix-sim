@@ -5,6 +5,7 @@
 #include "Sign.h"
 #include "Field.h"
 #include <initializer_list>
+#include <ostream>
 #include <stdexcept>
 #include <vector>
 
@@ -212,5 +213,17 @@ namespace MIX
 		else _sign = Sign::Plus;
 	}
 
+	/*
+	* Output a basic word.
+	*/
+	template<unsigned int Size>
+	std::ostream& operator<<(std::ostream& os, const Basic_word<Size>& bw)
+	{
+		os << '[' << static_cast<unsigned char>(bw.sign());
+		for(int i = 1; i <= Size; ++i)
+			os << '|' << static_cast<int>(bw.byte(i));
+		os << ']';
+		return os;
+	}
 }
 #endif
