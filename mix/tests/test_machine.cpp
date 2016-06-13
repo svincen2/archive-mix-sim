@@ -103,7 +103,7 @@ SCENARIO("Loading registers")
 	Machine mix{};
 	GIVEN("A instruction to load the accumulator with default field")
 	{
-		mix.memory(0) = Word{1, 2, 3, 4, 5};
+		mix.memory(0) = Word{Sign::Minus, {1, 2, 3, 4, 5}};
 		Word instruction{0, 0, 0, to_byte(Field{}), Op_code::LDA};
 		WHEN("Instruction is executed")
 		{
@@ -167,6 +167,46 @@ SCENARIO("Loading registers")
 				const Half_word& i3{mix.index_register(3)};
 				REQUIRE(i3.byte(1) == 2);
 				REQUIRE(i3.byte(2) == 3);
+			}
+		}
+	}
+
+	GIVEN("A load negative instuction, with default field")
+	{
+		mix.memory(0) = Word{1, 2, 3, 4, 5};
+		Word instruction{0, 0, 0, to_byte(Field{}), Op_code::LDAN};
+		WHEN("Instruction is executed")
+		{
+			mix.execute_instruction(instruction);
+			THEN("Contents of memory are loaded, with sign negated")
+			{
+				const Word& acc{mix.accumulator()};
+				REQUIRE(acc.sign() == Sign::Minus);
+				REQUIRE(acc.byte(1) == 1);
+				REQUIRE(acc.byte(2) == 2);
+				REQUIRE(acc.byte(3) == 3);
+				REQUIRE(acc.byte(4) == 4);
+				REQUIRE(acc.byte(5) == 5);
+			}
+		}
+	}
+
+	GIVEN("A load negative instruction, with field of (0:2)")
+	{
+		mix.memory(0) = Word{Sign::Minus, {1, 2, 3, 4, 5}};
+		Word instruction{0, 0, 0, to_byte(Field{0, 2}), Op_code::LDXN};
+		WHEN("Instruction is executed")
+		{
+			mix.execute_instruction(instruction);
+			THEN("Contents of memory are loaded, with sign negated")
+			{
+				const Word& ex{mix.extension()};
+				REQUIRE(ex.sign() == Sign::Plus);
+				REQUIRE(ex.byte(1) == 0);
+				REQUIRE(ex.byte(2) == 0);
+				REQUIRE(ex.byte(3) == 0);
+				REQUIRE(ex.byte(4) == 1);
+				REQUIRE(ex.byte(5) == 2);
 			}
 		}
 	}
