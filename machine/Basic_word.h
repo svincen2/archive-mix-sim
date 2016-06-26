@@ -34,7 +34,7 @@ namespace mix
 
 		// Conversion.
 		template<unsigned int N>
-		explicit operator Basic_word<N>();
+		explicit operator Basic_word<N>() const;
 
 
 		/* Functions. */
@@ -52,11 +52,14 @@ namespace mix
 		void left_shift(int);
 
 		// Byte shifted (non-mutating).
-		Basic_word right_shifted(int);
-		Basic_word left_shifted(int);
+		Basic_word right_shifted(int) const;
+		Basic_word left_shifted(int) const;
 
 		// Clear all bytes.
 		void clear_bytes();
+
+		// Range copy.
+		void copy_range(const Basic_word&, int, int);
 
 
 	private:
@@ -67,6 +70,7 @@ namespace mix
 
 		// Helper functions.
 		void check_byte_index(int) const;
+		void check_copy_range(int, int) const;
 	};
 
 
@@ -134,7 +138,7 @@ namespace mix
 	*/
 	template<unsigned int N1>
 	template<unsigned int N2>
-	Basic_word<N1>::operator Basic_word<N2>()
+	Basic_word<N1>::operator Basic_word<N2>() const
 	{
 		Basic_word<N2> bw{};
 		bw.sign() = sign_byte;
@@ -317,7 +321,7 @@ namespace mix
 	*	n - The amount the returned word will be shifted.
 	*/
 	template<unsigned int N>
-	Basic_word<N> Basic_word<N>::right_shifted(int n)
+	Basic_word<N> Basic_word<N>::right_shifted(int n) const
 	{
 		Basic_word<N> copy{*this};
 		copy.right_shift(n);
@@ -333,11 +337,47 @@ namespace mix
 	*	n - The amount the returned word will be shifted.
 	*/
 	template<unsigned int N>
-	Basic_word<N> Basic_word<N>::left_shifted(int n)
+	Basic_word<N> Basic_word<N>::left_shifted(int n) const
 	{
 		Basic_word<N> copy{*this};
 		copy.left_shift(n);
 		return copy;
+	}
+
+	/*
+	* Copies the given range [first, last] from the given word
+	* into the same range of this word.
+	* Template parameters:
+	*	N - Number of bytes.
+	* Parameters:
+	*	bw - Word to be copied.
+	*	first - First (lowest index) byte to be copied. If 0, the sign is copied.
+	*	last - Last (highest index) byte to be copied.
+	*/
+	template<unsigned int N>
+	void Basic_word<N>::copy_range(const Basic_word& bw, int first, int last)
+	{
+		check_copy_range(first, last);
+		if (first == 0) {
+			sign_byte = bw.sign_byte;
+			++first;
+		}
+		for (int i = first; i <= last; ++i)
+			byte(i) = bw.byte(i);
+	}
+
+	/*
+	* Makes sure the range [first, last] is valid.
+	*/
+	template<unsigned int N>
+	void Basic_word<N>::check_copy_range(int first, int last) const
+	{
+		if (first > last)
+			throw std::invalid_argument{"Invalid range: first > last"};
+		if (first < 0)
+			throw std::invalid_argument{"Invalid range: first is negative"};
+		if (last > num_bytes)
+			throw std::invalid_argument{"Invalid range: last > number of bytes"};
 	}
 }
 #endif

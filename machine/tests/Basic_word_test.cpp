@@ -278,3 +278,87 @@ SCENARIO("Left shifting")
 	}
 }
 
+SCENARIO("Copying a range")
+{
+	GIVEN("Two basic words")
+	{
+		Basic_word<5> first{Sign::Plus, {1, 2, 3, 4, 5}};
+		Basic_word<5> second{Sign::Minus, {6, 7, 8, 9, 0}};
+		WHEN("First index in range is negative")
+		{
+			THEN("Invalid argument exception is thrown")
+			{
+				REQUIRE_THROWS_AS(first.copy_range(second, -1, 0),
+								  std::invalid_argument);
+			}
+		}
+		WHEN("First index is greater than last index")
+		{
+			THEN("Invalid argument exception is thrown")
+			{
+				REQUIRE_THROWS_AS(first.copy_range(second, 1, 0),
+								  std::invalid_argument);
+			}
+		}
+		WHEN("Last index is greater than the number of bytes")
+		{
+			THEN("Invalid argument exception is thrown")
+			{
+				REQUIRE_THROWS_AS(first.copy_range(second, 0, 6),
+								  std::invalid_argument);
+			}
+		}
+		WHEN("Copying entire range")
+		{
+			first.copy_range(second, 0, 5);
+			THEN("All bytes from second are copied into first, including sign")
+			{
+				REQUIRE(first.sign() == second.sign());
+				REQUIRE(first.byte(1) == second.byte(1));
+				REQUIRE(first.byte(2) == second.byte(2));
+				REQUIRE(first.byte(3) == second.byte(3));
+				REQUIRE(first.byte(4) == second.byte(4));
+				REQUIRE(first.byte(5) == second.byte(5));
+			}
+		}
+		WHEN("Copying range that doesn't include the sign")
+		{
+			first.copy_range(second, 1, 4);
+			THEN("Only applicable bytes are copied, not the sign")
+			{
+				REQUIRE(first.sign() == Sign::Plus);
+				REQUIRE(first.byte(1) == second.byte(1));
+				REQUIRE(first.byte(2) == second.byte(2));
+				REQUIRE(first.byte(3) == second.byte(3));
+				REQUIRE(first.byte(4) == second.byte(4));
+				REQUIRE(first.byte(5) == 5);
+			}
+		}
+		WHEN("Copying a range of a single byte")
+		{
+			first.copy_range(second, 3, 3);
+			THEN("Only the byte is copied")
+			{
+				REQUIRE(first.sign() == Sign::Plus);
+				REQUIRE(first.byte(1) == 1);
+				REQUIRE(first.byte(2) == 2);
+				REQUIRE(first.byte(3) == 8);
+				REQUIRE(first.byte(4) == 4);
+				REQUIRE(first.byte(5) == 5);
+			}
+		}
+		WHEN("Copying only the sign")
+		{
+			first.copy_range(second, 0, 0);
+			THEN("Only the sign is copied")
+			{
+				REQUIRE(first.sign() == Sign::Minus);
+				REQUIRE(first.byte(1) == 1);
+				REQUIRE(first.byte(2) == 2);
+				REQUIRE(first.byte(3) == 3);
+				REQUIRE(first.byte(4) == 4);
+				REQUIRE(first.byte(5) == 5);
+			}
+		}
+	}
+}
