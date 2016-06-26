@@ -47,6 +47,17 @@ namespace mix
 		Sign sign() const;
 		Sign& sign();
 
+		// Byte shifting (mutating).
+		void right_shift(int);
+		void left_shift(int);
+
+		// Byte shifted (non-mutating).
+		Basic_word right_shifted(int);
+		Basic_word left_shifted(int);
+
+		// Clear all bytes.
+		void clear_bytes();
+
 
 	private:
 		// Implementation.
@@ -235,6 +246,98 @@ namespace mix
 	Sign& Basic_word<N>::sign()
 	{
 		return sign_byte;
+	}
+
+	/*
+	* Shift bytes right by the given amount.
+	* Template parameters:
+	*	N - Number of bytes of this basic word.
+	* Parameters:
+	*	n - Number of times to shift right.
+	*/
+	template<unsigned int N>
+	void Basic_word<N>::right_shift(int n)
+	{
+		if (n > N) clear_bytes();
+		if (n < 0)
+			throw std::invalid_argument{"Cannot shift by negative amount"};
+
+		// Move bytes that will not be shifted out.
+		int i = N;
+		for (int j = N - n; j > 0; --i, --j)
+			byte(i) = byte(j);
+
+		// Left-fill with 0s.
+		for (int j = 1; j <= i; ++j)
+			byte(j) = 0;
+	}
+
+	/*
+	* Clear all bytes to 0.
+	* Template parameters:
+	*	N - Number of bytes of this basic word.
+	*/
+	template<unsigned int N>
+	void Basic_word<N>::clear_bytes()
+	{
+		for (int i = 1; i <= num_bytes; ++i)
+			byte(i) = 0;
+	}
+
+	/*
+	* Shift bytes left, right-filling with 0s.
+	* Template parameters:
+	*	N - Number of bytes of this basic word.
+	* Parameters:
+	*	n - Number of times to left shift.
+	*/
+	template<unsigned int N>
+	void Basic_word<N>::left_shift(int n)
+	{
+		if (n > N) clear_bytes();
+		if (n < 0)
+			throw std::invalid_argument{"Cannot shift by negative amount"};
+
+		// Move bytes that will not be shifted out.
+		int i = 1;
+		for (int j = 1 + n; j <= N; ++i, ++j)
+			byte(i) = byte(j);
+
+		// Right fill with 0s.
+		for (int j = N; j >= i; --j)
+			byte(j) = 0;
+	}
+
+	/*
+	* Returns a new word, which is a copy of this word, right shifted
+	* by the given amount.
+	* Template parameters:
+	*	N - Number of bytes of this basic word, and the returned word.
+	* Parameters:
+	*	n - The amount the returned word will be shifted.
+	*/
+	template<unsigned int N>
+	Basic_word<N> Basic_word<N>::right_shifted(int n)
+	{
+		Basic_word<N> copy{*this};
+		copy.right_shift(n);
+		return copy;
+	}
+
+	/*
+	* Returns a new word, which is a copy of this word, left shifted
+	* by the given amount.
+	* Template parameters:
+	*	N - Number of bytes of this basic word, and the returned word.
+	* Parameters:
+	*	n - The amount the returned word will be shifted.
+	*/
+	template<unsigned int N>
+	Basic_word<N> Basic_word<N>::left_shifted(int n)
+	{
+		Basic_word<N> copy{*this};
+		copy.left_shift(n);
+		return copy;
 	}
 }
 #endif
