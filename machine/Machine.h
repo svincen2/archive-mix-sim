@@ -1,6 +1,9 @@
 #ifndef MIX_MACHINE_MACHINE_H
 #define MIX_MACHINE_MACHINE_H
 
+#include <string>
+#include <vector>
+
 namespace mix
 {
 	class Machine
@@ -13,7 +16,7 @@ namespace mix
 		~Machine();
 
 		// Public interface (API).
-		int run();
+		int run(std::vector<std::string>&);
 	};
 }
 #endif

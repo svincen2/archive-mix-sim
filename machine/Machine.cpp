@@ -2,9 +2,27 @@
 
 namespace mix
 {
-	Machine::Machine() {}
+	/*
+	* Construct a mix machine.
+	*/
+	Machine::Machine()
+	{
+	}
 
-	int Machine::run() {
+	/*
+	* Destruct a mix machine.
+	*/
+	Machine::~Machine()
+	{
+	}
+
+
+	/*
+	* Run the machine with the given arguments.
+	* Parameters:
+	*	args - Machine arguments.
+	*/
+	int Machine::run(std::vector<std::string>& args) {
 		return 0;
 	}
 }
