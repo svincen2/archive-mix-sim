@@ -1,3 +1,5 @@
 *.o
 *.swp
 mix-machine
+tests
+
