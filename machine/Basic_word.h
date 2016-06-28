@@ -2,15 +2,13 @@
 #define MIX_MACHINE_WORD_H
 
 #include "Byte.h"
+#include "Sign.h"
+#include <iostream>
 #include <stdexcept>
 #include <vector>
 
 namespace mix
 {
-	// Possible values of the sign of a basic word.
-	enum class Sign : Byte { Plus = '+', Minus = '-' };
-
-
 	// A mix basic word.
 	template<unsigned int Num_bytes>
 	class Basic_word
@@ -378,6 +376,42 @@ namespace mix
 			throw std::invalid_argument{"Invalid range: first is negative"};
 		if (last > num_bytes)
 			throw std::invalid_argument{"Invalid range: last > number of bytes"};
+	}
+
+	/*** Basic_word input/output. ***/
+
+	/*
+	* Write the given basic word to the given output stream.
+	* Template parameters:
+	*	N - Number of bytes of the basic word.
+	* Parameters:
+	*	os - Output stream to write to.
+	*	bw - Basic word to be written.
+	*/
+	template<unsigned int N>
+	std::ostream& operator<<(std::ostream& os, const Basic_word<N>& bw)
+	{
+		os << bw.sign();
+		for (int i = 1; i <= N; ++i)
+			os << bw.byte(i);
+		return os;
+	}
+
+	/*
+	* Read a basic word from the given input stream.
+	* Template parameters:
+	*	N - number of bytes of the basic word.
+	* Parameters:
+	*	is - Input stream to read from.
+	*	bw - Basic word to read into.
+	*/
+	template<unsigned int N>
+	std::istream& operator>>(std::istream& is, Basic_word<N>& bw)
+	{
+		is >> bw.sign();
+		for (int i = 1; i <= N; ++i)
+			is >> bw.byte(i);
+		return is;
 	}
 }
 #endif

@@ -1,5 +1,7 @@
 #include "catch.hpp"
 #include "../Basic_word.h"
+#include <sstream>
+#include <string>
 
 using namespace mix;
 
@@ -362,3 +364,70 @@ SCENARIO("Copying a range")
 		}
 	}
 }
+
+SCENARIO("Reading and writing a sign")
+{
+	GIVEN("A sign value")
+	{
+		Sign s{Sign::Plus};
+		WHEN("Writing a sign to output stream")
+		{
+			std::stringstream ss{};
+			ss << s;
+			THEN("The output stream contains the sign")
+			{
+				REQUIRE('+' == ss.str()[0]);
+			}
+		}
+		WHEN("Reading a sign from an input stream")
+		{
+			std::stringstream ss{};
+			ss << Sign::Plus;
+			ss >> s;
+			THEN("The sign is read correctly")
+			{
+				REQUIRE(s == Sign::Plus);
+			}
+		}
+	}
+}
+
+SCENARIO("Reading and writing a basic word")
+{
+	GIVEN("A basic word")
+	{
+		Basic_word<5> bw{};
+		WHEN("Written to an output stream")
+		{
+			std::stringstream ss{};
+			ss << bw;
+			THEN("The sign and bytes are written correctly")
+			{
+				std::string s{ss.str()};
+				REQUIRE(s[0] == '+');
+				REQUIRE(s[1] == 0);
+				REQUIRE(s[2] == 0);
+				REQUIRE(s[3] == 0);
+				REQUIRE(s[4] == 0);
+				REQUIRE(s[5] == 0);
+			}
+		}
+		WHEN("Read from an input stream")
+		{
+			std::stringstream ss{};
+			ss << bw;
+			Basic_word<5> bw2{Sign::Minus, {1, 2, 3, 4, 5}};
+			ss >> bw2;
+			THEN("The sign and bytes are read correctly")
+			{
+				REQUIRE(bw2.sign() == Sign::Plus);
+				REQUIRE(bw2.byte(1) == 0);
+				REQUIRE(bw2.byte(2) == 0);
+				REQUIRE(bw2.byte(3) == 0);
+				REQUIRE(bw2.byte(4) == 0);
+				REQUIRE(bw2.byte(5) == 0);
+			}
+		}
+	}
+}
+
