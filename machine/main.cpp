@@ -25,7 +25,7 @@ int run(int argc, char* argv[])
 	print_args(args);
 
 	mix::Machine machine{};
-	return machine.run(args);
+	machine.run(args);
 }
 
 /*
@@ -37,17 +37,13 @@ int run(int argc, char* argv[])
 */
 int main(int argc, char* argv[])
 {
-	int exit_code{0};
-
 	try {
-		exit_code = run(argc, argv);
+		run(argc, argv);
+		return 0;
 	}
 	catch(std::exception& e) {
 		std::cout << e.what() << std::endl;
-		exit_code = -1;
+		return -1;
 	}
-
-	std::cout << "exit: " << exit_code << '\n';
-	return exit_code;
 }
 
