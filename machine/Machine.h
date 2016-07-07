@@ -39,7 +39,7 @@ namespace mix
 
 		// Running the machine.
 		void load_program(std::istream&);
-		int run(std::vector<std::string>&);
+		void run(std::vector<std::string>&);
 		void execute_next_instruction();
 		void dump_memory(std::ostream*) const;
 

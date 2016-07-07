@@ -42,7 +42,7 @@ namespace mix
 	* Parameters:
 	*	args - Machine arguments.
 	*/
-	int Machine::run(std::vector<std::string>& args)
+	void Machine::run(std::vector<std::string>& args)
 	{
 		check_arguments(args);
 		std::ifstream program{args[0]};
@@ -59,6 +59,10 @@ namespace mix
 	{
 		if (args.size() < 1)
 			throw std::invalid_argument{"Expected at least 1 argument"};
+		// First argument is program to run (for now).
+		std::ifstream input{args[0]};
+		if (input.fail())
+			throw std::invalid_argument{"Cannot open file"};
 	}
 
 	/*
