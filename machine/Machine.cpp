@@ -1,7 +1,12 @@
 #include "Machine.h"
+#include <fstream>
 
 namespace mix
 {
+	/* Constant definitions. */
+	const unsigned int Machine::MEM_SIZE{4000};
+	const unsigned int Machine::NUM_INDEX_REGISTERS{6};
+
 	/*
 	* Construct a mix machine.
 	*/
@@ -39,7 +44,21 @@ namespace mix
 	*/
 	int Machine::run(std::vector<std::string>& args)
 	{
-		return 0;
+		check_arguments(args);
+		std::ifstream program{args[0]};
+		load_program(program);
+		std::cout << "Program " << args[0] << " loaded into memory\n";
+	}
+
+	/*
+	* Check the machine arguments.
+	* Parameters:
+	*	args - Machine arguments.
+	*/
+	void Machine::check_arguments(const std::vector<std::string>& args) const
+	{
+		if (args.size() < 1)
+			throw std::invalid_argument{"Expected at least 1 argument"};
 	}
 
 	/*
@@ -63,6 +82,15 @@ namespace mix
 	int Machine::program_counter() const
 	{
 		return pc;
+	}
+
+	/*
+	* Dumps the contents of memory into the given stream.
+	*/
+	void Machine::dump_memory(std::ostream* stream) const
+	{
+		for (int i = 0; i < MEM_SIZE; ++i)
+			*stream << memory[i];
 	}
 
 	/*
@@ -125,6 +153,19 @@ namespace mix
 		if (address < 0 || MEM_SIZE <= address)
 			throw std::invalid_argument{"Address out of bounds"};
 		return memory[address];
+	}
+
+	/*
+	* Load the given word into the memory cell at the given address.
+	* Parameters:
+	*	address - Address of memory to be written to.
+	*	w - Word to write to memory.
+	*/
+	void Machine::store_in_memory(int address, Word& w)
+	{
+		if (address < 0 || MEM_SIZE <= address)
+			throw std::invalid_argument{"Address out of bounds"};
+		memory[address] = w;
 	}
 }
 

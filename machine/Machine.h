@@ -3,7 +3,7 @@
 
 #include "Basic_word.h"
 #include "Sign.h"
-#include <istream>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -26,8 +26,8 @@ namespace mix
 		enum class Comparison_value : Byte { Equal, Greater, Less };
 
 		// Constants.
-		static const unsigned int MEM_SIZE{4000};
-		static const unsigned int NUM_INDEX_REGISTERS{6};
+		static const unsigned int MEM_SIZE;
+		static const unsigned int NUM_INDEX_REGISTERS;
 
 		// Constructors and destructor.
 		Machine();
@@ -37,10 +37,11 @@ namespace mix
 
 		/* Functions. */
 
-		// Run the machine.
+		// Running the machine.
 		void load_program(std::istream&);
 		int run(std::vector<std::string>&);
 		void execute_next_instruction();
+		void dump_memory(std::ostream*) const;
 
 		// Accessors.
 		int program_counter() const;
@@ -51,6 +52,9 @@ namespace mix
 		Word extension_register() const;
 		Half_word index_register(int) const;
 		Word memory_cell(int) const;
+
+		// Mutators.
+		void store_in_memory(int, Word&);
 
 
 	private:
@@ -63,6 +67,8 @@ namespace mix
 
 		std::vector<Half_word> index;
 		std::vector<Word> memory;
+
+		void check_arguments(const std::vector<std::string>&) const;
 	};
 }
 #endif
