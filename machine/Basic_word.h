@@ -30,6 +30,9 @@ namespace mix
 		Basic_word& operator=(const Basic_word&);
 		Basic_word& operator=(Basic_word&&);
 
+		// Comparison.
+		bool operator==(const Basic_word&) const;
+
 		// Conversion.
 		template<unsigned int N>
 		explicit operator Basic_word<N>() const;
@@ -53,6 +56,10 @@ namespace mix
 		Basic_word right_shifted(int) const;
 		Basic_word left_shifted(int) const;
 
+		// Rotating shifts.
+		void rotate_right(int);
+		void rotate_left(int);
+
 		// Clear all bytes.
 		void clear_bytes();
 
@@ -69,6 +76,8 @@ namespace mix
 		// Helper functions.
 		void check_byte_index(int) const;
 		void check_copy_range(int, int) const;
+		void check_rotate_amount(int&) const;
+		void rotate_bytes_right(int);
 	};
 
 
@@ -124,28 +133,6 @@ namespace mix
 
 	/*** Operators. ***/
 
-	/* Conversion. */
-
-	/*
-	* Convert this basic word to a basic word with a different number of bytes.
-	* If narrowing, the left-most bytes that don't fit will be dropped.
-	* If widening, the left-most bytes will by filled with 0s.
-	* Template parameters:
-	*	N1 - Number of bytes of the basic word to be converted.
-	*	N2 - Number of bytes of the new basic word.
-	*/
-	template<unsigned int N1>
-	template<unsigned int N2>
-	Basic_word<N1>::operator Basic_word<N2>() const
-	{
-		Basic_word<N2> bw{};
-		bw.sign() = sign_byte;
-		for (int i = num_bytes, j = bw.num_bytes; i > 0 && j > 0; --i, --j) {
-			bw.byte(j) = byte(i);
-		}
-		return bw;
-	}
-
 
 	/* Assignments. */
 
@@ -177,6 +164,48 @@ namespace mix
 		sign_byte = bw.sign_byte;
 		bytes = std::move(bw.bytes);
 		return *this;
+	}
+
+
+	/* Conversion. */
+
+	/*
+	* Convert this basic word to a basic word with a different number of bytes.
+	* If narrowing, the left-most bytes that don't fit will be dropped.
+	* If widening, the left-most bytes will by filled with 0s.
+	* Template parameters:
+	*	N1 - Number of bytes of the basic word to be converted.
+	*	N2 - Number of bytes of the new basic word.
+	*/
+	template<unsigned int N1>
+	template<unsigned int N2>
+	Basic_word<N1>::operator Basic_word<N2>() const
+	{
+		Basic_word<N2> bw{};
+		bw.sign() = sign_byte;
+		for (int i = num_bytes, j = bw.num_bytes; i > 0 && j > 0; --i, --j) {
+			bw.byte(j) = byte(i);
+		}
+		return bw;
+	}
+
+
+	/* Comparisons. */
+
+	/*
+	* Tests two basic words for equality.
+	* Template parameters:
+	*	N - Number of bytes of both words.
+	* Parameters:
+	*	bw - Word to compare to.
+	*/
+	template<unsigned int N>
+	bool Basic_word<N>::operator==(const Basic_word& bw) const
+	{
+		if (sign_byte == bw.sign_byte) {
+			return bytes == bw.bytes;
+		}
+		return false;
 	}
 
 
@@ -343,6 +372,72 @@ namespace mix
 	}
 
 	/*
+	* Rotate shift right all bytes n times.
+	* Template parameters:
+	*	N - Number of bytes of this basic word.
+	* Parameters:
+	*	n - Number of times to rotate right.
+	*/
+	template<unsigned int N>
+	void Basic_word<N>::rotate_right(int n)
+	{
+		check_rotate_amount(n);
+		rotate_bytes_right(n);
+	}
+
+	/*
+	* Check the amount to rotate by.
+	* If the amount is negative, throws an exception.
+	* Normalizes amount to be within range [0, N - 1].
+	* Template parameters:
+	*	N - Number of bytes of this basic word.
+	* Parameters:
+	*	n - Amount to rotate by.
+	*/
+	template<unsigned int N>
+	void Basic_word<N>::check_rotate_amount(int& n) const
+	{
+		if (n < 0)
+			throw std::invalid_argument{"Cannot rotate negative amount"};
+		if (n >= N) n %= N;
+	}
+
+	/*
+	* Rotate bytes right by the given amount.
+	* Template parameters:
+	*	N - Number of bytes of this basic word.
+	* Parameters:
+	*	n - Number of times to rotate right.
+	*/
+	template<unsigned int N>
+	void Basic_word<N>::rotate_bytes_right(int n)
+	{
+		if (n == 0) return;
+
+		// Rotate bytes.
+		std::vector<Byte> copy{bytes};
+		for (int i = 0, j = n; i < N; ++i) {
+			bytes[j] = copy[i];
+			j = (j + 1) % N;
+		}
+	}
+
+	/*
+	* Rotate shift left all bytes n times.
+	* Template parameters:
+	*	N - Number of bytes of this basic word.
+	* Parameters:
+	*	n - Number of times to rotate left.
+	*/
+	template<unsigned int N>
+	void Basic_word<N>::rotate_left(int n)
+	{
+		// Rotating left by n is the same as rotating right by N - n.
+		check_rotate_amount(n);
+		rotate_bytes_right(N - n);
+	}
+
+	/*
 	* Copies the given range [first, last] from the given word
 	* into the same range of this word.
 	* Template parameters:
@@ -378,6 +473,7 @@ namespace mix
 			throw std::invalid_argument{"Invalid range: last > number of bytes"};
 	}
 
+
 	/*** Basic_word input/output. ***/
 
 	/*
@@ -391,9 +487,18 @@ namespace mix
 	template<unsigned int N>
 	std::ostream& operator<<(std::ostream& os, const Basic_word<N>& bw)
 	{
+		// Save current formatting then set to not skip whitespace.
+		std::ios_base::fmtflags f{os.flags()};
+		os << std::noskipws;
+
+		// Write basic word.
 		os << bw.sign();
 		for (int i = 1; i <= N; ++i)
 			os << bw.byte(i);
+
+		// Reset formatting.
+		os.flags(f);
+
 		return os;
 	}
 
@@ -408,9 +513,18 @@ namespace mix
 	template<unsigned int N>
 	std::istream& operator>>(std::istream& is, Basic_word<N>& bw)
 	{
+		// Save current formatting then set to not skip whitespace.
+		std::ios_base::fmtflags f{is.flags()};
+		is >> std::noskipws;
+
+		// Read basic word.
 		is >> bw.sign();
 		for (int i = 1; i <= N; ++i)
 			is >> bw.byte(i);
+
+		// Reset formatting.
+		is.flags(f);
+
 		return is;
 	}
 }
