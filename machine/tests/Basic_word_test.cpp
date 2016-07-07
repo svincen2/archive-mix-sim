@@ -1,4 +1,5 @@
 #include "catch.hpp"
+#include "Helpers.h"
 #include "../Basic_word.h"
 #include <sstream>
 #include <string>
@@ -16,11 +17,7 @@ SCENARIO("Copying a basic word")
 			THEN("All the bytes are the same")
 			{
 				REQUIRE(copy.sign() == bw.sign());
-				REQUIRE(copy.byte(1) == bw.byte(1));
-				REQUIRE(copy.byte(2) == bw.byte(2));
-				REQUIRE(copy.byte(3) == bw.byte(3));
-				REQUIRE(copy.byte(4) == bw.byte(4));
-				REQUIRE(copy.byte(5) == bw.byte(5));
+				require_bytes_are(bw, {1, 2, 3, 4, 5});
 			}
 		}
 		WHEN("The word is copied with an assignment")
@@ -30,11 +27,7 @@ SCENARIO("Copying a basic word")
 			THEN("All the bytes are the same")
 			{
 				REQUIRE(copy.sign() == bw.sign());
-				REQUIRE(copy.byte(1) == bw.byte(1));
-				REQUIRE(copy.byte(2) == bw.byte(2));
-				REQUIRE(copy.byte(3) == bw.byte(3));
-				REQUIRE(copy.byte(4) == bw.byte(4));
-				REQUIRE(copy.byte(5) == bw.byte(5));
+				require_bytes_are(bw, {1, 2, 3, 4, 5});
 			}
 		}
 	}
@@ -51,11 +44,7 @@ SCENARIO("Moving a basic word")
 			THEN("All bytes are the same")
 			{
 				REQUIRE(moved.sign() == Sign::Plus);
-				REQUIRE(moved.byte(1) == 1);
-				REQUIRE(moved.byte(2) == 2);
-				REQUIRE(moved.byte(3) == 3);
-				REQUIRE(moved.byte(4) == 4);
-				REQUIRE(moved.byte(5) == 5);
+				require_bytes_are(moved, {1, 2, 3, 4, 5});
 			}
 		}
 		WHEN("The word is moved with an assignment")
@@ -65,11 +54,7 @@ SCENARIO("Moving a basic word")
 			THEN("All bytes are the same")
 			{
 				REQUIRE(moved.sign() == Sign::Plus);
-				REQUIRE(moved.byte(1) == 1);
-				REQUIRE(moved.byte(2) == 2);
-				REQUIRE(moved.byte(3) == 3);
-				REQUIRE(moved.byte(4) == 4);
-				REQUIRE(moved.byte(5) == 5);
+				require_bytes_are(moved, {1, 2, 3, 4, 5});
 			}
 		}
 	}
@@ -116,11 +101,7 @@ SCENARIO("Shifting right")
 			THEN("All bytes are 0")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
-				REQUIRE(bw.byte(1) == 0);
-				REQUIRE(bw.byte(2) == 0);
-				REQUIRE(bw.byte(3) == 0);
-				REQUIRE(bw.byte(4) == 0);
-				REQUIRE(bw.byte(5) == 0);
+				require_bytes_are(bw, {0, 0, 0, 0, 0});
 			}
 		}
 		WHEN("Shifting by less than the number of bytes")
@@ -129,11 +110,7 @@ SCENARIO("Shifting right")
 			THEN("Bytes are shifted, and left-filled with 0")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
-				REQUIRE(bw.byte(1) == 0);
-				REQUIRE(bw.byte(2) == 0);
-				REQUIRE(bw.byte(3) == 0);
-				REQUIRE(bw.byte(4) == 1);
-				REQUIRE(bw.byte(5) == 2);
+				require_bytes_are(bw, {0, 0, 0, 1, 2});
 			}
 		}
 		WHEN("Shifting all bytes")
@@ -142,11 +119,7 @@ SCENARIO("Shifting right")
 			THEN("All bytes are 0")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
-				REQUIRE(bw.byte(1) == 0);
-				REQUIRE(bw.byte(2) == 0);
-				REQUIRE(bw.byte(3) == 0);
-				REQUIRE(bw.byte(4) == 0);
-				REQUIRE(bw.byte(5) == 0);
+				require_bytes_are(bw, {0, 0, 0, 0, 0});
 			}
 		}
 		WHEN("Shifting by a negative amount")
@@ -163,11 +136,7 @@ SCENARIO("Shifting right")
 			THEN("Word is unnaffected")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
-				REQUIRE(bw.byte(1) == 1);
-				REQUIRE(bw.byte(2) == 2);
-				REQUIRE(bw.byte(3) == 3);
-				REQUIRE(bw.byte(4) == 4);
-				REQUIRE(bw.byte(5) == 5);
+				require_bytes_are(bw, {1, 2, 3, 4, 5});
 			}
 		}
 		WHEN("Copy-shifting")
@@ -176,18 +145,61 @@ SCENARIO("Shifting right")
 			THEN("The new word is shifted correctly, the old is unnaffected")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
-				REQUIRE(bw.byte(1) == 1);
-				REQUIRE(bw.byte(2) == 2);
-				REQUIRE(bw.byte(3) == 3);
-				REQUIRE(bw.byte(4) == 4);
-				REQUIRE(bw.byte(5) == 5);
+				require_bytes_are(bw, {1, 2, 3, 4, 5});
 
 				REQUIRE(copy.sign() == Sign::Minus);
-				REQUIRE(copy.byte(1) == 0);
-				REQUIRE(copy.byte(2) == 0);
-				REQUIRE(copy.byte(3) == 0);
-				REQUIRE(copy.byte(4) == 1);
-				REQUIRE(copy.byte(5) == 2);
+				require_bytes_are(copy, {0, 0, 0, 1, 2});
+			}
+		}
+	}
+}
+
+SCENARIO("Rotating right")
+{
+	GIVEN("A basic word")
+	{
+		Basic_word<5> bw{Sign::Minus, {1, 2, 3, 4, 5}};
+		WHEN("Rotating by 0")
+		{
+			bw.rotate_right(0);
+			THEN("The word is unchanged")
+			{
+				REQUIRE(bw.sign() == Sign::Minus);
+				require_bytes_are(bw, {1, 2, 3, 4, 5});
+			}
+		}
+		WHEN("Rotating by a negative amount")
+		{
+			THEN("An exception is thrown")
+			{
+				REQUIRE_THROWS_AS(bw.rotate_right(-1), std::invalid_argument);
+			}
+		}
+		WHEN("Rotating by an amount equal to the number of bytes")
+		{
+			bw.rotate_right(bw.num_bytes);
+			THEN("The basic word is unchanged")
+			{
+				REQUIRE(bw.sign() == Sign::Minus);
+				require_bytes_are(bw, {1, 2, 3, 4, 5});
+			}
+		}
+		WHEN("Rotating by an amount larger than number of bytes")
+		{
+			bw.rotate_right(bw.num_bytes + 1);
+			THEN("Full rotations are skipped. Only remainder is considered")
+			{
+				REQUIRE(bw.sign() == Sign::Minus);
+				require_bytes_are(bw, {5, 1, 2, 3, 4});
+			}
+		}
+		WHEN("Rotating by an amount between [0, Number of bytes]")
+		{
+			bw.rotate_right(3);
+			THEN("Bytes are rotated correctly")
+			{
+				REQUIRE(bw.sign() == Sign::Minus);
+				require_bytes_are(bw, {3, 4, 5, 1, 2});
 			}
 		}
 	}
@@ -211,11 +223,7 @@ SCENARIO("Left shifting")
 			THEN("All bytes are 0")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
-				REQUIRE(bw.byte(1) == 0);
-				REQUIRE(bw.byte(2) == 0);
-				REQUIRE(bw.byte(3) == 0);
-				REQUIRE(bw.byte(4) == 0);
-				REQUIRE(bw.byte(5) == 0);
+				require_bytes_are(bw, {0, 0, 0, 0, 0});
 			}
 		}
 		WHEN("Shifting by less than the number of bytes")
@@ -224,11 +232,7 @@ SCENARIO("Left shifting")
 			THEN("Bytes are shifted, and right-filled with 0")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
-				REQUIRE(bw.byte(1) == 3);
-				REQUIRE(bw.byte(2) == 4);
-				REQUIRE(bw.byte(3) == 5);
-				REQUIRE(bw.byte(4) == 0);
-				REQUIRE(bw.byte(5) == 0);
+				require_bytes_are(bw, {3, 4, 5, 0, 0});
 			}
 		}
 		WHEN("Shifting all bytes")
@@ -237,11 +241,7 @@ SCENARIO("Left shifting")
 			THEN("All bytes are 0")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
-				REQUIRE(bw.byte(1) == 0);
-				REQUIRE(bw.byte(2) == 0);
-				REQUIRE(bw.byte(3) == 0);
-				REQUIRE(bw.byte(4) == 0);
-				REQUIRE(bw.byte(5) == 0);
+				require_bytes_are(bw, {0, 0, 0, 0, 0});
 			}
 		}
 		WHEN("Shifting by 0")
@@ -250,11 +250,7 @@ SCENARIO("Left shifting")
 			THEN("Word is unnaffected")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
-				REQUIRE(bw.byte(1) == 1);
-				REQUIRE(bw.byte(2) == 2);
-				REQUIRE(bw.byte(3) == 3);
-				REQUIRE(bw.byte(4) == 4);
-				REQUIRE(bw.byte(5) == 5);
+				require_bytes_are(bw, {1, 2, 3, 4, 5});
 			}
 		}
 		WHEN("Copy-shifting")
@@ -263,18 +259,61 @@ SCENARIO("Left shifting")
 			THEN("The new word is shifted correctly, the old is unnaffected")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
-				REQUIRE(bw.byte(1) == 1);
-				REQUIRE(bw.byte(2) == 2);
-				REQUIRE(bw.byte(3) == 3);
-				REQUIRE(bw.byte(4) == 4);
-				REQUIRE(bw.byte(5) == 5);
+				require_bytes_are(bw, {1, 2, 3, 4, 5});
 
 				REQUIRE(copy.sign() == Sign::Minus);
-				REQUIRE(copy.byte(1) == 4);
-				REQUIRE(copy.byte(2) == 5);
-				REQUIRE(copy.byte(3) == 0);
-				REQUIRE(copy.byte(4) == 0);
-				REQUIRE(copy.byte(5) == 0);
+				require_bytes_are(copy, {4, 5, 0, 0, 0});
+			}
+		}
+	}
+}
+
+SCENARIO("Rotating left")
+{
+	GIVEN("A basic word")
+	{
+		Basic_word<5> bw{Sign::Minus, {1, 2, 3, 4, 5}};
+		WHEN("Rotating by 0")
+		{
+			bw.rotate_left(0);
+			THEN("The word is unchanged")
+			{
+				REQUIRE(bw.sign() == Sign::Minus);
+				require_bytes_are(bw, {1, 2, 3, 4, 5});
+			}
+		}
+		WHEN("Rotating by a negative amount")
+		{
+			THEN("An invalid argument is thrown")
+			{
+				REQUIRE_THROWS_AS(bw.rotate_left(-1), std::invalid_argument);
+			}
+		}
+		WHEN("Rotating by an amount larger than number of bytes")
+		{
+			bw.rotate_left(bw.num_bytes + 2);
+			THEN("The full rotations are ignored, only remainder is used")
+			{
+				REQUIRE(bw.sign() == Sign::Minus);
+				require_bytes_are(bw, {3, 4, 5, 1, 2});
+			}
+		}
+		WHEN("Rotating by an amount equal to the number of bytes")
+		{
+			bw.rotate_left(bw.num_bytes);
+			THEN("The basic word is unchanged")
+			{
+				REQUIRE(bw.sign() == Sign::Minus);
+				require_bytes_are(bw, {1, 2, 3, 4, 5});
+			}
+		}
+		WHEN("Rotating by an amount between [0, Number of bytes]")
+		{
+			bw.rotate_left(bw.num_bytes - 3);
+			THEN("The bytes are rotated correctly")
+			{
+				REQUIRE(bw.sign() == Sign::Minus);
+				require_bytes_are(bw, {3, 4, 5, 1, 2});
 			}
 		}
 	}
@@ -316,11 +355,7 @@ SCENARIO("Copying a range")
 			THEN("All bytes from second are copied into first, including sign")
 			{
 				REQUIRE(first.sign() == second.sign());
-				REQUIRE(first.byte(1) == second.byte(1));
-				REQUIRE(first.byte(2) == second.byte(2));
-				REQUIRE(first.byte(3) == second.byte(3));
-				REQUIRE(first.byte(4) == second.byte(4));
-				REQUIRE(first.byte(5) == second.byte(5));
+				require_bytes_match(first, second);
 			}
 		}
 		WHEN("Copying range that doesn't include the sign")
@@ -342,11 +377,7 @@ SCENARIO("Copying a range")
 			THEN("Only the byte is copied")
 			{
 				REQUIRE(first.sign() == Sign::Plus);
-				REQUIRE(first.byte(1) == 1);
-				REQUIRE(first.byte(2) == 2);
-				REQUIRE(first.byte(3) == 8);
-				REQUIRE(first.byte(4) == 4);
-				REQUIRE(first.byte(5) == 5);
+				require_bytes_are(first, {1, 2, 8, 4, 5});
 			}
 		}
 		WHEN("Copying only the sign")
@@ -355,11 +386,7 @@ SCENARIO("Copying a range")
 			THEN("Only the sign is copied")
 			{
 				REQUIRE(first.sign() == Sign::Minus);
-				REQUIRE(first.byte(1) == 1);
-				REQUIRE(first.byte(2) == 2);
-				REQUIRE(first.byte(3) == 3);
-				REQUIRE(first.byte(4) == 4);
-				REQUIRE(first.byte(5) == 5);
+				require_bytes_are(first, {1, 2, 3, 4, 5});
 			}
 		}
 	}
@@ -421,11 +448,7 @@ SCENARIO("Reading and writing a basic word")
 			THEN("The sign and bytes are read correctly")
 			{
 				REQUIRE(bw2.sign() == Sign::Plus);
-				REQUIRE(bw2.byte(1) == 0);
-				REQUIRE(bw2.byte(2) == 0);
-				REQUIRE(bw2.byte(3) == 0);
-				REQUIRE(bw2.byte(4) == 0);
-				REQUIRE(bw2.byte(5) == 0);
+				require_bytes_are(bw2, {0, 0, 0, 0, 0});
 			}
 		}
 	}
