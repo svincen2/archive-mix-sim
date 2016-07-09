@@ -12,6 +12,12 @@ namespace mix
 	// Input/output.
 	std::istream& operator>>(std::istream&, Sign&);
 	std::ostream& operator<<(std::ostream&, const Sign&);
+
+	// Validating a sign.
+	bool valid(const Sign&);
+
+	// Invalid sign exception.
+	class Invalid_sign{};
 }
 #endif
 

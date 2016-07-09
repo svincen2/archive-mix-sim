@@ -25,7 +25,17 @@ namespace mix
 		Byte temp;
 		is >> temp;
 		sign = static_cast<Sign>(temp);
+		if (!valid(sign))
+			throw Invalid_sign{};
 		return is;
+	}
+
+	/*
+	* Returns whether or not the sign is valid.
+	*/
+	bool valid(const Sign& sign)
+	{
+		return sign == Sign::Plus || sign == Sign::Minus;
 	}
 }
 
