@@ -9,6 +9,10 @@
 
 namespace mix
 {
+	// Invalid basic word exception.
+	class Invalid_basic_word{};
+
+
 	// A mix basic word.
 	template<unsigned int Num_bytes>
 	class Basic_word
@@ -518,9 +522,18 @@ namespace mix
 		is >> std::noskipws;
 
 		// Read basic word.
-		is >> bw.sign();
-		for (int i = 1; i <= N; ++i)
+		try {
+			is >> bw.sign();
+		}
+		catch (Invalid_sign& e) {
+			throw Invalid_basic_word{};
+		}
+		for (int i = 1; i <= N; ++i) {
 			is >> bw.byte(i);
+			if (is.eof() && i <= N) {
+				throw Invalid_basic_word{};
+			}
+		}
 
 		// Reset formatting.
 		is.flags(f);
