@@ -1,6 +1,8 @@
 #include "catch.hpp"
 #include "Helpers.h"
 #include "../Machine.h"
+#include <fstream>
+#include <sstream>
 
 using namespace mix;
 
@@ -122,13 +124,75 @@ SCENARIO("Dumping memory")
 				std::vector<Machine::Word> mem{};
 				Machine::Word curr{};
 				while (ss) {
-					ss >> curr;
-					if (!ss) break;
+					try {
+						ss >> curr; // Last read will throw exception.
+					}
+					catch(Invalid_basic_word& e) {
+						break;
+					}
 					mem.push_back(curr);
 				}
 				REQUIRE(mem.size() == Machine::MEM_SIZE);
 				REQUIRE(mem[0] == first);
 				REQUIRE(mem[last_mem_address] == last);
+				for (int i = 1; i < Machine::MEM_SIZE - 1; ++i) {
+					REQUIRE(mem[i].sign() == Sign::Plus);
+					require_bytes_are(mem[i], {0, 0, 0, 0, 0});
+				}
+			}
+		}
+	}
+}
+
+SCENARIO("Loading a program")
+{
+	GIVEN("A mix machine")
+	{
+		Machine machine{};
+		WHEN("A program is loaded into machine memory")
+		{
+			std::stringstream ss{};
+			Machine::Word first{Sign::Plus, {1, 2, 3, 4, 5}};
+			Machine::Word second{Sign::Minus, {6, 7, 8, 9, 0}};
+			ss << first << second;
+			machine.load_program(&ss);
+			THEN("Entire program is stored in memory, in correct order")
+			{
+				Machine::Word w{machine.memory_cell(0)};
+				REQUIRE(w.sign() == Sign::Plus);
+				require_bytes_are(w, {1, 2, 3, 4, 5});
+				w = machine.memory_cell(1);
+				REQUIRE(w.sign() == Sign::Minus);
+				require_bytes_are(w, {6, 7, 8, 9, 0});
+			}
+		}
+		WHEN("A program file cannot be opened")
+		{
+			std::ifstream program{"file_that_doesnt_exist"};
+			THEN("An invalid argument exception is thrown")
+			{
+				REQUIRE_THROWS_AS(machine.load_program(&program),
+								  std::invalid_argument);
+			}
+		}
+		WHEN("An empty program is loaded")
+		{
+			std::stringstream ss{};
+			THEN("An invalid argument exception is thrown")
+			{
+				REQUIRE_THROWS_AS(machine.load_program(&ss),
+								  std::invalid_argument);
+			}
+		}
+		WHEN("An invalid program is loaded")
+		{
+			std::stringstream ss{};
+			for (int i = 0; i < 10; ++i)
+				ss << static_cast<Byte>(i);
+			THEN("An exception is thrown")
+			{
+				REQUIRE_THROWS_AS(machine.load_program(&ss),
+								  Invalid_basic_word);
 			}
 		}
 	}
