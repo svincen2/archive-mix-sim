@@ -1,4 +1,4 @@
-include_dir = /home/sean/Documents/cpp/
+include_dir = ../../include
 test_suite = tests.o
 tests = Sign_test.o Basic_word_test.o Machine_test.o
 dependancies = ../Machine.o ../Sign.o
