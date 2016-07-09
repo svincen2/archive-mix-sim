@@ -23,15 +23,16 @@ namespace mix
 	}
 
 	/*
-	* Run the machine with the given arguments.
+	* Start the machine with the given arguments.
 	* Parameters:
 	*	args - Machine arguments.
 	*/
-	void Machine::run(std::vector<std::string>& args)
+	void Machine::start(std::vector<std::string>& args)
 	{
 		check_arguments(args);
 		std::ifstream program_file{args[0]};
 		load_program(&program_file);
+		run_program();
 	}
 
 	/*
@@ -80,6 +81,14 @@ namespace mix
 			throw std::invalid_argument{"Cannot read program"};
 		if (program_input_stream->peek() == EOF)
 			throw std::invalid_argument{"Program file is empty"};
+	}
+
+	/*
+	* Runs the program currently loaded in memory.
+	*/
+	void Machine::run_program()
+	{
+
 	}
 
 	/*

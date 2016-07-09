@@ -25,7 +25,7 @@ int run(int argc, char* argv[])
 	print_args(args);
 
 	mix::Machine machine{};
-	machine.run(args);
+	machine.start(args);
 }
 
 /*

@@ -38,8 +38,9 @@ namespace mix
 		/* Functions. */
 
 		// Running the machine.
+		void start(std::vector<std::string>&);
 		void load_program(std::istream*);
-		void run(std::vector<std::string>&);
+		void run_program();
 		void execute_next_instruction();
 		void dump_memory(std::ostream*) const;
 
