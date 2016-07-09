@@ -6,6 +6,22 @@
 
 using namespace mix;
 
+SCENARIO("Constructing a basic word")
+{
+	GIVEN("Nothing")
+	{
+		WHEN("A basic word is constructed with no parameters")
+		{
+			Basic_word<5> bw{};
+			THEN("The sign is Plus, and all bytes are 0")
+			{
+				REQUIRE(bw.sign() == Sign::Plus);
+				require_bytes_are(bw, {0, 0, 0, 0, 0});
+			}
+		}
+	}
+}
+
 SCENARIO("Copying a basic word")
 {
 	GIVEN("A basic word")
@@ -392,33 +408,6 @@ SCENARIO("Copying a range")
 	}
 }
 
-SCENARIO("Reading and writing a sign")
-{
-	GIVEN("A sign value")
-	{
-		Sign s{Sign::Plus};
-		WHEN("Writing a sign to output stream")
-		{
-			std::stringstream ss{};
-			ss << s;
-			THEN("The output stream contains the sign")
-			{
-				REQUIRE('+' == ss.str()[0]);
-			}
-		}
-		WHEN("Reading a sign from an input stream")
-		{
-			std::stringstream ss{};
-			ss << Sign::Plus;
-			ss >> s;
-			THEN("The sign is read correctly")
-			{
-				REQUIRE(s == Sign::Plus);
-			}
-		}
-	}
-}
-
 SCENARIO("Reading and writing a basic word")
 {
 	GIVEN("A basic word")
@@ -449,6 +438,17 @@ SCENARIO("Reading and writing a basic word")
 			{
 				REQUIRE(bw2.sign() == Sign::Plus);
 				require_bytes_are(bw2, {0, 0, 0, 0, 0});
+			}
+		}
+		WHEN("Reading an incomplete word")
+		{
+			std::stringstream ss{};
+			ss << Sign::Plus;
+			for (int i = 0; i < 4; ++i)
+				ss << static_cast<Byte>(i);
+			THEN("An exception is thrown")
+			{
+				REQUIRE_THROWS_AS(ss >> bw, Invalid_basic_word);
 			}
 		}
 	}
