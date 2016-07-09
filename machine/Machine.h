@@ -38,7 +38,7 @@ namespace mix
 		/* Functions. */
 
 		// Running the machine.
-		void load_program(std::istream&);
+		void load_program(std::istream*);
 		void run(std::vector<std::string>&);
 		void execute_next_instruction();
 		void dump_memory(std::ostream*) const;
@@ -69,6 +69,7 @@ namespace mix
 		std::vector<Word> memory;
 
 		void check_arguments(const std::vector<std::string>&) const;
+		void check_program_input_stream(std::istream*) const;
 	};
 }
 #endif

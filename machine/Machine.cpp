@@ -23,21 +23,6 @@ namespace mix
 	}
 
 	/*
-	* Loads a program into memory.
-	* Parameters:
-	*	input - Input to read program from.
-	*/
-	void Machine::load_program(std::istream& input)
-	{
-		int curr_address{0};
-		Word next_instruction{};
-		while (input) {
-			input >> next_instruction;
-			memory[curr_address] = next_instruction;
-		}
-	}
-
-	/*
 	* Run the machine with the given arguments.
 	* Parameters:
 	*	args - Machine arguments.
@@ -45,9 +30,8 @@ namespace mix
 	void Machine::run(std::vector<std::string>& args)
 	{
 		check_arguments(args);
-		std::ifstream program{args[0]};
-		load_program(program);
-		std::cout << "Program " << args[0] << " loaded into memory\n";
+		std::ifstream program_file{args[0]};
+		load_program(&program_file);
 	}
 
 	/*
@@ -59,10 +43,43 @@ namespace mix
 	{
 		if (args.size() < 1)
 			throw std::invalid_argument{"Expected at least 1 argument"};
-		// First argument is program to run (for now).
-		std::ifstream input{args[0]};
-		if (input.fail())
-			throw std::invalid_argument{"Cannot open file"};
+	}
+
+	/*
+	* Loads a program into memory.
+	* Parameters:
+	*	filename - Name of program file.
+	*/
+	void Machine::load_program(std::istream* program)
+	{
+		check_program_input_stream(program);
+		int curr_address{0};
+		Word next_instruction{};
+		while (*program) {
+			try {
+				// Last input attempt will throw exception.
+				*program >> next_instruction;
+			}
+			catch (Invalid_basic_word& e) {
+				if (!program->eof()) throw e;
+				else break;
+			}
+			memory[curr_address++] = next_instruction;
+		}
+	}
+
+	/*
+	* Check the program file.
+	* If the file cannot be opened, throws an exception.
+	* If the file is empty, throws an exception.
+	*/
+	void Machine::check_program_input_stream
+			(std::istream* program_input_stream) const
+	{
+		if (program_input_stream->fail())
+			throw std::invalid_argument{"Cannot read program"};
+		if (program_input_stream->peek() == EOF)
+			throw std::invalid_argument{"Program file is empty"};
 	}
 
 	/*
