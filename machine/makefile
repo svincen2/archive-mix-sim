@@ -1,4 +1,4 @@
-include_dir = /home/sean/Documents/cpp/
+include_dir = ../include
 objs = Machine.o Sign.o
 compile = g++ -std=c++11 -I $(include_dir) -c
 link = g++ -std=c++11 -I $(include_dir) -o
