@@ -32,9 +32,10 @@ SCENARIO("Reading and writing a sign")
 		{
 			std::stringstream ss{};
 			ss << static_cast<Byte>(6);
-			THEN("An exception is thrown")
+			ss >> s;
+			THEN("Sign is marked as invalid")
 			{
-				REQUIRE_THROWS_AS(ss >> s, Invalid_sign);
+				REQUIRE(s == Sign::Invalid);
 			}
 		}
 	}
