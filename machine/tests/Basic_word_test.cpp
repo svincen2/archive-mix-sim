@@ -446,9 +446,11 @@ SCENARIO("Reading and writing a basic word")
 			ss << Sign::Plus;
 			for (int i = 0; i < 4; ++i)
 				ss << static_cast<Byte>(i);
-			THEN("An exception is thrown")
+			ss >> bw;
+			THEN("Some bytes are marked as invalid")
 			{
-				REQUIRE_THROWS_AS(ss >> bw, Invalid_basic_word);
+				REQUIRE(bw.sign() == Sign::Plus);
+				require_bytes_are(bw, {0, 1, 2, 3, INVALID_BYTE});
 			}
 		}
 	}
