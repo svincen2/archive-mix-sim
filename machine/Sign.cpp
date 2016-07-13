@@ -26,7 +26,7 @@ namespace mix
 		is >> temp;
 		sign = static_cast<Sign>(temp);
 		if (!valid(sign))
-			throw Invalid_sign{};
+			sign = Sign::Invalid;
 		return is;
 	}
 
