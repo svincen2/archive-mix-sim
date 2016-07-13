@@ -15,7 +15,7 @@ namespace mix
 	const int BYTE_MASK{static_cast<int>(std::pow(2, BYTE_SIZE)) - 1};
 
 	// Invalid byte indicator.
-	const Byte INVALID_BYTE{-1};
+	const Byte INVALID_BYTE{static_cast<Byte>(-1)};
 }
 #endif
 
