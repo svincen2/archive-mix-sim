@@ -23,7 +23,8 @@ namespace mix
 
 
 		// Constructors.
-		Basic_word(Sign, std::vector<Byte>);
+		Basic_word(Sign s = Sign::Plus,
+				   std::vector<Byte> vb = {});
 		Basic_word(const Basic_word&);
 		Basic_word(Basic_word&&);
 
@@ -96,8 +97,7 @@ namespace mix
 	*	byte_vec - Bytes.
 	*/
 	template<unsigned int N>
-	Basic_word<N>::Basic_word(Sign s = Sign::Plus,
-							  std::vector<Byte> byte_vec = {})
+	Basic_word<N>::Basic_word(Sign s, std::vector<Byte> byte_vec)
 		: sign_byte{s}, bytes{}
 	{
 		if (byte_vec.size() > num_bytes)
