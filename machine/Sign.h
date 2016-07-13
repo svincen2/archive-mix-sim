@@ -15,9 +15,6 @@ namespace mix
 
 	// Validating a sign.
 	bool valid(const Sign&);
-
-	// Invalid sign exception.
-	class Invalid_sign{};
 }
 #endif
 
