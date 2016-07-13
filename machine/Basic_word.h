@@ -23,8 +23,7 @@ namespace mix
 
 
 		// Constructors.
-		Basic_word(Sign s = Sign::Plus,
-				   std::vector<Byte> vb = {});
+		Basic_word(Sign s = Sign::Plus, std::vector<Byte> vb = {});
 		Basic_word(const Basic_word&);
 		Basic_word(Basic_word&&);
 
@@ -517,27 +516,24 @@ namespace mix
 	template<unsigned int N>
 	std::istream& operator>>(std::istream& is, Basic_word<N>& bw)
 	{
+		// Create an invalid basic word to mark any input problems.
+		Basic_word<N> temp{Sign::Invalid,
+						   std::vector<Byte>(N, INVALID_BYTE)};
+
 		// Save current formatting then set to not skip whitespace.
 		std::ios_base::fmtflags f{is.flags()};
 		is >> std::noskipws;
 
 		// Read basic word.
-		try {
-			is >> bw.sign();
-		}
-		catch (Invalid_sign& e) {
-			throw Invalid_basic_word{};
-		}
+		is >> temp.sign();
 		for (int i = 1; i <= N; ++i) {
-			is >> bw.byte(i);
-			if (is.eof() && i <= N) {
-				throw Invalid_basic_word{};
-			}
+			is >> temp.byte(i);
 		}
 
 		// Reset formatting.
 		is.flags(f);
 
+		bw = temp;
 		return is;
 	}
 }
