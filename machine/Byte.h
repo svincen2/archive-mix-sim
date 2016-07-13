@@ -14,6 +14,9 @@ namespace mix
 	// Keeps BYTE_SIZE bits, clears unused bits.
 	const int BYTE_MASK{static_cast<int>(std::pow(2, BYTE_SIZE)) - 1};
 
+	// Maximum byte value.
+	const Byte BYTE_MAX{BYTE_MASK};
+
 	// Invalid byte indicator.
 	const Byte INVALID_BYTE{static_cast<Byte>(-1)};
 }
