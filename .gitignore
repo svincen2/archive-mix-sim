@@ -1,5 +1,5 @@
 *.o
 *.swp
 mix-machine
-tests
+/machine/tests/tests
 
