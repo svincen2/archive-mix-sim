@@ -57,15 +57,11 @@ namespace mix
 		int curr_address{0};
 		Word next_instruction{};
 		while (*program) {
-			try {
-				// Last input attempt will throw exception.
-				*program >> next_instruction;
-			}
-			catch (Invalid_basic_word& e) {
-				if (!program->eof()) throw e;
-				else break;
-			}
+			*program >> next_instruction;
+			if (!next_instruction.is_valid())
+				throw Invalid_basic_word{};
 			memory[curr_address++] = next_instruction;
+			if (program->peek() == EOF) break;
 		}
 	}
 
