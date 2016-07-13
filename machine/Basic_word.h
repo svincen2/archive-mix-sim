@@ -70,6 +70,9 @@ namespace mix
 		// Range copy.
 		void copy_range(const Basic_word&, int, int);
 
+		// Basic word validity check.
+		bool is_valid() const;
+
 
 	private:
 		// Implementation.
@@ -474,6 +477,24 @@ namespace mix
 			throw std::invalid_argument{"Invalid range: first is negative"};
 		if (last > num_bytes)
 			throw std::invalid_argument{"Invalid range: last > number of bytes"};
+	}
+
+	/*
+	* Checks if the basic word is valid.
+	* Template paramters:
+	*	N - Number of bytes of this basic word.
+	*/
+	template<unsigned int N>
+	bool Basic_word<N>::is_valid() const
+	{
+		if (sign_byte == Sign::Invalid)
+			return false;
+
+		for (int i = 1; i <= N; ++i) {
+			if (bytes[i] == INVALID_BYTE || bytes[i] > BYTE_MAX)
+				return false;
+		}
+		return true;
 	}
 
 
