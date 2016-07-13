@@ -124,12 +124,8 @@ SCENARIO("Dumping memory")
 				std::vector<Machine::Word> mem{};
 				Machine::Word curr{};
 				while (ss) {
-					try {
-						ss >> curr; // Last read will throw exception.
-					}
-					catch(Invalid_basic_word& e) {
-						break;
-					}
+					ss >> curr;
+					if (!curr.is_valid()) break;
 					mem.push_back(curr);
 				}
 				REQUIRE(mem.size() == Machine::MEM_SIZE);
