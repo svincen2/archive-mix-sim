@@ -456,3 +456,73 @@ SCENARIO("Reading and writing a basic word")
 	}
 }
 
+SCENARIO("Converting a range to an integer", "[A]")
+{
+	GIVEN("A basic word of [ 0x1f, 0x10 ]")
+	{
+		Basic_word<2> bw{Sign::Plus, {0x1f, 0x10}};
+		WHEN("Converting whole word to integer")
+		{
+			int i{bw.to_int()};
+			THEN("The integer is 2000")
+			{
+				REQUIRE(i == 2000);
+			}
+		}
+	}
+	GIVEN("A basic word of [ 0, 0x1f, 0x10, 0, 20]")
+	{
+		Basic_word<5> bw{Sign::Plus, {0, 0x1f, 0x10, 0, 20}};
+		WHEN("Converting range of [2,3] to integer")
+		{
+			int i{bw.to_int(2, 3)};
+			THEN("The integer is 2000")
+			{
+				REQUIRE(i == 2000);
+			}
+		}
+	}
+	GIVEN("A basic word of [ 1, 2, 3, 4, 5 ]")
+	{
+		Basic_word<5> bw{Sign::Minus, {1, 2, 3, 4, 5}};
+		WHEN("Converting range of [1, 4] to integer")
+		{
+			int i{bw.to_int(1, 4)};
+			THEN("The integer is -270532")
+			{
+				REQUIRE(i == -270532);
+			}
+		}
+		WHEN("Converting an invalid range of [0, 1] to integer")
+		{
+			THEN("An invalid argument exception is thrown")
+			{
+				REQUIRE_THROWS_AS(bw.to_int(0, 1),
+								  std::invalid_argument);
+			}
+		}
+		/* This case causes scenario "Dumping memory" in Machine_test to fail.
+		   But when moved to its own GIVEN segment, tests pass as expected.
+		WHEN("Converting an invalid range of [1, 6] to integer")
+		{
+			THEN("An invalid argument exception is thrown")
+			{
+				REQUIRE_THROWS_AS(bw.to_int(1, 6),
+								  std::invalid_argument);
+			}
+		}
+		*/
+	}
+	GIVEN("A basic word of [ 1, 2, 3, 4, 5 ]")
+	{
+		Basic_word<5> bw{Sign::Minus, {1, 2, 3, 4, 5}};
+		WHEN("Converting an invalid range of [1, 6] to integer")
+		{
+			THEN("An invalid argument exception is thrown")
+			{
+				REQUIRE_THROWS_AS(bw.to_int(1, 6),
+								  std::invalid_argument);
+			}
+		}
+	}
+}
