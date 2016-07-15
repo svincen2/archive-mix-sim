@@ -1,8 +1,10 @@
 #include "catch.hpp"
 #include "Helpers.h"
 #include "../Machine.h"
+#include "../../mixal/Op_code.h"
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 using namespace mix;
 
@@ -105,7 +107,7 @@ SCENARIO("Loading memory")
 	}
 }
 
-SCENARIO("Dumping memory")
+SCENARIO("Dumping memory", "[A]")
 {
 	GIVEN("A mix machine")
 	{
@@ -193,3 +195,55 @@ SCENARIO("Loading a program")
 		}
 	}
 }
+
+SCENARIO("Loading index register")
+{
+	GIVEN("A mix machine and a half word to load")
+	{
+		Machine machine{};
+		Machine::Half_word hw{Sign::Minus, {1, 2}};
+		WHEN("Index register 1 is loaded with [+ | 1 | 2]")
+		{
+			machine.load_index_register(1, hw);
+			THEN("Index register 1 contains the loaded word")
+			{
+				const Machine::Half_word i1{machine.index_register(1)};
+				REQUIRE(i1.sign() == Sign::Minus);
+				require_bytes_are(i1, {1, 2});
+			}
+		}
+		WHEN("Trying to load an index register that doesn't exist")
+		{
+			THEN("An invalid argument exception is thrown")
+			{
+				REQUIRE_THROWS_AS(machine.load_index_register(0, hw),
+								  std::invalid_argument);
+
+				int max{static_cast<int>(Machine::NUM_INDEX_REGISTERS)};
+				REQUIRE_THROWS_AS(machine.load_index_register(max + 1, hw),
+								  std::invalid_argument);
+					
+			}
+		}
+	}
+}
+
+SCENARIO("Reading the address from an instruction")
+{
+	GIVEN("A mix machine")
+	{
+		Machine machine{};
+		WHEN("Reading address from an instruction")
+		{
+			Machine::Word inst{Sign::Plus, {0x1f, 0x10, 1, 0, 0}};
+			Machine::Half_word i1{Sign::Plus, {0, 1}};
+			machine.load_index_register(1, i1);
+			int address{machine.read_address(inst)};
+			THEN("The address is read, and offset by index reg spec")
+			{
+				REQUIRE(address == 2001);
+			}
+		}
+	}
+}
+
