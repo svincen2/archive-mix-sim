@@ -74,7 +74,7 @@ namespace mix
 		bool is_valid() const;
 
 		// Converting contiguous ranges to integer.
-		int to_int(int first = 1, int last = Num_bytes) const;
+		int to_int(int first = 0, int last = Num_bytes) const;
 
 
 	private:
@@ -512,13 +512,17 @@ namespace mix
 	template<unsigned int N>
 	int Basic_word<N>::to_int(int first, int last) const
 	{
+		int f{first == 0 ? 1 : first};
 		check_range(first, last);
 		int result{};
-		for (int i = first; i <= last; ++i) {
+		for (int i = f; i <= last; ++i) {
 			result <<= BYTE_SIZE;
 			result += byte(i);
 		}
-		return (sign_byte == Sign::Minus ? -result : result);
+		if (first == 0 && sign_byte == Sign::Minus) {
+			result = -result;
+		}
+		return result;
 	}
 
 
