@@ -95,11 +95,12 @@ namespace mix
 		// Fetch.
 		Word next_inst{memory_cell(pc)};
 
-		// Execute.
-
-
-		// Point to next instruction.
+		// Increment the program counter before executing instruction.
+		// This is because instruction could modify pc.
 		++pc;
+
+		// Execute.
+		
 	}
 
 	/*
