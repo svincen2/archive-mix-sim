@@ -73,6 +73,9 @@ namespace mix
 		// Basic word validity check.
 		bool is_valid() const;
 
+		// Converting contiguous ranges to integer.
+		int to_int(int first = 1, int last = Num_bytes) const;
+
 
 	private:
 		// Implementation.
@@ -82,7 +85,7 @@ namespace mix
 
 		// Helper functions.
 		void check_byte_index(int) const;
-		void check_copy_range(int, int) const;
+		void check_range(int, int) const;
 		void check_rotate_amount(int&) const;
 		void rotate_bytes_right(int);
 	};
@@ -450,13 +453,14 @@ namespace mix
 	*	N - Number of bytes.
 	* Parameters:
 	*	bw - Word to be copied.
-	*	first - First (lowest index) byte to be copied. If 0, the sign is copied.
+	*	first - First (lowest index) byte to be copied.
+				If 0, the sign is copied.
 	*	last - Last (highest index) byte to be copied.
 	*/
 	template<unsigned int N>
 	void Basic_word<N>::copy_range(const Basic_word& bw, int first, int last)
 	{
-		check_copy_range(first, last);
+		check_range(first, last);
 		if (first == 0) {
 			sign_byte = bw.sign_byte;
 			++first;
@@ -469,14 +473,14 @@ namespace mix
 	* Makes sure the range [first, last] is valid.
 	*/
 	template<unsigned int N>
-	void Basic_word<N>::check_copy_range(int first, int last) const
+	void Basic_word<N>::check_range(int first, int last) const
 	{
 		if (first > last)
 			throw std::invalid_argument{"Invalid range: first > last"};
 		if (first < 0)
 			throw std::invalid_argument{"Invalid range: first is negative"};
 		if (last > num_bytes)
-			throw std::invalid_argument{"Invalid range: last > number of bytes"};
+			throw std::invalid_argument{"Invalid range: last > num of bytes"};
 	}
 
 	/*
@@ -495,6 +499,26 @@ namespace mix
 				return false;
 		}
 		return true;
+	}
+
+	/*
+	* Reads a range of bytes as an integer
+	* Template parameters:
+	*	N - Number of bytes of this basic word.
+	* Parameters:
+	*	first - First byte in range.
+	*	last - Last byte in range.
+	*/
+	template<unsigned int N>
+	int Basic_word<N>::to_int(int first, int last) const
+	{
+		check_range(first, last);
+		int result{};
+		for (int i = first; i <= last; ++i) {
+			result <<= BYTE_SIZE;
+			result += byte(i);
+		}
+		return (sign_byte == Sign::Minus ? -result : result);
 	}
 
 
