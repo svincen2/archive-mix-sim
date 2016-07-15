@@ -512,10 +512,10 @@ namespace mix
 	template<unsigned int N>
 	int Basic_word<N>::to_int(int first, int last) const
 	{
-		int f{first == 0 ? 1 : first};
-		check_range(first, last);
+		int first_byte{first == 0 ? 1 : first};
+		check_range(first_byte, last);
 		int result{};
-		for (int i = f; i <= last; ++i) {
+		for (int i = first_byte; i <= last; ++i) {
 			result <<= BYTE_SIZE;
 			result += byte(i);
 		}
