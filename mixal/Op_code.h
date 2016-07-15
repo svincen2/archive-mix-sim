@@ -6,7 +6,7 @@
 namespace mixal
 {
 	// Mix assembly language op codes.
-	enum Op : Byte
+	enum Op_code : Byte
 	{
 		// Load operations.
 		LDA = 8,
