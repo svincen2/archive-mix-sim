@@ -482,22 +482,30 @@ SCENARIO("Converting a range to an integer", "[A]")
 			}
 		}
 	}
-	GIVEN("A basic word of [ 1, 2, 3, 4, 5 ]")
+	GIVEN("A basic word of -[ 1, 2, 3, 4, 5 ]")
 	{
 		Basic_word<5> bw{Sign::Minus, {1, 2, 3, 4, 5}};
 		WHEN("Converting range of [1, 4] to integer")
 		{
 			int i{bw.to_int(1, 4)};
+			THEN("The integer is 270532")
+			{
+				REQUIRE(i == 270532);
+			}
+		}
+		WHEN("Converting a range of [0, 4] to integer")
+		{
+			int i{bw.to_int(0, 4)};
 			THEN("The integer is -270532")
 			{
 				REQUIRE(i == -270532);
 			}
 		}
-		WHEN("Converting an invalid range of [0, 1] to integer")
+		WHEN("Converting an invalid range of [-1, 1] to integer")
 		{
 			THEN("An invalid argument exception is thrown")
 			{
-				REQUIRE_THROWS_AS(bw.to_int(0, 1),
+				REQUIRE_THROWS_AS(bw.to_int(-1, 1),
 								  std::invalid_argument);
 			}
 		}
@@ -512,6 +520,7 @@ SCENARIO("Converting a range to an integer", "[A]")
 			}
 		}
 		*/
+		
 	}
 	GIVEN("A basic word of [ 1, 2, 3, 4, 5 ]")
 	{
