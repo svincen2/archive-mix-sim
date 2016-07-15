@@ -501,34 +501,13 @@ SCENARIO("Converting a range to an integer", "[A]")
 				REQUIRE(i == -270532);
 			}
 		}
-		WHEN("Converting an invalid range of [-1, 1] to integer")
+		WHEN("Converting an invalid range to integer")
 		{
 			THEN("An invalid argument exception is thrown")
 			{
 				REQUIRE_THROWS_AS(bw.to_int(-1, 1),
 								  std::invalid_argument);
-			}
-		}
-		/* This case causes scenario "Dumping memory" in Machine_test to fail.
-		   But when moved to its own GIVEN segment, tests pass as expected.
-		WHEN("Converting an invalid range of [1, 6] to integer")
-		{
-			THEN("An invalid argument exception is thrown")
-			{
-				REQUIRE_THROWS_AS(bw.to_int(1, 6),
-								  std::invalid_argument);
-			}
-		}
-		*/
-		
-	}
-	GIVEN("A basic word of [ 1, 2, 3, 4, 5 ]")
-	{
-		Basic_word<5> bw{Sign::Minus, {1, 2, 3, 4, 5}};
-		WHEN("Converting an invalid range of [1, 6] to integer")
-		{
-			THEN("An invalid argument exception is thrown")
-			{
+
 				REQUIRE_THROWS_AS(bw.to_int(1, 6),
 								  std::invalid_argument);
 			}
