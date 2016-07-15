@@ -1,9 +1,9 @@
-#ifndef MIX_MIXAL_OP_H
-#define MIX_MIXAL_OP_H
+#ifndef MIX_MACHINE_OP_CODE_H
+#define MIX_MACHINE_OP_CODE_H
 
-#include "../machine/Byte.h"
+#include "Byte.h"
 
-namespace mixal
+namespace mix
 {
 	// Mix assembly language op codes.
 	enum Op_code : Byte
