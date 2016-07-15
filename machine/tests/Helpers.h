@@ -9,7 +9,7 @@ using namespace mix;
 
 // Asserts all bytes in the given word match the given bytes.
 template<unsigned int N>
-void require_bytes_are(Basic_word<N>& bw, std::vector<Byte> bytes)
+void require_bytes_are(const Basic_word<N>& bw, std::vector<Byte> bytes)
 {
 	int i = 1;
 	for (auto p = bytes.begin(); p != bytes.end(); ++p)
@@ -18,7 +18,7 @@ void require_bytes_are(Basic_word<N>& bw, std::vector<Byte> bytes)
 
 // Asserts that all bytes match between the two basic words.
 template<unsigned int N>
-void require_bytes_match(Basic_word<N>& a, Basic_word<N>& b)
+void require_bytes_match(const Basic_word<N>& a, const Basic_word<N>& b)
 {
 	for (int i = 1; i <= N; ++i)
 		REQUIRE(a.byte(i) == b.byte(i));
