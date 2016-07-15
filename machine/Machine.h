@@ -29,6 +29,7 @@ namespace mix
 		static const unsigned int MEM_SIZE;
 		static const unsigned int NUM_INDEX_REGISTERS;
 
+
 		// Constructors and destructor.
 		Machine();
 		Machine(const Machine&) = delete;
@@ -42,6 +43,7 @@ namespace mix
 		void load_program(std::istream*);
 		void run_program();
 		void execute_next_instruction();
+		int read_address(const Word&) const;
 		void dump_memory(std::ostream*) const;
 
 		// Accessors.
@@ -55,7 +57,8 @@ namespace mix
 		Word memory_cell(int) const;
 
 		// Mutators.
-		void store_in_memory(int, Word&);
+		void store_in_memory(int, const Word&);
+		void load_index_register(int, const Half_word&);
 
 
 	private:
@@ -71,6 +74,7 @@ namespace mix
 
 		void check_arguments(const std::vector<std::string>&) const;
 		void check_program_input_stream(std::istream*) const;
+		void check_index_register_number(int) const;
 	};
 }
 #endif

@@ -96,11 +96,30 @@ namespace mix
 		Word next_inst{memory_cell(pc)};
 
 		// Increment the program counter before executing instruction.
-		// This is because instruction could modify pc.
+		// This is done first because instruction could modify pc.
 		++pc;
 
-		// Execute.
-		
+		// Decode operation code.
+		int op_code{next_inst.byte(5)};
+
+	}
+
+	/*
+	* Read the address from the given instruction.
+	* If the instruction specifies an index, offset by the
+	* contents of the specified index register.
+	* Parameters:
+	*	instruction - Instruction to read address from.
+	*/
+	int Machine::read_address(const Word& instruction) const
+	{
+		int address{instruction.to_int(0, 2)};
+		int index_spec{instruction.byte(3)};
+		if (index_spec != 0) {
+			const Half_word& index_reg{index_register(index_spec)};
+			address += index_reg.to_int(0, 2);
+		}
+		return address;
 	}
 
 	/*
@@ -188,11 +207,35 @@ namespace mix
 	*	address - Address of memory to be written to.
 	*	w - Word to write to memory.
 	*/
-	void Machine::store_in_memory(int address, Word& w)
+	void Machine::store_in_memory(int address, const Word& w)
 	{
 		if (address < 0 || MEM_SIZE <= address)
 			throw std::invalid_argument{"Address out of bounds"};
 		memory[address] = w;
+	}
+
+	/*
+	* Load the index register specified by the given register number
+	* with the given half word.
+	* Parameters:
+	*	register_num - Index register number, in range [1, 6].
+	*	hw - Half word to load.
+	*/
+	void Machine::load_index_register(int register_num, const Half_word& hw)
+	{
+		check_index_register_number(register_num);
+		index[register_num - 1] = hw;
+	}
+
+	/*
+	* Check that the index register number is in range [1, 6].
+	* Parameters:
+	*	num - Index register numbers.
+	*/
+	void Machine::check_index_register_number(int num) const
+	{
+		if (num < 1 || NUM_INDEX_REGISTERS < num)
+			throw std::invalid_argument{"Invalid index register number"};
 	}
 }
 
