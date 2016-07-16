@@ -1,3 +1,4 @@
+#include "Instruction.h"
 #include "Machine.h"
 #include <fstream>
 
@@ -6,7 +7,6 @@ namespace mix
 	/* Constant definitions. */
 	const unsigned int Machine::MEM_SIZE{4000};
 	const unsigned int Machine::NUM_INDEX_REGISTERS{6};
-	const Field_spec Machine::ADDRESS{0, 2};
 
 	/*
 	* Construct a mix machine.
@@ -112,12 +112,12 @@ namespace mix
 	* Parameters:
 	*	instruction - Instruction to read address from.
 	*/
-	int Machine::read_address(const Instruction& instruction) const
+	int Machine::read_address(const Word& instruction) const
 	{
-		int address{instruction.address()};
-		int index_spec{instruction.index_spec()};
+		int address{get_address(instruction)};
+		int index_spec{get_index_spec(instruction)};
 		if (index_spec != 0) {
-			address += index_register(index_reg).address();
+			address += get_address(index_register(index_spec));
 		}
 		return address;
 	}

@@ -4,6 +4,7 @@
 #include "Basic_word.h"
 #include "Field_spec.h"
 #include "Sign.h"
+#include "Word.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -23,10 +24,6 @@ namespace mix
 		// Constants.
 		static const unsigned int MEM_SIZE;
 		static const unsigned int NUM_INDEX_REGISTERS;
-		static const Field_spec ADDRESS;
-		static const unsigned int INDEX_SPEC{3};
-		static const unsigned int MODIFICATION{4};
-		static const unsigned int OP_CODE{5};
 
 
 		// Constructors and destructor.
@@ -42,7 +39,7 @@ namespace mix
 		void load_program(std::istream*);
 		void run_program();
 		void execute_next_instruction();
-		int read_address(const Instruction&) const;
+		int read_address(const Word&) const;
 		void dump_memory(std::ostream*) const;
 
 		// Accessors.
