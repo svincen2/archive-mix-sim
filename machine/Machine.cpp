@@ -99,9 +99,9 @@ namespace mix
 		// This is done first because instruction could modify pc.
 		++pc;
 
-		// Decode operation code.
-		int op_code{next_inst.byte(5)};
+		// Decode instruction.
 
+		// Execute.
 	}
 
 	/*
@@ -123,60 +123,12 @@ namespace mix
 	}
 
 	/*
-	* Returns the program counter.
-	*/
-	int Machine::program_counter() const
-	{
-		return pc;
-	}
-
-	/*
 	* Dumps the contents of memory into the given stream.
 	*/
 	void Machine::dump_memory(std::ostream* stream) const
 	{
 		for (int i = 0; i < MEM_SIZE; ++i)
 			*stream << memory[i];
-	}
-
-	/*
-	* Returns the state of the overflow bit.
-	*/
-	Machine::Bit Machine::overflow_bit() const
-	{
-		return overflow;
-	}
-
-	/*
-	* Returns the state of the comparison indicator.
-	*/
-	Machine::Comparison_value Machine::comparison_indicator() const
-	{
-		return compare;
-	}
-
-	/*
-	* Returns the contents of the jump register.
-	*/
-	Machine::Half_word Machine::jump_register() const
-	{
-		return jump;
-	}
-
-	/*
-	* Returns the contents of the accumulator.
-	*/
-	Machine::Word Machine::accumulator() const
-	{
-		return accum;
-	}
-
-	/*
-	* Returns the contents of the extension register.
-	*/
-	Machine::Word Machine::extension_register() const
-	{
-		return exten;
 	}
 
 	/*

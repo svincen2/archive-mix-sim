@@ -2,6 +2,7 @@
 #define MIX_MACHINE_MACHINE_H
 
 #include "Basic_word.h"
+#include "Field_spec.h"
 #include "Sign.h"
 #include <iostream>
 #include <string>
@@ -47,12 +48,12 @@ namespace mix
 		void dump_memory(std::ostream*) const;
 
 		// Accessors.
-		int program_counter() const;
-		Bit overflow_bit() const;
-		Comparison_value comparison_indicator() const;
-		Half_word jump_register() const;
-		Word accumulator() const;
-		Word extension_register() const;
+		int program_counter() const { return pc; }
+		Bit overflow_bit() const { return overflow; }
+		Comparison_value comparison_indicator() const { return compare; }
+		Half_word jump_register() const { return jump; }
+		Word accumulator() const { return accum; }
+		Word extension_register() const { return exten; }
 		Half_word index_register(int) const;
 		Word memory_cell(int) const;
 
