@@ -1,5 +1,5 @@
-#ifndef MIX_MACHINE_WORD_H
-#define MIX_MACHINE_WORD_H
+#ifndef MIX_MACHINE_BASIC_WORD_H
+#define MIX_MACHINE_BASIC_WORD_H
 
 #include "Byte.h"
 #include "Field_spec.h"
