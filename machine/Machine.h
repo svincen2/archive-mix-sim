@@ -29,7 +29,7 @@ namespace mix
 		// Constants.
 		static const unsigned int MEM_SIZE;
 		static const unsigned int NUM_INDEX_REGISTERS;
-		static const Field_spec ADDRESS{0, 2};
+		static const Field_spec ADDRESS;
 		static const unsigned int INDEX_SPEC{3};
 		static const unsigned int MODIFICATION{4};
 		static const unsigned int OP_CODE{5};

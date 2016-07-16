@@ -6,6 +6,7 @@ namespace mix
 	/* Constant definitions. */
 	const unsigned int Machine::MEM_SIZE{4000};
 	const unsigned int Machine::NUM_INDEX_REGISTERS{6};
+	const Field_spec Machine::ADDRESS{0, 2};
 
 	/*
 	* Construct a mix machine.
