@@ -246,7 +246,7 @@ namespace mix
 	void Basic_word<N>::check_byte_index(int index) const
 	{
 		if (index == 0)
-			throw std::invalid_argument{"Cannot access sign with operator[]"};
+			throw std::invalid_argument{"Cannot access sign with byte()"};
 		if (index < 1 || num_bytes < index)
 			throw std::invalid_argument{"Invalid byte index"};
 	}
