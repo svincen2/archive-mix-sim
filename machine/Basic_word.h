@@ -2,6 +2,7 @@
 #define MIX_MACHINE_WORD_H
 
 #include "Byte.h"
+#include "Field_spec.h"
 #include "Sign.h"
 #include <iostream>
 #include <stdexcept>
@@ -75,6 +76,7 @@ namespace mix
 
 		// Converting contiguous ranges to integer.
 		int to_int(int first = 0, int last = Num_bytes) const;
+		int to_int(const Field_spec&) const;
 
 
 	private:
@@ -523,6 +525,17 @@ namespace mix
 			result = -result;
 		}
 		return result;
+	}
+
+	/*
+	* Read the field specification as an integer.
+	* Parameters:
+	*	fs - Field specification.
+	*/
+	template<unsigned int N>
+	int Basic_word<N>::to_int(const Field_spec& fs) const
+	{
+		return to_int(fs.left, fs.right);
 	}
 
 
