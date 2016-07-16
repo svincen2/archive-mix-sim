@@ -493,6 +493,7 @@ SCENARIO("Converting a range to an integer", "[A]")
 			{
 				REQUIRE(i == 270532);
 			}
+
 			Field_spec fs{1, 4};
 			i = bw.to_int(fs);
 			THEN("The integer is 270532")
@@ -507,6 +508,7 @@ SCENARIO("Converting a range to an integer", "[A]")
 			{
 				REQUIRE(i == -270532);
 			}
+
 			Field_spec fs{0, 4};
 			i = bw.to_int(fs);
 			THEN("The integer is -270532")
