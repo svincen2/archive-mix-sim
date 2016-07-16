@@ -42,7 +42,7 @@ namespace mix
 		void load_program(std::istream*);
 		void run_program();
 		void execute_next_instruction();
-		int read_address(const Word&) const;
+		int read_address(const Instruction&) const;
 		void dump_memory(std::ostream*) const;
 
 		// Accessors.

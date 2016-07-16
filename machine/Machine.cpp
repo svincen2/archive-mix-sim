@@ -112,13 +112,12 @@ namespace mix
 	* Parameters:
 	*	instruction - Instruction to read address from.
 	*/
-	int Machine::read_address(const Word& instruction) const
+	int Machine::read_address(const Instruction& instruction) const
 	{
-		int address{instruction.to_int(ADDRESS)};
-		int index_spec{instruction.byte(INDEX_SPEC)};
+		int address{instruction.address()};
+		int index_spec{instruction.index_spec()};
 		if (index_spec != 0) {
-			const Half_word& index_reg{index_register(index_spec)};
-			address += index_reg.to_int(ADDRESS);
+			address += index_register(index_reg).address();
 		}
 		return address;
 	}
