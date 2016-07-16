@@ -7,31 +7,36 @@
 
 namespace mix
 {
-	// A wrapper class to add functions to a Word representing
-	// a machine instruction.
-	class Instruction : public Word
+	// Constants for the parts of an instruction.
+	const Field_spec ADDRESS_FIELD{0, 2};
+	const unsigned int INDEX_SPEC{3};
+	const unsigned int FIELD_SPEC{4};
+	const unsigned int OP_CODE{5};
+
+	// Functions for accessing named parts of a word.
+	template<unsigned int N>
+	int get_address(const Basic_word<N>& bw)
 	{
-	public:
-		// Constants for the parts of an instruction.
-		static const Field_spec ADDRESS_FIELD;
-		static const unsigned int INDEX_SPEC{3};
-		static const unsigned int FIELD_SPEC{4};
-		static const unsigned int OP_CODE{5};
+		return bw.to_int(ADDRESS_FIELD);
+	}
 
-		/* Constructors. */
+	template<unsigned int N>
+	Byte get_index_spec(const Basic_word<N>& bw)
+	{
+		return bw.byte(INDEX_SPEC);
+	}
 
-		// Wrapper.
-		Instruction(const Word&);
+	template<unsigned int N>
+	Byte get_field_spec(const Basic_word<N>& bw)
+	{
+		return bw.byte(FIELD_SPEC);
+	}
 
-		// Bring base constructors into scope.
-		using Word::Word;
-
-		// Functions for accessing parts of an instruction.
-		int address() const;
-		Byte index_spec() const;
-		Byte field_spec() const;
-		Byte op_code() const;
-	};
+	template<unsigned int N>
+	Byte get_op_code(const Basic_word<N>& bw)
+	{
+		return bw.byte(OP_CODE);
+	}
 }
 #endif
 
