@@ -135,7 +135,7 @@ namespace mix
 	/*
 	* Returns the contents of the index register with the given ID.
 	*/
-	Machine::Half_word Machine::index_register(int id) const
+	Half_word Machine::index_register(int id) const
 	{
 		if (id < 1 || NUM_INDEX_REGISTERS < id)
 			throw std::invalid_argument{"Index register ID does not exist"};
@@ -147,7 +147,7 @@ namespace mix
 	* Parameters:
 	*	address - Memory address, in range [0, MEM_SIZE].
 	*/
-	Machine::Word Machine::memory_cell(int address) const
+	Word Machine::memory_cell(int address) const
 	{
 		if (address < 0 || MEM_SIZE <= address)
 			throw std::invalid_argument{"Address out of bounds"};

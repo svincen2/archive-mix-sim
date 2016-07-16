@@ -14,12 +14,6 @@ namespace mix
 	class Machine
 	{
 	public:
-		// A word has 5 bytes and a sign.
-		using Word = Basic_word<5>;
-
-		// A half-word has 2 bytes and a sign.
-		using Half_word = Basic_word<2>;
-
 		// A bit is either on or off.
 		enum class Bit : Byte { On, Off };
 
