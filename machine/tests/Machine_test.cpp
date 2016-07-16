@@ -1,7 +1,8 @@
 #include "catch.hpp"
 #include "Helpers.h"
 #include "../Machine.h"
-#include "../../mixal/Op_code.h"
+#include "../Op_code.h"
+#include "../Word.h"
 #include <fstream>
 #include <sstream>
 #include <vector>
@@ -26,8 +27,8 @@ SCENARIO("Accessing registers")
 		}
 		WHEN("Accessing a valid index register")
 		{
-			Machine::Word w{machine.index_register(1)};
-			Machine::Word w2{machine.index_register(
+			Word w{machine.index_register(1)};
+			Word w2{machine.index_register(
 								Machine::NUM_INDEX_REGISTERS - 1)};
 			THEN("The contents of the register are returned")
 			{
@@ -58,8 +59,8 @@ SCENARIO("Accessing memory")
 		}
 		WHEN("Accessing valid memory cells")
 		{
-			Machine::Word w{machine.memory_cell(0)};
-			Machine::Word w2{machine.memory_cell(Machine::MEM_SIZE - 1)};
+			Word w{machine.memory_cell(0)};
+			Word w2{machine.memory_cell(Machine::MEM_SIZE - 1)};
 			THEN("The contents of the memory cell are returned")
 			{
 				REQUIRE(w.sign() == Sign::Plus);
@@ -93,13 +94,13 @@ SCENARIO("Loading memory")
 	GIVEN("A mix machine and a word to load")
 	{
 		Machine machine{};
-		Machine::Word w{Sign::Minus, {1, 2, 3, 4, 5}};
+		Word w{Sign::Minus, {1, 2, 3, 4, 5}};
 		WHEN("Memory address 0 is loaded with the word")
 		{
 			machine.store_in_memory(0, w);
 			THEN("The word is copied to memory cell")
 			{
-				Machine::Word mem{machine.memory_cell(0)};
+				Word mem{machine.memory_cell(0)};
 				REQUIRE(mem.sign() == Sign::Minus);
 				require_bytes_are(mem, {1, 2, 3, 4, 5});
 			}
@@ -113,8 +114,8 @@ SCENARIO("Dumping memory", "[A]")
 	{
 		Machine machine{};
 		const int last_mem_address{static_cast<int>(Machine::MEM_SIZE) - 1};
-		Machine::Word first{Sign::Minus, {1, 2, 3, 4, 5}};
-		Machine::Word last{Sign::Minus, {6, 7, 8, 9, 0}};
+		Word first{Sign::Minus, {1, 2, 3, 4, 5}};
+		Word last{Sign::Minus, {6, 7, 8, 9, 0}};
 		machine.store_in_memory(0, first);
 		machine.store_in_memory(last_mem_address, last);
 		WHEN("Memory is dumped to a stream")
@@ -123,8 +124,8 @@ SCENARIO("Dumping memory", "[A]")
 			machine.dump_memory(&ss);
 			THEN("All memory cells are dumped")
 			{
-				std::vector<Machine::Word> mem{};
-				Machine::Word curr{};
+				std::vector<Word> mem{};
+				Word curr{};
 				while (ss) {
 					ss >> curr;
 					if (!curr.is_valid()) break;
@@ -150,13 +151,13 @@ SCENARIO("Loading a program")
 		WHEN("A program is loaded into machine memory")
 		{
 			std::stringstream ss{};
-			Machine::Word first{Sign::Plus, {1, 2, 3, 4, 5}};
-			Machine::Word second{Sign::Minus, {6, 7, 8, 9, 0}};
+			Word first{Sign::Plus, {1, 2, 3, 4, 5}};
+			Word second{Sign::Minus, {6, 7, 8, 9, 0}};
 			ss << first << second;
 			machine.load_program(&ss);
 			THEN("Entire program is stored in memory, in correct order")
 			{
-				Machine::Word w{machine.memory_cell(0)};
+				Word w{machine.memory_cell(0)};
 				REQUIRE(w.sign() == Sign::Plus);
 				require_bytes_are(w, {1, 2, 3, 4, 5});
 				w = machine.memory_cell(1);
@@ -201,13 +202,13 @@ SCENARIO("Loading index register")
 	GIVEN("A mix machine and a half word to load")
 	{
 		Machine machine{};
-		Machine::Half_word hw{Sign::Minus, {1, 2}};
+		Half_word hw{Sign::Minus, {1, 2}};
 		WHEN("Index register 1 is loaded with [+ | 1 | 2]")
 		{
 			machine.load_index_register(1, hw);
 			THEN("Index register 1 contains the loaded word")
 			{
-				const Machine::Half_word i1{machine.index_register(1)};
+				const Half_word i1{machine.index_register(1)};
 				REQUIRE(i1.sign() == Sign::Minus);
 				require_bytes_are(i1, {1, 2});
 			}
@@ -235,8 +236,8 @@ SCENARIO("Reading the address from an instruction")
 		Machine machine{};
 		WHEN("Reading address from an instruction")
 		{
-			Machine::Word inst{Sign::Plus, {0x1f, 0x10, 1, 0, 0}};
-			Machine::Half_word i1{Sign::Plus, {0, 1}};
+			Word inst{Sign::Plus, {0x1f, 0x10, 1, 0, 0}};
+			Half_word i1{Sign::Plus, {0, 1}};
 			machine.load_index_register(1, i1);
 			int address{machine.read_address(inst)};
 			THEN("The address is read, and offset by index reg spec")
