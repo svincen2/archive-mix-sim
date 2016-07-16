@@ -3,9 +3,6 @@
 
 namespace mix
 {
-	// Address field specification.
-	Field_spec Field_spec::ADDRESS{0, 2};
-
 	/*
 	* Construct a field specification.
 	*/

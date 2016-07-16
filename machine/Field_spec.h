@@ -9,9 +9,6 @@ namespace mix
 		// Value used to encode/decode a field spec.
 		static const int ENCODE_VALUE{8};
 
-		// Address field specification.
-		static Field_spec ADDRESS;
-
 		// Constructor.
 		Field_spec(int, int);
 
