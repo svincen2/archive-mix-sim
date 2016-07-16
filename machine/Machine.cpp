@@ -113,11 +113,11 @@ namespace mix
 	*/
 	int Machine::read_address(const Word& instruction) const
 	{
-		int address{instruction.to_int(Field_spec::ADDRESS)};
-		int index_spec{instruction.byte(3)};
+		int address{instruction.to_int(ADDRESS)};
+		int index_spec{instruction.byte(INDEX_SPEC)};
 		if (index_spec != 0) {
 			const Half_word& index_reg{index_register(index_spec)};
-			address += index_reg.to_int(Field_spec::ADDRESS);
+			address += index_reg.to_int(ADDRESS);
 		}
 		return address;
 	}
