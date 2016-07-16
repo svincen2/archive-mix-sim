@@ -1,6 +1,7 @@
 #include "catch.hpp"
 #include "Helpers.h"
 #include "../Basic_word.h"
+#include "../Field_spec.h"
 #include <sstream>
 #include <string>
 
@@ -492,10 +493,22 @@ SCENARIO("Converting a range to an integer", "[A]")
 			{
 				REQUIRE(i == 270532);
 			}
+			Field_spec fs{1, 4};
+			i = bw.to_int(fs);
+			THEN("The integer is 270532")
+			{
+				REQUIRE(i == 270532);
+			}
 		}
 		WHEN("Converting a range of [0, 4] to integer")
 		{
 			int i{bw.to_int(0, 4)};
+			THEN("The integer is -270532")
+			{
+				REQUIRE(i == -270532);
+			}
+			Field_spec fs{0, 4};
+			i = bw.to_int(fs);
 			THEN("The integer is -270532")
 			{
 				REQUIRE(i == -270532);
@@ -509,6 +522,9 @@ SCENARIO("Converting a range to an integer", "[A]")
 								  std::invalid_argument);
 
 				REQUIRE_THROWS_AS(bw.to_int(1, 6),
+								  std::invalid_argument);
+				Field_spec fs{1, 6};
+				REQUIRE_THROWS_AS(bw.to_int(fs),
 								  std::invalid_argument);
 			}
 		}
