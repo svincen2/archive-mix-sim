@@ -408,8 +408,7 @@ SCENARIO("Copying a range")
 		}
 		WHEN("Copying the default field spec")
 		{
-			Field_spec fs{};
-			first.copy_range(second, fs);
+			first.copy_range(second, Field_spec::DEFAULT);
 			THEN("The entire word is copied")
 			{
 				REQUIRE(first.sign() == second.sign());
