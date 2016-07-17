@@ -3,6 +3,9 @@
 
 namespace mix
 {
+	// Default field specification.
+	const Field_spec Field_spec::DEFAULT{0, 0};
+
 	/*
 	* Construct a field specification.
 	*/
@@ -22,6 +25,25 @@ namespace mix
 		if (left < 0) is_valid = false;
 		if (left > right) is_valid = false;
 		return is_valid;
+	}
+
+	/*
+	* Checks the given field spec for equality to this one.
+	*/
+	bool Field_spec::operator==(const Field_spec& fs) const
+	{
+		return left == fs.left && right == fs.right;
+	}
+
+	/*
+	* Return the number of bytes included in the field specification.
+	* Excludes the sign.
+	*/
+	int Field_spec::bytes() const
+	{
+		int bytes{size()};
+		if (left == 0) --bytes;
+		return bytes;
 	}
 
 	/*
@@ -49,6 +71,9 @@ namespace mix
 	*/
 	Field_spec decode_field_spec(int encoded)
 	{
+		if (encoded == 0) {
+			return Field_spec::DEFAULT;
+		}
 		int left{encoded / Field_spec::ENCODE_VALUE};
 		int right{encoded % Field_spec::ENCODE_VALUE};
 		return Field_spec{left, right};

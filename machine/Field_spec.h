@@ -6,20 +6,23 @@ namespace mix
 	struct Field_spec
 	{
 	public:
-		// Value used to encode/decode a field spec.
+		// Constants.
 		static const int ENCODE_VALUE{8};
+		static const Field_spec DEFAULT;
 
 		// Constructor.
 		Field_spec(int, int);
+
+		// Operators.
+		bool operator==(const Field_spec&) const;
 
 		// Properties.
 		int left;
 		int right;
 
-		// Size of the field spec range.
+		// Functions.
+		int bytes() const;
 		int size() const;
-
-		// Encode field spec as integer.
 		int encode() const;
 
 	private:
