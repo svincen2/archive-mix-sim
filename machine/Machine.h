@@ -42,6 +42,10 @@ namespace mix
 		int read_address(const Word&) const;
 		void dump_memory(std::ostream*) const;
 
+		// Executing instructions.
+		const Word memory_contents(int, const Field_spec&) const;
+		void execute_load(const Word&);
+
 		// Accessors.
 		int program_counter() const { return pc; }
 		Bit overflow_bit() const { return overflow; }
@@ -54,6 +58,8 @@ namespace mix
 
 		// Mutators.
 		void store_in_memory(int, const Word&);
+		void load_accumulator(const Word&);
+		void load_extension_register(const Word&);
 		void load_index_register(int, const Half_word&);
 
 

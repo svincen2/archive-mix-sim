@@ -1,5 +1,6 @@
 #include "Instruction.h"
 #include "Machine.h"
+#include "Op_code.h"
 #include <fstream>
 
 namespace mix
@@ -106,6 +107,32 @@ namespace mix
 	}
 
 	/*
+	* Execute the load operation specified by the given instruction.
+	* Parameters:
+	*	instruction - Load instruction.
+	*/
+	void Machine::execute_load(const Word& instruction)
+	{
+		int address{read_address(instruction)};
+		int op{get_op_code(instruction)};
+		op -= static_cast<int>(Op_code::LDA);
+		Field_spec field{get_field_spec(instruction)};
+		const Word contents{memory_contents(address, field)};
+		switch(op)
+		{
+		case 0:
+			load_accumulator(contents);
+			break;
+		case 1: case 2: case 3: case 4: case 5: case 6:
+			load_index_register(op, static_cast<Half_word>(contents));
+			break;
+		case 7:
+			load_extension_register(contents);
+			break;
+		}
+	}
+
+	/*
 	* Read the address from the given instruction.
 	* If the instruction specifies an index, offset by the
 	* contents of the specified index register.
@@ -120,6 +147,67 @@ namespace mix
 			address += get_address(index_register(index_spec));
 		}
 		return address;
+	}
+
+	/*
+	* Get the contents of the given field of the memory cell
+	* at the given address.
+	* Parameters:
+	*	address - Address of memory cell.
+	*	field - Field of memory cell to get.
+	*/
+	const Word Machine::memory_contents(int address,
+										const Field_spec& field) const
+	{
+		Word contents{};
+		contents.copy_range(memory_cell(address), field);
+		unsigned int shift_amount{contents.num_bytes - field.right};
+		contents.right_shift(shift_amount);
+		return contents;
+	}
+
+	/*
+	* Load the accumulator with the given word.
+	* Parameters:
+	*	w - Word to load.
+	*/
+	void Machine::load_accumulator(const Word& w)
+	{
+		accum = w;
+	}
+
+	/*
+	* Load the extension register with the given word.
+	* Parameters:
+	*	w - Word to load.
+	*/
+	void Machine::load_extension_register(const Word& w)
+	{
+		exten = w;
+	}
+
+	/*
+	* Load the index register specified by the given register number
+	* with the given half word.
+	* Parameters:
+	*	register_num - Index register number, in range [1, 6].
+	*	hw - Half word to load.
+	*/
+	void Machine::load_index_register(int register_num, const Half_word& hw)
+	{
+		check_index_register_number(register_num);
+		index[register_num - 1] = hw;
+	}
+
+	/*
+	* Check that the index register number is in range [1, 6].
+	* Parameters:
+	*	num - Index register numbers.
+	*/
+	void Machine::check_index_register_number(int num) const
+	{
+		if (num < 1 || NUM_INDEX_REGISTERS < num)
+			throw std::invalid_argument{"Invalid index register number"};
 	}
 
 	/*
@@ -164,30 +252,6 @@ namespace mix
 		if (address < 0 || MEM_SIZE <= address)
 			throw std::invalid_argument{"Address out of bounds"};
 		memory[address] = w;
-	}
-
-	/*
-	* Load the index register specified by the given register number
-	* with the given half word.
-	* Parameters:
-	*	register_num - Index register number, in range [1, 6].
-	*	hw - Half word to load.
-	*/
-	void Machine::load_index_register(int register_num, const Half_word& hw)
-	{
-		check_index_register_number(register_num);
-		index[register_num - 1] = hw;
-	}
-
-	/*
-	* Check that the index register number is in range [1, 6].
-	* Parameters:
-	*	num - Index register numbers.
-	*/
-	void Machine::check_index_register_number(int num) const
-	{
-		if (num < 1 || NUM_INDEX_REGISTERS < num)
-			throw std::invalid_argument{"Invalid index register number"};
 	}
 }
 
