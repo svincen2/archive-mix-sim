@@ -248,3 +248,44 @@ SCENARIO("Reading the address from an instruction")
 	}
 }
 
+SCENARIO("Getting contents of memory with a field spec")
+{
+	GIVEN("A mix machine")
+	{
+		Machine machine{};
+		WHEN("Getting field (0:5) of memory cell 0")
+		{
+			Word some_data{Sign::Plus, {1, 2, 3, 4, 5}};
+			machine.store_in_memory(0, some_data);
+			THEN("The whole memory cell is returned")
+			{
+				Field_spec fs{0, 5};
+				Word contents{machine.memory_contents(0, fs)};
+				REQUIRE(contents.sign() == Sign::Plus);
+				require_bytes_are(contents, {1, 2, 3, 4, 5});
+			}
+		}
+	}
+}
+
+SCENARIO("Executing load instructions")
+{
+	GIVEN("A mix machine")
+	{
+		Machine machine{};
+		WHEN("Executing a LDA instruction")
+		{
+			Word inst{Sign::Plus, {0, 0, 0, 0, Op_code::LDA}};
+			Word some_data{Sign::Plus, {1, 2, 3, 4, 5}};
+			machine.store_in_memory(0, some_data);
+			machine.execute_load(inst);
+			THEN("The accumulator is loaded")
+			{
+				Word accum{machine.accumulator()};
+				REQUIRE(accum.sign() == Sign::Plus);
+				require_bytes_are(accum, {1, 2, 3, 4, 5});
+			}
+		}
+	}
+}
+
