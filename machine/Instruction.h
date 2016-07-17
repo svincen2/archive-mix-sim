@@ -27,9 +27,10 @@ namespace mix
 	}
 
 	template<unsigned int N>
-	Byte get_field_spec(const Basic_word<N>& bw)
+	Field_spec get_field_spec(const Basic_word<N>& bw)
 	{
-		return bw.byte(FIELD_SPEC);
+		Byte encoded_field{bw.byte(FIELD_SPEC)};
+		return decode_field_spec(encoded_field);
 	}
 
 	template<unsigned int N>
