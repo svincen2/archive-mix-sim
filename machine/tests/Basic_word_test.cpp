@@ -406,6 +406,16 @@ SCENARIO("Copying a range")
 				require_bytes_are(first, {1, 2, 3, 4, 5});
 			}
 		}
+		WHEN("Copying the default field spec")
+		{
+			Field_spec fs{};
+			first.copy_range(second, fs);
+			THEN("The entire word is copied")
+			{
+				REQUIRE(first.sign() == second.sign());
+				require_bytes_match(first, second);
+			}
+		}
 	}
 }
 

@@ -69,7 +69,8 @@ namespace mix
 		void clear_bytes();
 
 		// Range copy.
-		void copy_range(const Basic_word&, int, int);
+		void copy_range(const Basic_word&, int fist = 0, int last = Num_bytes);
+		void copy_range(const Basic_word&, const Field_spec&);
 
 		// Basic word validity check.
 		bool is_valid() const;
@@ -483,6 +484,29 @@ namespace mix
 			throw std::invalid_argument{"Invalid range: first is negative"};
 		if (last > num_bytes)
 			throw std::invalid_argument{"Invalid range: last > num of bytes"};
+	}
+
+	/*
+	* Copies the range of the given field spec from the given word
+	* into the same range of this word.
+	* Template parameters:
+	*	N - Number of bytes.
+	* Parameters:
+	*	bw - Word to be copied.
+	*	first - First (lowest index) byte to be copied.
+				If 0, the sign is copied.
+	*	last - Last (highest index) byte to be copied.
+	*/
+	template<unsigned int N>
+	void Basic_word<N>::copy_range(const Basic_word& bw,
+								   const Field_spec& field)
+	{
+		if (field == Field_spec::DEFAULT) {
+			copy_range(bw);
+		}
+		else {
+			copy_range(bw, field.left, field.right);
+		}
 	}
 
 	/*
