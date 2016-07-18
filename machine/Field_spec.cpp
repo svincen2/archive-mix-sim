@@ -3,9 +3,6 @@
 
 namespace mix
 {
-	// Default field specification.
-	const Field_spec Field_spec::DEFAULT{0, 0};
-
 	/*
 	* Construct a field specification.
 	*/
@@ -71,9 +68,6 @@ namespace mix
 	*/
 	Field_spec decode_field_spec(int encoded)
 	{
-		if (encoded == 0) {
-			return Field_spec::DEFAULT;
-		}
 		int left{encoded / Field_spec::ENCODE_VALUE};
 		int right{encoded % Field_spec::ENCODE_VALUE};
 		return Field_spec{left, right};

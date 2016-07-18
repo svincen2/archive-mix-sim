@@ -3,12 +3,12 @@
 
 namespace mix
 {
+	
 	struct Field_spec
 	{
 	public:
 		// Constants.
 		static const int ENCODE_VALUE{8};
-		static const Field_spec DEFAULT;
 
 		// Constructor.
 		Field_spec(int, int);

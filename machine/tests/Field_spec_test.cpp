@@ -62,9 +62,9 @@ SCENARIO("Decoding encoded field spec")
 		WHEN("Decoded")
 		{
 			Field_spec fs{decode_field_spec(encoded)};
-			THEN("The default field spec is returned")
+			THEN("A field spec of (0:0) is returned")
 			{
-				REQUIRE(fs == Field_spec::DEFAULT);
+				REQUIRE(fs == Field_spec(0, 0));
 			}
 		}
 	}
