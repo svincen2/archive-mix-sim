@@ -250,17 +250,17 @@ SCENARIO("Reading the address from an instruction")
 
 SCENARIO("Getting contents of memory with a field spec")
 {
-	GIVEN("A mix machine")
+	GIVEN("A mix machine with some data in memory cell 0")
 	{
 		Machine machine{};
+		Word some_data{Sign::Plus, {1, 2, 3, 4, 5}};
+		machine.store_in_memory(0, some_data);
 		WHEN("Getting field (0:5) of memory cell 0")
 		{
-			Word some_data{Sign::Plus, {1, 2, 3, 4, 5}};
-			machine.store_in_memory(0, some_data);
+			Field_spec fs{0, 5};
+			Word contents{machine.memory_contents(0, fs)};
 			THEN("The whole memory cell is returned")
 			{
-				Field_spec fs{0, 5};
-				Word contents{machine.memory_contents(0, fs)};
 				REQUIRE(contents.sign() == Sign::Plus);
 				require_bytes_are(contents, {1, 2, 3, 4, 5});
 			}
@@ -275,7 +275,7 @@ SCENARIO("Executing load instructions")
 		Machine machine{};
 		WHEN("Executing a LDA instruction")
 		{
-			Word inst{Sign::Plus, {0, 0, 0, 0, Op_code::LDA}};
+			Word inst{Sign::Plus, {0, 0, 0, 5, Op_code::LDA}};
 			Word some_data{Sign::Plus, {1, 2, 3, 4, 5}};
 			machine.store_in_memory(0, some_data);
 			machine.execute_load(inst);
