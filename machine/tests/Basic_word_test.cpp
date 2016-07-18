@@ -406,15 +406,6 @@ SCENARIO("Copying a range")
 				require_bytes_are(first, {1, 2, 3, 4, 5});
 			}
 		}
-		WHEN("Copying the default field spec")
-		{
-			first.copy_range(second, Field_spec::DEFAULT);
-			THEN("The entire word is copied")
-			{
-				REQUIRE(first.sign() == second.sign());
-				require_bytes_match(first, second);
-			}
-		}
 	}
 }
 
@@ -537,6 +528,29 @@ SCENARIO("Converting a range to an integer", "[A]")
 				Field_spec fs{1, 6};
 				REQUIRE_THROWS_AS(bw.to_int(fs),
 								  std::invalid_argument);
+			}
+		}
+	}
+}
+
+SCENARIO("Negating the sign")
+{
+	GIVEN("A basic word")
+	{
+		Basic_word<5> bw{Sign::Plus};
+		WHEN("Negating the sign")
+		{
+			bw.negate();
+			THEN("A sign of plus becomes minus")
+			{
+				REQUIRE(bw.sign() == Sign::Minus);
+				require_bytes_are(bw, {0, 0, 0, 0, 0});
+			}
+			bw.negate();
+			THEN("A sign of minus becomes plus")
+			{
+				REQUIRE(bw.sign() == Sign::Plus);
+				require_bytes_are(bw, {0, 0, 0, 0, 0});
 			}
 		}
 	}

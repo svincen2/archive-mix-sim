@@ -79,6 +79,9 @@ namespace mix
 		int to_int(int first = 0, int last = Num_bytes) const;
 		int to_int(const Field_spec&) const;
 
+		// Negate the sign.
+		Basic_word& negate();
+
 
 	private:
 		// Implementation.
@@ -501,12 +504,7 @@ namespace mix
 	void Basic_word<N>::copy_range(const Basic_word& bw,
 								   const Field_spec& field)
 	{
-		if (field == Field_spec::DEFAULT) {
-			copy_range(bw);
-		}
-		else {
-			copy_range(bw, field.left, field.right);
-		}
+		copy_range(bw, field.left, field.right);
 	}
 
 	/*
@@ -560,6 +558,18 @@ namespace mix
 	int Basic_word<N>::to_int(const Field_spec& fs) const
 	{
 		return to_int(fs.left, fs.right);
+	}
+
+	/*
+	* Negate the sign of this basic word, returning a reference to it.
+	* Template parameters:
+	*	N - Number of bytes of this basic word.
+	*/
+	template<unsigned int N>
+	Basic_word<N>& Basic_word<N>::negate()
+	{
+		negate_sign(sign_byte);
+		return *this;
 	}
 
 
