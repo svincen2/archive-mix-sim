@@ -15,6 +15,9 @@ namespace mix
 
 	// Validating a sign.
 	bool valid(const Sign&);
+
+	// Negate a sign.
+	void negate_sign(Sign&);
 }
 #endif
 

@@ -37,5 +37,15 @@ namespace mix
 	{
 		return sign == Sign::Plus || sign == Sign::Minus;
 	}
+
+	/*
+	* Negate the given sign.
+	* Parameters:
+	*	s - Sign to negate.
+	*/
+	void negate_sign(Sign& s)
+	{
+		s = (s == Sign::Plus ? Sign::Minus : Sign::Plus);
+	}
 }
 
