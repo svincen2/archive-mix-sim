@@ -31,3 +31,6 @@ Instruction_test.o : Instruction_test.cpp
 clean:
 	rm $(tests) $(proj_name)
 
+relink:
+	$(link) $(proj_name) $(test_suite) $(tests) $(dependancies)
+
