@@ -102,8 +102,11 @@ namespace mix
 		++pc;
 
 		// Decode instruction.
+		Op_code op{get_op_code(next_inst)};
+		int address{read_address(next_inst)};
 
 		// Execute.
+
 	}
 
 	/*
@@ -114,21 +117,25 @@ namespace mix
 	void Machine::execute_load(const Word& instruction)
 	{
 		int address{read_address(instruction)};
-		int op{get_op_code(instruction)};
-		op -= static_cast<int>(Op_code::LDA);
+		Op_code op{get_op_code(instruction)};
 		Field_spec field{get_field_spec(instruction)};
 		const Word contents{memory_contents(address, field)};
 		switch(op)
 		{
-		case 0:
+		case Op_code::LDA:
 			load_accumulator(contents);
 			break;
-		case 1: case 2: case 3: case 4: case 5: case 6:
-			load_index_register(op, static_cast<Half_word>(contents));
-			break;
-		case 7:
-			load_extension_register(contents);
-			break;
+		case Op_code::LD1:
+		case Op_code::LD2:
+		case Op_code::LD3:
+		case Op_code::LD4:
+		case Op_code::LD5:
+		case Op_code::LD6:
+			{
+				int reg_num{static_cast<int>(op - Op_code::LDA)};
+				load_index_register(op, static_cast<Half_word>(contents));
+				break;
+			}
 		}
 	}
 
@@ -220,13 +227,15 @@ namespace mix
 	}
 
 	/*
-	* Returns the contents of the index register with the given ID.
+	* Returns the contents of the index register with the given number.
+	* Index register number must be in range [1, 6].
+	* Parameters:
+	*	register_num - Index register number.
 	*/
-	Half_word Machine::index_register(int id) const
+	Half_word Machine::index_register(int register_num) const
 	{
-		if (id < 1 || NUM_INDEX_REGISTERS < id)
-			throw std::invalid_argument{"Index register ID does not exist"};
-		return index[id - 1];
+		check_index_register_number(register_num);
+		return index[register_num - 1];
 	}
 
 	/*
