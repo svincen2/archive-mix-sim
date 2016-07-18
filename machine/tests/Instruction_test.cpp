@@ -36,7 +36,7 @@ SCENARIO("Getting parts of an instruction")
 		}
 		WHEN("Getting the op code")
 		{
-			Byte op{get_op_code(inst)};
+			Op_code op{get_op_code(inst)};
 			THEN("The op code is correct")
 			{
 				REQUIRE(op == 5);

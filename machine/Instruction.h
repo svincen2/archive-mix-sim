@@ -3,6 +3,7 @@
 
 #include "Byte.h"
 #include "Field_spec.h"
+#include "Op_code.h"
 #include "Word.h"
 
 namespace mix
@@ -34,9 +35,9 @@ namespace mix
 	}
 
 	template<unsigned int N>
-	Byte get_op_code(const Basic_word<N>& bw)
+	Op_code get_op_code(const Basic_word<N>& bw)
 	{
-		return bw.byte(OP_CODE);
+		return static_cast<Op_code>(bw.byte(OP_CODE));
 	}
 }
 #endif
