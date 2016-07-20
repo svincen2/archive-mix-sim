@@ -40,7 +40,7 @@ namespace mix
 
 		// Conversion.
 		template<unsigned int N>
-		explicit operator Basic_word<N>() const;
+		operator Basic_word<N>() const;
 
 
 		/* Functions. */
