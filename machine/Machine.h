@@ -3,9 +3,13 @@
 
 #include "Basic_word.h"
 #include "Field_spec.h"
+#include "Op_class.h"
+#include "Op_code.h"
 #include "Sign.h"
 #include "Word.h"
+#include <functional>
 #include <iostream>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -46,6 +50,7 @@ namespace mix
 		const Word memory_contents(int, const Field_spec&) const;
 		void execute_load(const Word&);
 
+
 		// Accessors.
 		int program_counter() const { return pc; }
 		Bit overflow_bit() const { return overflow; }
@@ -74,9 +79,22 @@ namespace mix
 		std::vector<Half_word> index;
 		std::vector<Word> memory;
 
+		// Operation aliases.
+		using Operation = std::function<void(const Word&)>;
+		using Op_map = std::map<Op_code, Operation>;
+
+		// Load operations.
+		Op_map load_ops;
+
+		// Operation maps.
+		std::map<Op_class, Op_map*> ops;
+
+		// Helpers.
 		void check_arguments(const std::vector<std::string>&) const;
 		void check_program_input_stream(std::istream*) const;
 		void check_index_register_number(int) const;
+		void init_load_ops();
+		void init_ops();
 	};
 }
 #endif

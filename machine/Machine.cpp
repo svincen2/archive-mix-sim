@@ -1,3 +1,4 @@
+#include "Executor.h"
 #include "Instruction.h"
 #include "Machine.h"
 #include "Op_code.h"
@@ -20,8 +21,35 @@ namespace mix
 		  exten{},
 		  pc{0},
 		  index(NUM_INDEX_REGISTERS),
-		  memory(MEM_SIZE)
+		  memory(MEM_SIZE),
+		  load_ops{},
+		  ops{}
 	{
+		init_load_ops();
+		init_ops();
+	}
+
+	/*
+	* Initialize load operations map.
+	*/
+	void Machine::init_load_ops()
+	{
+		load_ops[Op_code::LDA] = [this](const Word& w){ this->accum = w; };
+		load_ops[Op_code::LD1] = [this](const Word& w){ this->index[1] = w; };
+		load_ops[Op_code::LD2] = [this](const Word& w){ this->index[2] = w; };
+		load_ops[Op_code::LD3] = [this](const Word& w){ this->index[3] = w; };
+		load_ops[Op_code::LD4] = [this](const Word& w){ this->index[4] = w; };
+		load_ops[Op_code::LD5] = [this](const Word& w){ this->index[5] = w; };
+		load_ops[Op_code::LD6] = [this](const Word& w){ this->index[6] = w; };
+		load_ops[Op_code::LDX] = [this](const Word& w){ this->exten = w; };
+	}
+
+	/*
+	* Initialize operations.
+	*/
+	void Machine::init_ops()
+	{
+		ops[Op_class::LOAD] = &load_ops;
 	}
 
 	/*
@@ -101,12 +129,10 @@ namespace mix
 		// This is done first because instruction could modify pc.
 		++pc;
 
-		// Decode instruction.
-		Op_code op{get_op_code(next_inst)};
-		int address{read_address(next_inst)};
-
+		// Decode.
+		
 		// Execute.
-
+		
 	}
 
 	/*
@@ -120,23 +146,7 @@ namespace mix
 		Op_code op{get_op_code(instruction)};
 		Field_spec field{get_field_spec(instruction)};
 		const Word contents{memory_contents(address, field)};
-		switch(op)
-		{
-		case Op_code::LDA:
-			load_accumulator(contents);
-			break;
-		case Op_code::LD1:
-		case Op_code::LD2:
-		case Op_code::LD3:
-		case Op_code::LD4:
-		case Op_code::LD5:
-		case Op_code::LD6:
-			{
-				int reg_num{static_cast<int>(op - Op_code::LDA)};
-				load_index_register(op, static_cast<Half_word>(contents));
-				break;
-			}
-		}
+		ops[Op_class::LOAD]->operator[](op)(contents);
 	}
 
 	/*
