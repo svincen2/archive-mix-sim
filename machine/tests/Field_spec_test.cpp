@@ -81,6 +81,19 @@ SCENARIO("Decoding encoded field spec")
 			}
 		}
 	}
+	GIVEN("A field spec encoding of 20")
+	{
+		int encoded{20};
+		WHEN("Decoded")
+		{
+			Field_spec fs{decode_field_spec(encoded)};
+			THEN("A field spec of (2:4) is returned")
+			{
+				Field_spec expected{2, 4};
+				REQUIRE(fs == expected);
+			}
+		}
+	}
 }
 
 SCENARIO("Testing equality")
