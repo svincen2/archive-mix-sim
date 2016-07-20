@@ -253,7 +253,7 @@ SCENARIO("Getting contents of memory with a field spec")
 	GIVEN("A mix machine with some data in memory cell 0")
 	{
 		Machine machine{};
-		Word some_data{Sign::Plus, {1, 2, 3, 4, 5}};
+		Word some_data{Sign::Minus, {1, 2, 3, 4, 5}};
 		machine.store_in_memory(0, some_data);
 		WHEN("Getting field (0:5) of memory cell 0")
 		{
@@ -261,8 +261,18 @@ SCENARIO("Getting contents of memory with a field spec")
 			Word contents{machine.memory_contents(0, fs)};
 			THEN("The whole memory cell is returned")
 			{
-				REQUIRE(contents.sign() == Sign::Plus);
+				REQUIRE(contents.sign() == Sign::Minus);
 				require_bytes_are(contents, {1, 2, 3, 4, 5});
+			}
+		}
+		WHEN("Getting field (0:2) of memory cell 0")
+		{
+			Field_spec fs{0, 2};
+			Word contents{machine.memory_contents(0, fs)};
+			THEN("The bytes [1, 2] are shifted to [4, 5]")
+			{
+				REQUIRE(contents.sign() == Sign::Minus);
+				require_bytes_are(contents, {0, 0, 0, 1, 2});
 			}
 		}
 	}
@@ -270,22 +280,46 @@ SCENARIO("Getting contents of memory with a field spec")
 
 SCENARIO("Executing load instructions")
 {
-	GIVEN("A mix machine")
+	GIVEN("A mix machine with some data in memory cell 0")
 	{
 		Machine machine{};
+		Word some_data{Sign::Minus, {1, 2, 3, 4, 5}};
+		machine.store_in_memory(0, some_data);
 		WHEN("Executing a LDA instruction")
 		{
 			Word inst{Sign::Plus, {0, 0, 0, 5, Op_code::LDA}};
-			Word some_data{Sign::Plus, {1, 2, 3, 4, 5}};
-			machine.store_in_memory(0, some_data);
 			machine.execute_load(inst);
 			THEN("The accumulator is loaded")
 			{
 				Word accum{machine.accumulator()};
-				REQUIRE(accum.sign() == Sign::Plus);
+				REQUIRE(accum.sign() == Sign::Minus);
 				require_bytes_are(accum, {1, 2, 3, 4, 5});
 			}
 		}
+		WHEN("Executing a LDX instruction")
+		{
+			Word inst{Sign::Plus, {0, 0, 0, 3, Op_code::LDX}};
+			machine.execute_load(inst);
+			THEN("The extension register is loaded")
+			{
+				Word exten{machine.extension_register()};
+				REQUIRE(exten.sign() == Sign::Minus);
+				require_bytes_are(exten, {0, 0, 1, 2, 3});
+			}
+		}
+		/*
+		WHEN("Executing LD[1, 6] instructions")
+		{
+			Word inst{Sign::Plus, {0, 0, 0, 37, Op_code::LD1}};
+			machine.execute_load(inst);
+			THEN("Index register 1 is loaded")
+			{
+				Word index_one{machine.index_register(1)};
+				REQUIRE(index_one.sign() == Sign::Plus);
+				require_bytes_are(index_one, {3, 4});
+			}
+		}
+		*/
 	}
 }
 
