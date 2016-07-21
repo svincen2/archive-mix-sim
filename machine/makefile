@@ -7,7 +7,7 @@ proj_name = mix-machine
 Mix-machine.exe : main.cpp $(objs)
 	$(link) $(proj_name) main.cpp $(objs)
 
-Field_spec.o : Field_spec.cpp
+Field_spec.o : Field_spec.h Field_spec.cpp
 	$(compile) Field_spec.cpp
 
 Machine.o : Machine.h Machine.cpp
