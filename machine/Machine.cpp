@@ -1,4 +1,3 @@
-#include "Executor.h"
 #include "Instruction.h"
 #include "Machine.h"
 #include "Op_code.h"
@@ -49,7 +48,7 @@ namespace mix
 	*/
 	void Machine::init_ops()
 	{
-		ops[Op_class::LOAD] = &load_ops;
+		ops[Op_class::LOAD] = &Machine::execute_load;
 	}
 
 	/*
@@ -130,9 +129,24 @@ namespace mix
 		++pc;
 
 		// Decode.
-		
+		Op_code op_code{get_op_code(next_inst)};
+		Op_class op_class{get_op_class(op_code)};
+
 		// Execute.
-		
+		Basic_operation base_op = ops[op_class];
+		(this->*base_op)(op_code, next_inst);
+	}
+
+	/*
+	* Return the class of operation, such as LOAD or STORE.
+	* Parameters:
+	*	op_code - Operation code.
+	*/
+	Op_class Machine::get_op_class(Op_code op_code) const
+	{
+		if (op_code < Op_code::STA) {
+			return Op_class::LOAD;
+		}
 	}
 
 	/*
@@ -140,13 +154,12 @@ namespace mix
 	* Parameters:
 	*	instruction - Load instruction.
 	*/
-	void Machine::execute_load(const Word& instruction)
+	void Machine::execute_load(Op_code op, const Word& instruction)
 	{
 		int address{read_address(instruction)};
-		Op_code op{get_op_code(instruction)};
 		Field_spec field{get_field_spec(instruction)};
 		const Word contents{memory_contents(address, field)};
-		ops[Op_class::LOAD]->operator[](op)(contents);
+		load_ops[op](contents);
 	}
 
 	/*

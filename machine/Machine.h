@@ -48,7 +48,6 @@ namespace mix
 
 		// Executing instructions.
 		const Word memory_contents(int, const Field_spec&) const;
-		void execute_load(const Word&);
 
 
 		// Accessors.
@@ -80,14 +79,14 @@ namespace mix
 		std::vector<Word> memory;
 
 		// Operation aliases.
+		using Basic_operation = void (Machine::*)(Op_code, const Word&);
 		using Operation = std::function<void(const Word&)>;
-		using Op_map = std::map<Op_code, Operation>;
+
+		// Basic operation map.
+		std::map<Op_class, Basic_operation> ops;
 
 		// Load operations.
-		Op_map load_ops;
-
-		// Operation maps.
-		std::map<Op_class, Op_map*> ops;
+		std::map<Op_code, Operation> load_ops;
 
 		// Helpers.
 		void check_arguments(const std::vector<std::string>&) const;
@@ -95,6 +94,8 @@ namespace mix
 		void check_index_register_number(int) const;
 		void init_load_ops();
 		void init_ops();
+		Op_class get_op_class(Op_code) const;
+		void execute_load(Op_code, const Word&);
 	};
 }
 #endif
