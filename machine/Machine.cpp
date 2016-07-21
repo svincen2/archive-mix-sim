@@ -34,12 +34,12 @@ namespace mix
 	void Machine::init_load_ops()
 	{
 		load_ops[Op_code::LDA] = [this](const Word& w){ this->accum = w; };
-		load_ops[Op_code::LD1] = [this](const Word& w){ this->index[1] = w; };
-		load_ops[Op_code::LD2] = [this](const Word& w){ this->index[2] = w; };
-		load_ops[Op_code::LD3] = [this](const Word& w){ this->index[3] = w; };
-		load_ops[Op_code::LD4] = [this](const Word& w){ this->index[4] = w; };
-		load_ops[Op_code::LD5] = [this](const Word& w){ this->index[5] = w; };
-		load_ops[Op_code::LD6] = [this](const Word& w){ this->index[6] = w; };
+		load_ops[Op_code::LD1] = [this](const Word& w){ this->index[0] = w; };
+		load_ops[Op_code::LD2] = [this](const Word& w){ this->index[1] = w; };
+		load_ops[Op_code::LD3] = [this](const Word& w){ this->index[2] = w; };
+		load_ops[Op_code::LD4] = [this](const Word& w){ this->index[3] = w; };
+		load_ops[Op_code::LD5] = [this](const Word& w){ this->index[4] = w; };
+		load_ops[Op_code::LD6] = [this](const Word& w){ this->index[5] = w; };
 		load_ops[Op_code::LDX] = [this](const Word& w){ this->exten = w; };
 	}
 
