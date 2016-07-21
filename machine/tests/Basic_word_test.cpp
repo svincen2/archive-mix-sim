@@ -81,27 +81,41 @@ SCENARIO("Converting basic words")
 {
 	GIVEN("A basic word")
 	{
-		Basic_word<3> bw{Sign::Minus, {1, 2, 3}};
+		Basic_word<5> bw{Sign::Minus, {1, 2, 3, 4, 5}};
 		WHEN("Converting to a smaller word")
 		{
 			Basic_word<2> smaller{bw};
 			THEN("The left-most bytes are dropped")
 			{
 				REQUIRE(smaller.sign() == Sign::Minus);
-				REQUIRE(smaller.byte(1) == bw.byte(2));
-				REQUIRE(smaller.byte(2) == bw.byte(3));
+				REQUIRE(smaller.byte(1) == bw.byte(4));
+				REQUIRE(smaller.byte(2) == bw.byte(5));
+			}
+		}
+		WHEN("Narrowing using assignment operator")
+		{
+			Basic_word<2> smaller{};
+			smaller = bw;
+			THEN("The left-most bytes are dropped")
+			{
+				REQUIRE(smaller.sign() == Sign::Minus);
+				REQUIRE(smaller.byte(1) == bw.byte(4));
+				REQUIRE(smaller.byte(2) == bw.byte(5));
 			}
 		}
 		WHEN("Converting to a larger word")
 		{
-			Basic_word<4> larger{bw};
+			Basic_word<7> larger{bw};
 			THEN("The left-most bytes are set to 0")
 			{
 				REQUIRE(larger.sign() == Sign::Minus);
 				REQUIRE(larger.byte(1) == 0);
-				REQUIRE(larger.byte(2) == bw.byte(1));
-				REQUIRE(larger.byte(3) == bw.byte(2));
-				REQUIRE(larger.byte(4) == bw.byte(3));
+				REQUIRE(larger.byte(2) == 0);
+				REQUIRE(larger.byte(3) == bw.byte(1));
+				REQUIRE(larger.byte(4) == bw.byte(2));
+				REQUIRE(larger.byte(5) == bw.byte(3));
+				REQUIRE(larger.byte(6) == bw.byte(4));
+				REQUIRE(larger.byte(7) == bw.byte(5));
 			}
 		}
 	}
