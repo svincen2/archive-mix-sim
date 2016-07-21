@@ -16,7 +16,10 @@ namespace mix
 		// Load negative operations.
 		LDAN,
 		LD1N, LD2N, LD3N, LD4N, LD5N, LD6N,
-		LDXN
+		LDXN,
+
+		// Store operations.
+		STA
 	};
 }
 #endif
