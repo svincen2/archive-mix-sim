@@ -27,16 +27,17 @@ SCENARIO("Accessing registers")
 		}
 		WHEN("Accessing a valid index register")
 		{
-			Word w{machine.index_register(1)};
-			Word w2{machine.index_register(
-								Machine::NUM_INDEX_REGISTERS - 1)};
+			machine.load_index_register(1, {Sign::Minus, {1, 2}});
+			machine.load_index_register(2, {Sign::Minus, {3, 4}});
 			THEN("The contents of the register are returned")
 			{
-				REQUIRE(w.sign() == Sign::Plus);
-				require_bytes_are(w, {0, 0, 0, 0, 0});
+				Half_word ir_one{machine.index_register(1)};
+				REQUIRE(ir_one.sign() == Sign::Minus);
+				require_bytes_are(ir_one, {1, 2});
 
-				REQUIRE(w2.sign() == Sign::Plus);
-				require_bytes_are(w2, {0, 0, 0, 0, 0});
+				Half_word ir_two{machine.index_register(2)};
+				REQUIRE(ir_two.sign() == Sign::Minus);
+				require_bytes_are(ir_two, {3, 4});
 			}
 		}
 	}
@@ -311,19 +312,30 @@ SCENARIO("Executing load instructions")
 				require_bytes_are(exten, {0, 0, 1, 2, 3});
 			}
 		}
-		/*
-		WHEN("Executing LD[1, 6] instructions")
+		WHEN("Executing LD1 instructions")
 		{
-			Word inst{Sign::Plus, {0, 0, 0, 37, Op_code::LD1}};
-			machine.execute_load(inst);
+			Word inst{Sign::Plus, {0, 1, 0, 28, Op_code::LD1}};
+			machine.store_in_memory(0, inst);
+			machine.execute_next_instruction();
 			THEN("Index register 1 is loaded")
 			{
-				Word index_one{machine.index_register(1)};
+				Half_word index_one{machine.index_register(1)};
 				REQUIRE(index_one.sign() == Sign::Plus);
 				require_bytes_are(index_one, {3, 4});
 			}
 		}
-		*/
+		WHEN("Executing LD6 instructions")
+		{
+			Word inst{Sign::Plus, {0, 1, 0, 5, Op_code::LD6}};
+			machine.store_in_memory(0, inst);
+			machine.execute_next_instruction();
+			THEN("Index register 6 is loaded")
+			{
+				Half_word index_six{machine.index_register(6)};
+				REQUIRE(index_six.sign() == Sign::Minus);
+				require_bytes_are(index_six, {4, 5});
+			}
+		}
 	}
 }
 
