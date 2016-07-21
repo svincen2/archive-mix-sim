@@ -78,6 +78,8 @@ SCENARIO("Program counter")
 	GIVEN("A mix machine")
 	{
 		Machine machine{};
+		Word inst{Sign::Plus, {0, 0, 0, 0, Op_code::LDA}};
+		machine.store_in_memory(0, inst);
 		WHEN("The first instruction is executed")
 		{
 			machine.execute_next_instruction();
@@ -280,15 +282,16 @@ SCENARIO("Getting contents of memory with a field spec")
 
 SCENARIO("Executing load instructions")
 {
-	GIVEN("A mix machine with some data in memory cell 0")
+	GIVEN("A mix machine with some data in memory cell 1")
 	{
 		Machine machine{};
 		Word some_data{Sign::Minus, {1, 2, 3, 4, 5}};
-		machine.store_in_memory(0, some_data);
+		machine.store_in_memory(1, some_data);
 		WHEN("Executing a LDA instruction")
 		{
-			Word inst{Sign::Plus, {0, 0, 0, 5, Op_code::LDA}};
-			machine.execute_load(inst);
+			Word inst{Sign::Plus, {0, 1, 0, 5, Op_code::LDA}};
+			machine.store_in_memory(0, inst);
+			machine.execute_next_instruction();
 			THEN("The accumulator is loaded")
 			{
 				Word accum{machine.accumulator()};
@@ -298,8 +301,9 @@ SCENARIO("Executing load instructions")
 		}
 		WHEN("Executing a LDX instruction")
 		{
-			Word inst{Sign::Plus, {0, 0, 0, 3, Op_code::LDX}};
-			machine.execute_load(inst);
+			Word inst{Sign::Plus, {0, 1, 0, 3, Op_code::LDX}};
+			machine.store_in_memory(0, inst);
+			machine.execute_next_instruction();
 			THEN("The extension register is loaded")
 			{
 				Word exten{machine.extension_register()};
