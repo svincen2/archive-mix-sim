@@ -62,6 +62,14 @@ namespace mix
 	}
 
 	/*
+	* Returns whether or not the sign is part of the specified field.
+	*/
+	bool Field_spec::contains_sign() const
+	{
+		return left == 0;
+	}
+
+	/*
 	* Decode an encoded field specification.
 	* Parameters:
 	*	encoded - Encoded field spec.

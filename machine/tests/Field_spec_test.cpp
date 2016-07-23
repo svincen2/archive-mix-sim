@@ -141,3 +141,32 @@ SCENARIO("Field_spec sizes")
 		}
 	}
 }
+
+SCENARIO("Fields with sign")
+{
+	GIVEN("A field spec with the sign")
+	{
+		WHEN("Asked whether the field contains the sign byte")
+		{
+			THEN("The answer is yes")
+			{
+				Field_spec fs{0, 5};
+				REQUIRE(fs.contains_sign() == true);
+
+				fs = Field_spec{0, 0};
+				REQUIRE(fs.contains_sign() == true);
+			}
+		}
+	}
+	GIVEN("A field spec without a sign")
+	{
+		WHEN("Asked whether the field contains the sign byte")
+		{
+			THEN("The answer is no")
+			{
+				Field_spec fs{1, 3};
+				REQUIRE(fs.contains_sign() == false);
+			}
+		}
+	}
+}

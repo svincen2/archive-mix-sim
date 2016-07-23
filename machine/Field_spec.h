@@ -24,6 +24,7 @@ namespace mix
 		int bytes() const;
 		int size() const;
 		int encode() const;
+		bool contains_sign() const;
 
 	private:
 		// Check if field spec is valid.
