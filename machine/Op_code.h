@@ -19,7 +19,10 @@ namespace mix
 		LDXN,
 
 		// Store operations.
-		STA
+		STA,
+		ST1, ST2, ST3, ST4, ST5, ST6,
+		STX,
+		STJ
 	};
 }
 #endif
