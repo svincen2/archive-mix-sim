@@ -68,34 +68,52 @@ namespace mix
 
 
 	private:
+		// Program counter.
 		int pc;
+
+		// Operation result flags.
 		Bit overflow;
 		Comparison_value compare;
+
+		// Registers.
 		Half_word jump;
 		Word accum;
 		Word exten;
-
 		std::vector<Half_word> index;
+
+		// Memory.
 		std::vector<Word> memory;
 
+		// Operation buffers.
+		Word instruction_buffer;
+		Word content_buffer;
+
 		// Operation aliases.
-		using Basic_operation = void (Machine::*)(Op_code, const Word&);
-		using Operation = std::function<void(const Word&)>;
+		using Base_operation = void (Machine::*)(Op_code);
+		using Operation = std::function<void()>;
 
-		// Basic operation map.
-		std::map<Op_class, Basic_operation> ops;
+		// Op class operation map.
+		std::map<Op_class, Base_operation> ops;
 
-		// Load operations.
+		// Operation maps.
 		std::map<Op_code, Operation> load_ops;
+		std::map<Op_code, Operation> store_ops;
 
-		// Helpers.
+		// Initialization functions.
+		void init_ops();
+		void init_load_ops();
+		void init_store_ops();
+
+		// Base operation functions.
+		Op_class get_op_class(Op_code) const;
+		void execute_load(Op_code);
+		void execute_load_negative(Op_code);
+		void execute_store(Op_code);
+
+		// Validations.
 		void check_arguments(const std::vector<std::string>&) const;
 		void check_program_input_stream(std::istream*) const;
 		void check_index_register_number(int) const;
-		void init_load_ops();
-		void init_ops();
-		Op_class get_op_class(Op_code) const;
-		void execute_load(Op_code, const Word&);
 	};
 }
 #endif

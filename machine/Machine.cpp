@@ -13,34 +13,22 @@ namespace mix
 	* Construct a mix machine.
 	*/
 	Machine::Machine()
-		: overflow{Bit::Off},
+		: pc{0},
+		  overflow{Bit::Off},
 		  compare{Comparison_value::Equal},
 		  jump{},
 		  accum{},
 		  exten{},
-		  pc{0},
 		  index(NUM_INDEX_REGISTERS),
 		  memory(MEM_SIZE),
+		  instruction_buffer{},
+		  content_buffer{},
 		  load_ops{},
 		  ops{}
 	{
 		init_load_ops();
+		init_store_ops();
 		init_ops();
-	}
-
-	/*
-	* Initialize load operations map.
-	*/
-	void Machine::init_load_ops()
-	{
-		load_ops[Op_code::LDA] = [this](const Word& w){ this->accum = w; };
-		load_ops[Op_code::LD1] = [this](const Word& w){ this->index[0] = w; };
-		load_ops[Op_code::LD2] = [this](const Word& w){ this->index[1] = w; };
-		load_ops[Op_code::LD3] = [this](const Word& w){ this->index[2] = w; };
-		load_ops[Op_code::LD4] = [this](const Word& w){ this->index[3] = w; };
-		load_ops[Op_code::LD5] = [this](const Word& w){ this->index[4] = w; };
-		load_ops[Op_code::LD6] = [this](const Word& w){ this->index[5] = w; };
-		load_ops[Op_code::LDX] = [this](const Word& w){ this->exten = w; };
 	}
 
 	/*
@@ -49,6 +37,39 @@ namespace mix
 	void Machine::init_ops()
 	{
 		ops[Op_class::LOAD] = &Machine::execute_load;
+		ops[Op_class::LOAD_NEG] = &Machine::execute_load_negative;
+		ops[Op_class::STORE] = &Machine::execute_store;
+	}
+
+	/*
+	* Initialize load operations map.
+	*/
+	void Machine::init_load_ops()
+	{
+		load_ops[Op_code::LDA] = [this](){ this->accum = content_buffer; };
+		load_ops[Op_code::LD1] = [this](){ this->index[0] = content_buffer; };
+		load_ops[Op_code::LD2] = [this](){ this->index[1] = content_buffer; };
+		load_ops[Op_code::LD3] = [this](){ this->index[2] = content_buffer; };
+		load_ops[Op_code::LD4] = [this](){ this->index[3] = content_buffer; };
+		load_ops[Op_code::LD5] = [this](){ this->index[4] = content_buffer; };
+		load_ops[Op_code::LD6] = [this](){ this->index[5] = content_buffer; };
+		load_ops[Op_code::LDX] = [this](){ this->exten = content_buffer; };
+	}
+
+	/*
+	* Initialize store operations map.
+	*/
+	void Machine::init_store_ops()
+	{
+		store_ops[Op_code::STA] = [this](){ this->content_buffer = accum; };
+		store_ops[Op_code::ST1] = [this](){ this->content_buffer = index[0]; };
+		store_ops[Op_code::ST2] = [this](){ this->content_buffer = index[1]; };
+		store_ops[Op_code::ST3] = [this](){ this->content_buffer = index[2]; };
+		store_ops[Op_code::ST4] = [this](){ this->content_buffer = index[3]; };
+		store_ops[Op_code::ST5] = [this](){ this->content_buffer = index[4]; };
+		store_ops[Op_code::ST6] = [this](){ this->content_buffer = index[5]; };
+		store_ops[Op_code::STX] = [this](){ this->content_buffer = exten; };
+		store_ops[Op_code::STJ] = [this](){ this->content_buffer = jump; };
 	}
 
 	/*
@@ -122,19 +143,19 @@ namespace mix
 	void Machine::execute_next_instruction()
 	{
 		// Fetch.
-		Word next_inst{memory_cell(pc)};
+		instruction_buffer = memory_cell(pc);
 
 		// Increment the program counter before executing instruction.
 		// This is done first because instruction could modify pc.
 		++pc;
 
 		// Decode.
-		Op_code op_code{get_op_code(next_inst)};
+		Op_code op_code{get_op_code(instruction_buffer)};
 		Op_class op_class{get_op_class(op_code)};
 
 		// Execute.
-		Basic_operation base_op = ops[op_class];
-		(this->*base_op)(op_code, next_inst);
+		Base_operation base_op = ops[op_class];
+		(this->*base_op)(op_code);
 	}
 
 	/*
@@ -144,22 +165,60 @@ namespace mix
 	*/
 	Op_class Machine::get_op_class(Op_code op_code) const
 	{
-		if (op_code < Op_code::STA) {
-			return Op_class::LOAD;
+		Op_class op_class{};
+		if (op_code < Op_code::LDAN) {
+			op_class = Op_class::LOAD;
 		}
+		else if (op_code < Op_code::STA) {
+			op_class = Op_class::LOAD_NEG;
+		}
+		else if (op_code <= Op_code::STJ) {
+			op_class = Op_class::STORE;
+		}
+		return op_class;
 	}
 
 	/*
 	* Execute the load operation specified by the given instruction.
 	* Parameters:
-	*	instruction - Load instruction.
+	*	op - Operation code.
 	*/
-	void Machine::execute_load(Op_code op, const Word& instruction)
+	void Machine::execute_load(Op_code op)
 	{
-		int address{read_address(instruction)};
-		Field_spec field{get_field_spec(instruction)};
-		const Word contents{memory_contents(address, field)};
-		load_ops[op](contents);
+		int address{read_address(instruction_buffer)};
+		Field_spec field{get_field_spec(instruction_buffer)};
+		content_buffer = memory_contents(address, field);
+		load_ops[op]();
+	}
+
+	/*
+	* Execute the load negative operation specified by the given
+	* instruction.
+	* Parameters:
+	*	op - Operation code.
+	*/
+	void Machine::execute_load_negative(Op_code op)
+	{
+		int address{read_address(instruction_buffer)};
+		Field_spec field{get_field_spec(instruction_buffer)};
+		content_buffer = memory_contents(address, field);
+		if (field.contains_sign()) {
+			content_buffer.negate();
+		}
+		load_ops[op]();
+	}
+
+	/*
+	* Execute the store operation specified by the given instruction.
+	* Parameters:
+	*	op - Operation code.
+	*/
+	void Machine::execute_store(Op_code op)
+	{
+		store_ops[op](); // Store the content of the desired register.
+		int address{read_address(instruction_buffer)};
+		Field_spec field{get_field_spec(instruction_buffer)};
+		memory[address].copy_range(content_buffer, field);
 	}
 
 	/*
@@ -189,11 +248,7 @@ namespace mix
 	const Word Machine::memory_contents(int address,
 										const Field_spec& field) const
 	{
-		Word contents{};
-		contents.copy_range(memory_cell(address), field);
-		unsigned int shift_amount{contents.num_bytes - field.right};
-		contents.right_shift(shift_amount);
-		return contents;
+		return memory_cell(address).field_aligned_right(field);
 	}
 
 	/*
