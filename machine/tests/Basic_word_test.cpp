@@ -569,3 +569,65 @@ SCENARIO("Negating the sign")
 		}
 	}
 }
+
+SCENARIO("Aligning fields")
+{
+	GIVEN("A basic word")
+	{
+		Basic_word<5> bw{Sign::Minus, {1, 2, 3, 4, 5}};
+		WHEN("Left aligning (4:5) field")
+		{
+			Basic_word<5> bw2{bw.field_aligned_left({4, 5})};
+			THEN("Bytes [4,5] are shifted to [1,2]")
+			{
+				REQUIRE(bw2.sign() == Sign::Plus);
+				require_bytes_are(bw2, {4, 5, 0, 0, 0});
+			}
+		}
+		WHEN("Left aligning (3:3) field")
+		{
+			Basic_word<5> bw2{bw.field_aligned_left({3, 3})};
+			THEN("Byte 3 is moved to position 1")
+			{
+				REQUIRE(bw2.sign() == Sign::Plus);
+				require_bytes_are(bw2, {3, 0, 0, 0, 0});
+			}
+		}
+		WHEN("Left aligning (0:4) field")
+		{
+			Basic_word<5> bw2{bw.field_aligned_left({0, 4})};
+			THEN("The fifth byte is 0, the rest are untouched")
+			{
+				REQUIRE(bw2.sign() == Sign::Minus);
+				require_bytes_are(bw2, {1, 2, 3, 4, 0});
+			}
+		}
+		WHEN("Right aligning (1:3) field")
+		{
+			Basic_word<5> bw2{bw.field_aligned_right({1, 3})};
+			THEN("Bytes [1,3] are shifted to [3,5]")
+			{
+				REQUIRE(bw2.sign() == Sign::Plus);
+				require_bytes_are(bw2, {0, 0, 1, 2, 3});
+			}
+		}
+		WHEN("Right aligning (4:4) field")
+		{
+			Basic_word<5> bw2{bw.field_aligned_right({4, 4})};
+			THEN("Byte 4 is moved to position 5")
+			{
+				REQUIRE(bw2.sign() == Sign::Plus);
+				require_bytes_are(bw2, {0, 0, 0, 0, 4});
+			}
+		}
+		WHEN("Right aligning (0:2) field")
+		{
+			Basic_word<5> bw2{bw.field_aligned_right({0, 2})};
+			THEN("Sign is changed, and bytes [1,2] are moved to [4,5]")
+			{
+				REQUIRE(bw2.sign() == Sign::Minus);
+				require_bytes_are(bw2, {0, 0, 0, 1, 2});
+			}
+		}
+	}
+}

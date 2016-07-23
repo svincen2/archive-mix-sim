@@ -82,6 +82,10 @@ namespace mix
 		// Negate the sign.
 		Basic_word& negate();
 
+		// Field alignment.
+		Basic_word field_aligned_left(const Field_spec&) const;
+		Basic_word field_aligned_right(const Field_spec&) const;
+
 
 	private:
 		// Implementation.
@@ -570,6 +574,48 @@ namespace mix
 	{
 		negate_sign(sign_byte);
 		return *this;
+	}
+
+	/*
+	* Return a new basic word of the same size, containing
+	* only the given field, left shifted if necessary as far
+	* as possible without losing any byte in the field.
+	* Template parameters:
+	*	N - Number of bytes of the basic word.
+	* Parameters:
+	*	field - Field to keep and left align.
+	*/
+	template<unsigned int N>
+	Basic_word<N> Basic_word<N>::field_aligned_left(
+			const Field_spec& field) const
+	{
+		Basic_word<N> copy{};
+		copy.copy_range(*this, field);
+		int shift_amount{(field.left == 0 ? 1 : field.left) - 1};
+		copy.left_shift(shift_amount);
+		return copy;
+	}
+
+	/*
+	* Return a new basic word of the same size, containing
+	* only the given field, right shifted if necessary as far
+	* as possible without losing any byte in the field.
+	* Template parameters:
+	*	N - Number of bytes of the basic word.
+	* Parameters:
+	*	field - Field to keep and right align.
+	*/
+	template<unsigned int N>
+	Basic_word<N> Basic_word<N>::field_aligned_right(
+			const Field_spec& field) const
+	{
+		Basic_word<N> copy{};
+		if (field.right != 0) {
+			copy.copy_range(*this, field);
+			int shift_amount{static_cast<int>(N) - field.right};
+			copy.right_shift(shift_amount);
+		}
+		return copy;
 	}
 
 
