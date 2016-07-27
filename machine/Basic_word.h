@@ -20,7 +20,7 @@ namespace mix
 	{
 	public:
 		// Number of bytes.
-		const unsigned int num_bytes = Num_bytes;
+		static const unsigned int num_bytes = Num_bytes;
 
 
 		// Constructors.
@@ -85,6 +85,12 @@ namespace mix
 		// Field alignment.
 		Basic_word field_aligned_left(const Field_spec&) const;
 		Basic_word field_aligned_right(const Field_spec&) const;
+
+		// Left/right most bytes only.
+		Basic_word leftmost_bytes(int) const;
+		Basic_word rightmost_bytes(int) const;
+		Basic_word leftmost_with_sign(int) const;
+		Basic_word rightmost_with_sign(int) const;
 
 
 	private:
@@ -202,7 +208,7 @@ namespace mix
 	{
 		Basic_word<N2> bw{};
 		bw.sign() = sign_byte;
-		for (int i = num_bytes, j = bw.num_bytes; i > 0 && j > 0; --i, --j) {
+		for (int i = N1, j = N2; i > 0 && j > 0; --i, --j) {
 			bw.byte(j) = byte(i);
 		}
 		return bw;
@@ -330,8 +336,9 @@ namespace mix
 	template<unsigned int N>
 	void Basic_word<N>::clear_bytes()
 	{
-		for (int i = 1; i <= num_bytes; ++i)
+		for (int i = 1; i <= num_bytes; ++i) {
 			byte(i) = 0;
+		}
 	}
 
 	/*
@@ -615,6 +622,74 @@ namespace mix
 			int shift_amount{static_cast<int>(N) - field.right};
 			copy.right_shift(shift_amount);
 		}
+		return copy;
+	}
+
+	/*
+	* Return a new word containing only the given number of bytes
+	* from this word taken from the left.
+	* Template parameters:
+	*	N - Number of bytes of this basic word.
+	* Parameters:
+	*	amount - Number of left-most bytes desired.
+	*/
+	template<unsigned int N>
+	Basic_word<N> Basic_word<N>::leftmost_bytes(int amount) const
+	{
+		if (amount > N)
+			throw std::invalid_argument{"Requested too many bytes"};
+		Basic_word copy{};
+		copy.copy_range(*this, {1, amount});
+		return copy;
+	}
+
+	/*
+	* Return a new word containing the given number of bytes
+	* from this word taken from the left, and the sign.
+	* Template parameters:
+	*	N - Number of bytes of this basic word.
+	* Parameters:
+	*	amount - Number of left-most bytes desired.
+	*/
+	template<unsigned int N>
+	Basic_word<N> Basic_word<N>::leftmost_with_sign(int amount) const
+	{
+		Basic_word copy{leftmost_bytes(amount)};
+		copy.sign_byte = sign_byte;
+		return copy;
+	}
+
+	/*
+	* Return a new word containing the given number of bytes
+	* taken from the right.
+	* Template parameters:
+	*	N - Number of bytes of this basic word.
+	* Parameters:
+	*	amount - Number of right-most bytes desired.
+	*/
+	template<unsigned int N>
+	Basic_word<N> Basic_word<N>::rightmost_bytes(int amount) const
+	{
+		if (amount > N)
+			throw std::invalid_argument{"Requested too many bytes"};
+		Basic_word copy{};
+		copy.copy_range(*this, {static_cast<int>(N) - amount + 1, N});
+		return copy;
+	}
+
+	/*
+	* Return a new word containing the given number of bytes
+	* taken from the right, and the sign.
+	* Template parameters:
+	*	N - Number of bytes of this basic word.
+	* Parameters:
+	*	amount - Number of right-most bytes desired.
+	*/
+	template<unsigned int N>
+	Basic_word<N> Basic_word<N>::rightmost_with_sign(int amount) const
+	{
+		Basic_word copy{rightmost_bytes(amount)};
+		copy.sign_byte = sign_byte;
 		return copy;
 	}
 

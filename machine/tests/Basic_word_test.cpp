@@ -631,3 +631,123 @@ SCENARIO("Aligning fields")
 		}
 	}
 }
+
+SCENARIO("Left-most bytes")
+{
+	GIVEN("A basic word")
+	{
+		Basic_word<5> bw{Sign::Minus, {1, 2, 3, 4, 5}};
+		WHEN("Asking for the 3 leftmost bytes")
+		{
+			Basic_word<5> bw2{bw.leftmost_bytes(3)};
+			THEN("The new word contains only the 3 leftmost bytes")
+			{
+				REQUIRE(bw2.sign() == Sign::Plus);
+				require_bytes_are(bw2, {1, 2, 3, 0, 0});
+			}
+		}
+		WHEN("Asking for the 5 leftmost bytes")
+		{
+			Basic_word<5> bw2{bw.leftmost_bytes(5)};
+			THEN("The new word is the same as the old, except the sign")
+			{
+				REQUIRE(bw2.sign() == Sign::Plus);
+				require_bytes_are(bw2, {1, 2, 3, 4, 5});
+			}
+		}
+		WHEN("Asking for more bytes than the word contains")
+		{
+			THEN("An invalid argument exception is thrown")
+			{
+				REQUIRE_THROWS_AS(bw.leftmost_bytes(10),
+								  std::invalid_argument);
+			}
+		}
+	}
+}
+
+SCENARIO("Left-most bytes with sign")
+{
+	GIVEN("A basic word")
+	{
+		Basic_word<5> bw{Sign::Minus, {1, 2, 3, 4, 5}};
+		WHEN("Asking for the 2 leftmost bytes")
+		{
+			Basic_word<5> bw2{bw.leftmost_with_sign(2)};
+			THEN("New word contains 2 leftmost bytes and the sign")
+			{
+				REQUIRE(bw2.sign() == Sign::Minus);
+				require_bytes_are(bw2, {1, 2, 0, 0, 0});
+			}
+		}
+		WHEN("Asking for the 5 leftmost bytes")
+		{
+			Basic_word<5> bw2{bw.leftmost_with_sign(5)};
+			THEN("New word is an exact copy of old one")
+			{
+				REQUIRE(bw2.sign() == Sign::Minus);
+				require_bytes_are(bw2, {1, 2, 3, 4, 5});
+			}
+		}
+	}
+}
+
+SCENARIO("Right-most bytes")
+{
+	GIVEN("A basic word")
+	{
+		Basic_word<5> bw{Sign::Minus, {1, 2, 3, 4, 5}};
+		WHEN("Asking for the 3 rightmost bytes")
+		{
+			Basic_word<5> bw2{bw.rightmost_bytes(3)};
+			THEN("The new word contains 3 rightmost bytes")
+			{
+				REQUIRE(bw2.sign() == Sign::Plus);
+				require_bytes_are(bw2, {0, 0, 3, 4, 5});
+			}
+		}
+		WHEN("Asking for the 5 rightmost bytes")
+		{
+			Basic_word<5> bw2{bw.rightmost_bytes(5)};
+			THEN("The new word contains all bytes of the original")
+			{
+				REQUIRE(bw2.sign() == Sign::Plus);
+				require_bytes_are(bw2, {1, 2, 3, 4, 5});
+			}
+		}
+		WHEN("Asking for too many bytes")
+		{
+			THEN("An invalid argument exception is thrown")
+			{
+				REQUIRE_THROWS_AS(bw.rightmost_bytes(10),
+								  std::invalid_argument);
+			}
+		}
+	}
+}
+
+SCENARIO("Right-most bytes with sign")
+{
+	GIVEN("A basic word")
+	{
+		Basic_word<5> bw{Sign::Minus, {1, 2, 3, 4, 5}};
+		WHEN("Asking for the 2 rightmost bytes")
+		{
+			Basic_word<5> bw2{bw.rightmost_with_sign(2)};
+			THEN("The new word copied bytes [4,5] and the sign")
+			{
+				REQUIRE(bw2.sign() == Sign::Minus);
+				require_bytes_are(bw2, {0, 0, 0, 4, 5});
+			}
+		}
+		WHEN("Asking for the 5 rightmost bytes")
+		{
+			Basic_word<5> bw2{bw.rightmost_with_sign(5)};
+			THEN("The new word is an exact copy of the original")
+			{
+				REQUIRE(bw2.sign() == Sign::Minus);
+				require_bytes_are(bw2, {1, 2, 3, 4, 5});
+			}
+		}
+	}
+}
