@@ -25,11 +25,19 @@ namespace mix
 	}
 
 	/*
-	* Checks the given field spec for equality to this one.
+	* Determines whether or not the given field spec is equal to this one.
 	*/
 	bool Field_spec::operator==(const Field_spec& fs) const
 	{
 		return left == fs.left && right == fs.right;
+	}
+
+	/*
+	* Determines whether or not the given field spec is different to this one.
+	*/
+	bool Field_spec::operator!=(const Field_spec& fs) const
+	{
+		return !(*this == fs);
 	}
 
 	/*

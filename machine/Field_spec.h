@@ -15,6 +15,7 @@ namespace mix
 
 		// Operators.
 		bool operator==(const Field_spec&) const;
+		bool operator!=(const Field_spec&) const;
 
 		// Properties.
 		int left;
