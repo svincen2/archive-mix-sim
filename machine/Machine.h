@@ -26,8 +26,8 @@ namespace mix
 		enum class Comparison_value : Byte { Equal, Greater, Less };
 
 		// Constants.
-		static const unsigned int MEM_SIZE;
-		static const unsigned int NUM_INDEX_REGISTERS;
+		static const unsigned int mem_size;
+		static const unsigned int num_index_registers;
 
 
 		// Constructors and destructor.

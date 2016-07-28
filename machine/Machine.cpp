@@ -6,8 +6,8 @@
 namespace mix
 {
 	/* Constant definitions. */
-	const unsigned int Machine::MEM_SIZE{4000};
-	const unsigned int Machine::NUM_INDEX_REGISTERS{6};
+	const unsigned int Machine::mem_size{4000};
+	const unsigned int Machine::num_index_registers{6};
 
 	/*
 	* Construct a mix machine.
@@ -19,8 +19,8 @@ namespace mix
 		  jump{},
 		  accum{},
 		  exten{},
-		  index(NUM_INDEX_REGISTERS),
-		  memory(MEM_SIZE),
+		  index(num_index_registers),
+		  memory(mem_size),
 		  instruction_buffer{},
 		  content_buffer{},
 		  load_ops{},
@@ -296,7 +296,7 @@ namespace mix
 	*/
 	void Machine::check_index_register_number(int num) const
 	{
-		if (num < 1 || NUM_INDEX_REGISTERS < num) {
+		if (num < 1 || num_index_registers < num) {
 			throw std::invalid_argument{"Invalid index register number"};
 		}
 	}
@@ -306,7 +306,7 @@ namespace mix
 	*/
 	void Machine::dump_memory(std::ostream* stream) const
 	{
-		for (int i = 0; i < MEM_SIZE; ++i) {
+		for (int i = 0; i < mem_size; ++i) {
 			*stream << memory[i];
 		}
 	}
@@ -326,11 +326,11 @@ namespace mix
 	/*
 	* Returns the contents of memory at the given address.
 	* Parameters:
-	*	address - Memory address, in range [0, MEM_SIZE].
+	*	address - Memory address, in range [0, mem_size].
 	*/
 	Word Machine::memory_cell(int address) const
 	{
-		if (address < 0 || MEM_SIZE <= address) {
+		if (address < 0 || mem_size <= address) {
 			throw std::invalid_argument{"Address out of bounds"};
 		}
 		return memory[address];
@@ -344,7 +344,7 @@ namespace mix
 	*/
 	void Machine::store_in_memory(int address, const Word& w)
 	{
-		if (address < 0 || MEM_SIZE <= address) {
+		if (address < 0 || mem_size <= address) {
 			throw std::invalid_argument{"Address out of bounds"};
 		}
 		memory[address] = w;

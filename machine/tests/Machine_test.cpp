@@ -21,7 +21,7 @@ SCENARIO("Accessing registers")
 				REQUIRE_THROWS_AS(machine.index_register(0),
 								  std::invalid_argument);
 				REQUIRE_THROWS_AS(machine.index_register(
-									Machine::NUM_INDEX_REGISTERS + 1),
+									Machine::num_index_registers + 1),
 								  std::invalid_argument);
 			}
 		}
@@ -54,14 +54,14 @@ SCENARIO("Accessing memory")
 			{
 				REQUIRE_THROWS_AS(machine.memory_cell(-1),
 								  std::invalid_argument);
-				REQUIRE_THROWS_AS(machine.memory_cell(Machine::MEM_SIZE),
+				REQUIRE_THROWS_AS(machine.memory_cell(Machine::mem_size),
 								  std::invalid_argument);
 			}
 		}
 		WHEN("Accessing valid memory cells")
 		{
 			Word w{machine.memory_cell(0)};
-			Word w2{machine.memory_cell(Machine::MEM_SIZE - 1)};
+			Word w2{machine.memory_cell(Machine::mem_size - 1)};
 			THEN("The contents of the memory cell are returned")
 			{
 				REQUIRE(w.sign() == Sign::Plus);
@@ -116,7 +116,7 @@ SCENARIO("Dumping memory", "[A]")
 	GIVEN("A mix machine")
 	{
 		Machine machine{};
-		const int last_mem_address{static_cast<int>(Machine::MEM_SIZE) - 1};
+		const int last_mem_address{static_cast<int>(Machine::mem_size) - 1};
 		Word first{Sign::Minus, {1, 2, 3, 4, 5}};
 		Word last{Sign::Minus, {6, 7, 8, 9, 0}};
 		machine.store_in_memory(0, first);
@@ -134,10 +134,10 @@ SCENARIO("Dumping memory", "[A]")
 					if (!curr.is_valid()) break;
 					mem.push_back(curr);
 				}
-				REQUIRE(mem.size() == Machine::MEM_SIZE);
+				REQUIRE(mem.size() == Machine::mem_size);
 				REQUIRE(mem[0] == first);
 				REQUIRE(mem[last_mem_address] == last);
-				for (int i = 1; i < Machine::MEM_SIZE - 1; ++i) {
+				for (int i = 1; i < Machine::mem_size - 1; ++i) {
 					REQUIRE(mem[i].sign() == Sign::Plus);
 					require_bytes_are(mem[i], {0, 0, 0, 0, 0});
 				}
@@ -223,7 +223,7 @@ SCENARIO("Loading index register")
 				REQUIRE_THROWS_AS(machine.load_index_register(0, hw),
 								  std::invalid_argument);
 
-				int max{static_cast<int>(Machine::NUM_INDEX_REGISTERS)};
+				int max{static_cast<int>(Machine::num_index_registers)};
 				REQUIRE_THROWS_AS(machine.load_index_register(max + 1, hw),
 								  std::invalid_argument);
 					
