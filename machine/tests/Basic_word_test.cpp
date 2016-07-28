@@ -128,7 +128,7 @@ SCENARIO("Shifting right")
 		Basic_word<5> bw{Sign::Minus, {1, 2, 3, 4, 5}};
 		WHEN("Shifting by more than the number of bytes")
 		{
-			bw.right_shift(bw.num_bytes + 1);
+			bw.shift_right(bw.num_bytes + 1);
 			THEN("All bytes are 0")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
@@ -137,7 +137,7 @@ SCENARIO("Shifting right")
 		}
 		WHEN("Shifting by less than the number of bytes")
 		{
-			bw.right_shift(bw.num_bytes - 2);
+			bw.shift_right(bw.num_bytes - 2);
 			THEN("Bytes are shifted, and left-filled with 0")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
@@ -146,7 +146,7 @@ SCENARIO("Shifting right")
 		}
 		WHEN("Shifting all bytes")
 		{
-			bw.right_shift(bw.num_bytes);
+			bw.shift_right(bw.num_bytes);
 			THEN("All bytes are 0")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
@@ -158,12 +158,12 @@ SCENARIO("Shifting right")
 			
 			THEN("Invalid argument is thrown")
 			{
-				REQUIRE_THROWS_AS(bw.right_shift(-1), std::invalid_argument);
+				REQUIRE_THROWS_AS(bw.shift_right(-1), std::invalid_argument);
 			}
 		}
 		WHEN("Shifting by 0")
 		{
-			bw.right_shift(0);
+			bw.shift_right(0);
 			THEN("Word is unnaffected")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
@@ -172,7 +172,7 @@ SCENARIO("Shifting right")
 		}
 		WHEN("Copy-shifting")
 		{
-			Basic_word<5> copy{bw.right_shifted(3)};
+			Basic_word<5> copy{bw.shifted_right(3)};
 			THEN("The new word is shifted correctly, the old is unnaffected")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
@@ -245,12 +245,12 @@ SCENARIO("Left shifting")
 		{
 			THEN("Invalid argument is thrown")
 			{
-				REQUIRE_THROWS_AS(bw.left_shift(-1), std::invalid_argument);
+				REQUIRE_THROWS_AS(bw.shift_left(-1), std::invalid_argument);
 			}
 		}
 		WHEN("Shifting by more than the number of bytes")
 		{
-			bw.left_shift(bw.num_bytes + 2);
+			bw.shift_left(bw.num_bytes + 2);
 			THEN("All bytes are 0")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
@@ -259,7 +259,7 @@ SCENARIO("Left shifting")
 		}
 		WHEN("Shifting by less than the number of bytes")
 		{
-			bw.left_shift(bw.num_bytes - 3);
+			bw.shift_left(bw.num_bytes - 3);
 			THEN("Bytes are shifted, and right-filled with 0")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
@@ -268,7 +268,7 @@ SCENARIO("Left shifting")
 		}
 		WHEN("Shifting all bytes")
 		{
-			bw.left_shift(bw.num_bytes);
+			bw.shift_left(bw.num_bytes);
 			THEN("All bytes are 0")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
@@ -277,7 +277,7 @@ SCENARIO("Left shifting")
 		}
 		WHEN("Shifting by 0")
 		{
-			bw.left_shift(0);
+			bw.shift_left(0);
 			THEN("Word is unnaffected")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);
@@ -286,7 +286,7 @@ SCENARIO("Left shifting")
 		}
 		WHEN("Copy-shifting")
 		{
-			Basic_word<5> copy{bw.left_shifted(3)};
+			Basic_word<5> copy{bw.shifted_left(3)};
 			THEN("The new word is shifted correctly, the old is unnaffected")
 			{
 				REQUIRE(bw.sign() == Sign::Minus);

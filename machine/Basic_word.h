@@ -54,12 +54,12 @@ namespace mix
 		Sign& sign();
 
 		// Byte shifting (mutating).
-		void right_shift(int);
-		void left_shift(int);
+		void shift_right(int);
+		void shift_left(int);
 
 		// Byte shifted (non-mutating).
-		Basic_word right_shifted(int) const;
-		Basic_word left_shifted(int) const;
+		Basic_word shifted_right(int) const;
+		Basic_word shifted_left(int) const;
 
 		// Rotating shifts.
 		void rotate_right(int);
@@ -312,7 +312,7 @@ namespace mix
 	*	n - Number of times to shift right.
 	*/
 	template<unsigned int N>
-	void Basic_word<N>::right_shift(int n)
+	void Basic_word<N>::shift_right(int n)
 	{
 		if (n > N) clear_bytes();
 		if (n < 0)
@@ -349,7 +349,7 @@ namespace mix
 	*	n - Number of times to left shift.
 	*/
 	template<unsigned int N>
-	void Basic_word<N>::left_shift(int n)
+	void Basic_word<N>::shift_left(int n)
 	{
 		if (n > N) clear_bytes();
 		if (n < 0)
@@ -374,10 +374,10 @@ namespace mix
 	*	n - The amount the returned word will be shifted.
 	*/
 	template<unsigned int N>
-	Basic_word<N> Basic_word<N>::right_shifted(int n) const
+	Basic_word<N> Basic_word<N>::shifted_right(int n) const
 	{
 		Basic_word<N> copy{*this};
-		copy.right_shift(n);
+		copy.shift_right(n);
 		return copy;
 	}
 
@@ -390,10 +390,10 @@ namespace mix
 	*	n - The amount the returned word will be shifted.
 	*/
 	template<unsigned int N>
-	Basic_word<N> Basic_word<N>::left_shifted(int n) const
+	Basic_word<N> Basic_word<N>::shifted_left(int n) const
 	{
 		Basic_word<N> copy{*this};
-		copy.left_shift(n);
+		copy.shift_left(n);
 		return copy;
 	}
 
@@ -599,7 +599,7 @@ namespace mix
 		Basic_word<N> copy{};
 		copy.copy_range(*this, field);
 		int shift_amount{(field.left == 0 ? 1 : field.left) - 1};
-		copy.left_shift(shift_amount);
+		copy.shift_left(shift_amount);
 		return copy;
 	}
 
@@ -620,7 +620,7 @@ namespace mix
 		if (field.right != 0) {
 			copy.copy_range(*this, field);
 			int shift_amount{static_cast<int>(N) - field.right};
-			copy.right_shift(shift_amount);
+			copy.shift_right(shift_amount);
 		}
 		return copy;
 	}
