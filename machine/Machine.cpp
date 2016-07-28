@@ -24,6 +24,7 @@ namespace mix
 		  instruction_buffer{},
 		  content_buffer{},
 		  load_ops{},
+		  store_ops{},
 		  ops{}
 	{
 		init_load_ops();
@@ -46,14 +47,14 @@ namespace mix
 	*/
 	void Machine::init_load_ops()
 	{
-		load_ops[Op_code::LDA] = [this](){ this->accum = content_buffer; };
-		load_ops[Op_code::LD1] = [this](){ this->index[0] = content_buffer; };
-		load_ops[Op_code::LD2] = [this](){ this->index[1] = content_buffer; };
-		load_ops[Op_code::LD3] = [this](){ this->index[2] = content_buffer; };
-		load_ops[Op_code::LD4] = [this](){ this->index[3] = content_buffer; };
-		load_ops[Op_code::LD5] = [this](){ this->index[4] = content_buffer; };
-		load_ops[Op_code::LD6] = [this](){ this->index[5] = content_buffer; };
-		load_ops[Op_code::LDX] = [this](){ this->exten = content_buffer; };
+		load_ops[Op_code::LDA] = [this](){ accum = content_buffer; };
+		load_ops[Op_code::LD1] = [this](){ index[0] = content_buffer; };
+		load_ops[Op_code::LD2] = [this](){ index[1] = content_buffer; };
+		load_ops[Op_code::LD3] = [this](){ index[2] = content_buffer; };
+		load_ops[Op_code::LD4] = [this](){ index[3] = content_buffer; };
+		load_ops[Op_code::LD5] = [this](){ index[4] = content_buffer; };
+		load_ops[Op_code::LD6] = [this](){ index[5] = content_buffer; };
+		load_ops[Op_code::LDX] = [this](){ exten = content_buffer; };
 	}
 
 	/*
@@ -61,15 +62,35 @@ namespace mix
 	*/
 	void Machine::init_store_ops()
 	{
-		store_ops[Op_code::STA] = [this](){ this->content_buffer = accum; };
-		store_ops[Op_code::ST1] = [this](){ this->content_buffer = index[0]; };
-		store_ops[Op_code::ST2] = [this](){ this->content_buffer = index[1]; };
-		store_ops[Op_code::ST3] = [this](){ this->content_buffer = index[2]; };
-		store_ops[Op_code::ST4] = [this](){ this->content_buffer = index[3]; };
-		store_ops[Op_code::ST5] = [this](){ this->content_buffer = index[4]; };
-		store_ops[Op_code::ST6] = [this](){ this->content_buffer = index[5]; };
-		store_ops[Op_code::STX] = [this](){ this->content_buffer = exten; };
-		store_ops[Op_code::STJ] = [this](){ this->content_buffer = jump; };
+		store_ops[Op_code::STA] = [this](){ buffer_reg_content(accum); };
+		store_ops[Op_code::ST1] = [this](){ buffer_reg_content(index[0]); };
+		store_ops[Op_code::ST2] = [this](){ buffer_reg_content(index[1]); };
+		store_ops[Op_code::ST3] = [this](){ buffer_reg_content(index[2]); };
+		store_ops[Op_code::ST4] = [this](){ buffer_reg_content(index[3]); };
+		store_ops[Op_code::ST5] = [this](){ buffer_reg_content(index[4]); };
+		store_ops[Op_code::ST6] = [this](){ buffer_reg_content(index[5]); };
+		store_ops[Op_code::STX] = [this](){ buffer_reg_content(exten); };
+		store_ops[Op_code::STJ] = [this](){ buffer_reg_content(jump); };
+	}
+
+	/*
+	* Read the necessary number of bytes from the rightmost bytes of
+	* the given register, left shifting if necessary into the field
+	* specified by the instruction in the instruction buffer.
+	* Parameters:
+	*	reg - Register to get contents.
+	*/
+	void Machine::buffer_reg_content(const Word& reg)
+	{
+		Field_spec field{get_field_spec(instruction_buffer)};
+		if (field.contains_sign()) {
+			content_buffer = reg.rightmost_with_sign(field.bytes());
+		}
+		else {
+			content_buffer = reg.rightmost_bytes(field.bytes());
+		}
+		int shift_amount{static_cast<int>(Word::num_bytes) - field.right};
+		content_buffer.shift_left(shift_amount);
 	}
 
 	/*
@@ -92,8 +113,9 @@ namespace mix
 	*/
 	void Machine::check_arguments(const std::vector<std::string>& args) const
 	{
-		if (args.size() < 1)
+		if (args.size() < 1) {
 			throw std::invalid_argument{"Expected at least 1 argument"};
+		}
 	}
 
 	/*
@@ -108,10 +130,13 @@ namespace mix
 		Word next_instruction{};
 		while (*program) {
 			*program >> next_instruction;
-			if (!next_instruction.is_valid())
+			if (!next_instruction.is_valid()) {
 				throw Invalid_basic_word{};
+			}
 			memory[curr_address++] = next_instruction;
-			if (program->peek() == EOF) break;
+			if (program->peek() == EOF) {
+				break;
+			}
 		}
 	}
 
@@ -123,10 +148,12 @@ namespace mix
 	void Machine::check_program_input_stream
 			(std::istream* program_input_stream) const
 	{
-		if (program_input_stream->fail())
+		if (program_input_stream->fail()) {
 			throw std::invalid_argument{"Cannot read program"};
-		if (program_input_stream->peek() == EOF)
+		}
+		if (program_input_stream->peek() == EOF) {
 			throw std::invalid_argument{"Program file is empty"};
+		}
 	}
 
 	/*
@@ -142,12 +169,8 @@ namespace mix
 	*/
 	void Machine::execute_next_instruction()
 	{
-		// Fetch.
-		instruction_buffer = memory_cell(pc);
-
-		// Increment the program counter before executing instruction.
-		// This is done first because instruction could modify pc.
-		++pc;
+		// Fetch next instruction and increment program counter.
+		instruction_buffer = memory_cell(pc++);
 
 		// Decode.
 		Op_code op_code{get_op_code(instruction_buffer)};
@@ -205,6 +228,8 @@ namespace mix
 		if (field.contains_sign()) {
 			content_buffer.negate();
 		}
+		// Offset into regular load ops range.
+		op = static_cast<Op_code>(op - Op_code::LDA);
 		load_ops[op]();
 	}
 
@@ -252,26 +277,6 @@ namespace mix
 	}
 
 	/*
-	* Load the accumulator with the given word.
-	* Parameters:
-	*	w - Word to load.
-	*/
-	void Machine::load_accumulator(const Word& w)
-	{
-		accum = w;
-	}
-
-	/*
-	* Load the extension register with the given word.
-	* Parameters:
-	*	w - Word to load.
-	*/
-	void Machine::load_extension_register(const Word& w)
-	{
-		exten = w;
-	}
-
-	/*
 	* Load the index register specified by the given register number
 	* with the given half word.
 	* Parameters:
@@ -291,8 +296,9 @@ namespace mix
 	*/
 	void Machine::check_index_register_number(int num) const
 	{
-		if (num < 1 || NUM_INDEX_REGISTERS < num)
+		if (num < 1 || NUM_INDEX_REGISTERS < num) {
 			throw std::invalid_argument{"Invalid index register number"};
+		}
 	}
 
 	/*
@@ -300,8 +306,9 @@ namespace mix
 	*/
 	void Machine::dump_memory(std::ostream* stream) const
 	{
-		for (int i = 0; i < MEM_SIZE; ++i)
+		for (int i = 0; i < MEM_SIZE; ++i) {
 			*stream << memory[i];
+		}
 	}
 
 	/*
@@ -323,8 +330,9 @@ namespace mix
 	*/
 	Word Machine::memory_cell(int address) const
 	{
-		if (address < 0 || MEM_SIZE <= address)
+		if (address < 0 || MEM_SIZE <= address) {
 			throw std::invalid_argument{"Address out of bounds"};
+		}
 		return memory[address];
 	}
 
@@ -336,8 +344,9 @@ namespace mix
 	*/
 	void Machine::store_in_memory(int address, const Word& w)
 	{
-		if (address < 0 || MEM_SIZE <= address)
+		if (address < 0 || MEM_SIZE <= address) {
 			throw std::invalid_argument{"Address out of bounds"};
+		}
 		memory[address] = w;
 	}
 }

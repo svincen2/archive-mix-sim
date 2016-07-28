@@ -339,3 +339,23 @@ SCENARIO("Executing load instructions")
 	}
 }
 
+SCENARIO("Load negative operations")
+{
+	GIVEN("A mix machine with some data in memory cell 1")
+	{
+		Machine machine{};
+		machine.store_in_memory(1, {Sign::Plus, {1, 2, 3, 4, 5}});
+		WHEN("Executing a LDAN instruction with field that contains sign")
+		{
+			const Word inst{Sign::Plus, {0, 1, 0, 5, Op_code::LDAN}};
+			machine.store_in_memory(0, inst);
+			machine.execute_next_instruction();
+			THEN("Accumulator is loaded, and sign is negated")
+			{
+				const Word accum{machine.accumulator()};
+				REQUIRE(accum.sign() == Sign::Minus);
+				require_bytes_are(accum, {1, 2, 3, 4, 5});
+			}
+		}
+	}
+}

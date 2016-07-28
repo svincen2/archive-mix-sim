@@ -62,8 +62,6 @@ namespace mix
 
 		// Mutators.
 		void store_in_memory(int, const Word&);
-		void load_accumulator(const Word&);
-		void load_extension_register(const Word&);
 		void load_index_register(int, const Half_word&);
 
 
@@ -109,6 +107,9 @@ namespace mix
 		void execute_load(Op_code);
 		void execute_load_negative(Op_code);
 		void execute_store(Op_code);
+
+		// Operation helpers.
+		void buffer_reg_content(const Word&);
 
 		// Validations.
 		void check_arguments(const std::vector<std::string>&) const;
