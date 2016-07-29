@@ -418,5 +418,19 @@ SCENARIO("Executing store instructions")
 				require_bytes_are(mem, {6, 7, 3, 4, 5});
 			}
 		}
+		WHEN("Executing a STX instruction")
+		{
+			machine.store_in_memory(1, {Sign::Minus, {1, 2, 3, 4, 5}});
+			machine.extension_register({Sign::Plus, {6, 7, 8, 9, 0}});
+			const Word inst{Sign::Plus, {0, 1, 0, 27, Op_code::STX}};
+			machine.store_in_memory(0, inst);
+			machine.execute_next_instruction();
+			THEN("The contents of the extension register are stored in memory")
+			{
+				const Word mem{machine.memory_cell(1)};
+				REQUIRE(mem.sign() == Sign::Minus);
+				require_bytes_are(mem, {1, 2, 0, 4, 5});
+			}
+		}
 	}
 }
