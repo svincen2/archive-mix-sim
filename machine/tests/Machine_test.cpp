@@ -27,8 +27,8 @@ SCENARIO("Accessing registers")
 		}
 		WHEN("Accessing a valid index register")
 		{
-			machine.load_index_register(1, {Sign::Minus, {1, 2}});
-			machine.load_index_register(2, {Sign::Minus, {3, 4}});
+			machine.index_register(1, {Sign::Minus, {1, 2}});
+			machine.index_register(2, {Sign::Minus, {3, 4}});
 			THEN("The contents of the register are returned")
 			{
 				Half_word ir_one{machine.index_register(1)};
@@ -208,7 +208,7 @@ SCENARIO("Loading index register")
 		Half_word hw{Sign::Minus, {1, 2}};
 		WHEN("Index register 1 is loaded with [+ | 1 | 2]")
 		{
-			machine.load_index_register(1, hw);
+			machine.index_register(1, hw);
 			THEN("Index register 1 contains the loaded word")
 			{
 				const Half_word i1{machine.index_register(1)};
@@ -220,11 +220,11 @@ SCENARIO("Loading index register")
 		{
 			THEN("An invalid argument exception is thrown")
 			{
-				REQUIRE_THROWS_AS(machine.load_index_register(0, hw),
+				REQUIRE_THROWS_AS(machine.index_register(0, hw),
 								  std::invalid_argument);
 
 				int max{static_cast<int>(Machine::num_index_registers)};
-				REQUIRE_THROWS_AS(machine.load_index_register(max + 1, hw),
+				REQUIRE_THROWS_AS(machine.index_register(max + 1, hw),
 								  std::invalid_argument);
 					
 			}
@@ -241,7 +241,7 @@ SCENARIO("Reading the address from an instruction")
 		{
 			Word inst{Sign::Plus, {0x1f, 0x10, 1, 0, 0}};
 			Half_word i1{Sign::Plus, {0, 1}};
-			machine.load_index_register(1, i1);
+			machine.index_register(1, i1);
 			int address{machine.read_address(inst)};
 			THEN("The address is read, and offset by index reg spec")
 			{
@@ -393,7 +393,7 @@ SCENARIO("Executing store instructions")
 		WHEN("Executing a ST1 instruction")
 		{
 			machine.store_in_memory(1, {Sign::Plus, {1, 2, 3, 4, 5}});
-			machine.load_index_register(1, {Sign::Minus, {1, 2}});
+			machine.index_register(1, {Sign::Minus, {1, 2}});
 			const Word inst{Sign::Plus, {0, 1, 0, 3, Op_code::ST1}};
 			machine.store_in_memory(0, inst);
 			machine.execute_next_instruction();

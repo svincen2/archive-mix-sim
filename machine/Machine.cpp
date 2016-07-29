@@ -283,7 +283,7 @@ namespace mix
 	*	register_num - Index register number, in range [1, 6].
 	*	hw - Half word to load.
 	*/
-	void Machine::load_index_register(int register_num, const Half_word& hw)
+	void Machine::index_register(int register_num, const Half_word& hw)
 	{
 		check_index_register_number(register_num);
 		index[register_num - 1] = hw;
