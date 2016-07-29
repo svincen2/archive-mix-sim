@@ -361,6 +361,16 @@ namespace mix
 	}
 
 	/*
+	* Load the extension register with the given word.
+	* Parameters:
+	*	w - Word to load into extension register.
+	*/
+	void Machine::extension_register(const Word& w)
+	{
+		exten = w;
+	}
+
+	/*
 	* Load the jump register with the given half word.
 	* Parameters:
 	*	hw - Half word to load into jump register.

@@ -64,6 +64,7 @@ namespace mix
 		void store_in_memory(int, const Word&);
 		void index_register(int, const Half_word&);
 		void accumulator(const Word&);
+		void extension_register(const Word&);
 		void jump_register(const Half_word&);
 
 
