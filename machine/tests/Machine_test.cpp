@@ -339,7 +339,7 @@ SCENARIO("Executing load instructions")
 	}
 }
 
-SCENARIO("Load negative operations")
+SCENARIO("Executing load negative operations")
 {
 	GIVEN("A mix machine with some data in memory cell 1")
 	{
@@ -355,6 +355,67 @@ SCENARIO("Load negative operations")
 				const Word accum{machine.accumulator()};
 				REQUIRE(accum.sign() == Sign::Minus);
 				require_bytes_are(accum, {1, 2, 3, 4, 5});
+			}
+		}
+		WHEN("Executing a LDXN instruction with field with no sign")
+		{
+			const Word inst{Sign::Plus, {0, 1, 0, 13, Op_code::LDXN}};
+			machine.store_in_memory(0, inst);
+			machine.execute_next_instruction();
+			THEN("Extension register is loaded, and sign is not negated")
+			{
+				const Word exten{machine.extension_register()};
+				REQUIRE(exten.sign() == Sign::Plus);
+				require_bytes_are(exten, {1, 2, 3, 4, 5});
+			}
+		}
+	}
+}
+
+SCENARIO("Executing store instructions")
+{
+	GIVEN("A mix machine")
+	{
+		Machine machine{};
+		WHEN("Executing a STA instruction")
+		{
+			machine.accumulator({Sign::Minus, {1, 2, 3, 4, 5}});
+			const Word inst{Sign::Plus, {0, 1, 0, 5, Op_code::STA}};
+			machine.store_in_memory(0, inst);
+			machine.execute_next_instruction();
+			THEN("The contents of the accumulator are stored into memory")
+			{
+				const Word mem{machine.memory_cell(1)};
+				REQUIRE(mem.sign() == Sign::Minus);
+				require_bytes_are(mem, {1, 2, 3, 4, 5});
+			}
+		}
+		WHEN("Executing a ST1 instruction")
+		{
+			machine.store_in_memory(1, {Sign::Plus, {1, 2, 3, 4, 5}});
+			machine.load_index_register(1, {Sign::Minus, {1, 2}});
+			const Word inst{Sign::Plus, {0, 1, 0, 3, Op_code::ST1}};
+			machine.store_in_memory(0, inst);
+			machine.execute_next_instruction();
+			THEN("The contents of index register 1 are stored in memory")
+			{
+				const Word mem{machine.memory_cell(1)};
+				REQUIRE(mem.sign() == Sign::Minus);
+				require_bytes_are(mem, {0, 1, 2, 4, 5});
+			}
+		}
+		WHEN("Executing a STJ instruction")
+		{
+			machine.store_in_memory(1, {Sign::Plus, {1, 2, 3, 4, 5}});
+			machine.jump_register({Sign::Plus, {6, 7}});
+			const Word inst{Sign::Plus, {0, 1, 0, 2, Op_code::STJ}};
+			machine.store_in_memory(0, inst);
+			machine.execute_next_instruction();
+			THEN("The contents of the jump register are stored in memory")
+			{
+				const Word mem{machine.memory_cell(1)};
+				REQUIRE(mem.sign() == Sign::Plus);
+				require_bytes_are(mem, {6, 7, 3, 4, 5});
 			}
 		}
 	}
