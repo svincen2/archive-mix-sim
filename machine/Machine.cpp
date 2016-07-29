@@ -349,5 +349,25 @@ namespace mix
 		}
 		memory[address] = w;
 	}
+
+	/*
+	* Load the accumulator with the given word.
+	* Parameters:
+	*	w - Word to load into accumulator.
+	*/
+	void Machine::accumulator(const Word& w)
+	{
+		accum = w;
+	}
+
+	/*
+	* Load the jump register with the given half word.
+	* Parameters:
+	*	hw - Half word to load into jump register.
+	*/
+	void Machine::jump_register(const Half_word& hw)
+	{
+		jump = hw;
+	}
 }
 

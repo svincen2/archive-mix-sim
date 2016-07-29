@@ -63,6 +63,8 @@ namespace mix
 		// Mutators.
 		void store_in_memory(int, const Word&);
 		void load_index_register(int, const Half_word&);
+		void accumulator(const Word&);
+		void jump_register(const Half_word&);
 
 
 	private:
