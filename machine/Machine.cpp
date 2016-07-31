@@ -27,8 +27,6 @@ namespace mix
 		  store_ops{},
 		  ops{}
 	{
-		init_load_ops();
-		init_store_ops();
 		init_ops();
 	}
 
@@ -37,9 +35,21 @@ namespace mix
 	*/
 	void Machine::init_ops()
 	{
+		ops[Op_class::MATH] = &Machine::execute_arithmetic;
 		ops[Op_class::LOAD] = &Machine::execute_load;
 		ops[Op_class::LOAD_NEG] = &Machine::execute_load_negative;
 		ops[Op_class::STORE] = &Machine::execute_store;
+		init_math_ops();
+		init_load_ops();
+		init_store_ops();
+	}
+
+	/*
+	* Initialize arithmetic operations map.
+	*/
+	void Machine::init_math_ops()
+	{
+
 	}
 
 	/*
@@ -71,6 +81,7 @@ namespace mix
 		store_ops[Op_code::ST6] = [this](){ buffer_reg_content(index[5]); };
 		store_ops[Op_code::STX] = [this](){ buffer_reg_content(exten); };
 		store_ops[Op_code::STJ] = [this](){ buffer_reg_content(jump); };
+		store_ops[Op_code::STZ] = [this](){ content_buffer.clear(); };
 	}
 
 	/*
@@ -189,20 +200,36 @@ namespace mix
 	Op_class Machine::get_op_class(Op_code op_code) const
 	{
 		Op_class op_class{};
-		if (op_code < Op_code::LDAN) {
+		if (op_code < Op_code::LDA) {
+			op_class = Op_class::MATH;
+		}
+		else if (op_code <= Op_code::LDX) {
 			op_class = Op_class::LOAD;
 		}
-		else if (op_code < Op_code::STA) {
+		else if (op_code <= Op_code::LDXN) {
 			op_class = Op_class::LOAD_NEG;
 		}
-		else if (op_code <= Op_code::STJ) {
+		else if (op_code <= Op_code::STZ) {
 			op_class = Op_class::STORE;
 		}
 		return op_class;
 	}
 
 	/*
-	* Execute the load operation specified by the given instruction.
+	* Execute the arithmetic operations specified by the instruction buffer.
+	* Parameters:
+	*	op - Operation code.
+	*/
+	void Machine::execute_arithmetic(Op_code op)
+	{
+		int address{read_addres(instruction_buffer)};
+		Field_spec field{get_field_spec(instruction_buffer)};
+		content_buffer = memory_cell(address).to_int(field);
+		math_ops[op]();
+	}
+
+	/*
+	* Execute the load operation specified by the given instruction buffer.
 	* Parameters:
 	*	op - Operation code.
 	*/
@@ -216,7 +243,7 @@ namespace mix
 
 	/*
 	* Execute the load negative operation specified by the given
-	* instruction.
+	* instruction buffer.
 	* Parameters:
 	*	op - Operation code.
 	*/
@@ -234,7 +261,7 @@ namespace mix
 	}
 
 	/*
-	* Execute the store operation specified by the given instruction.
+	* Execute the store operation specified by the given instruction buffer.
 	* Parameters:
 	*	op - Operation code.
 	*/
@@ -342,7 +369,7 @@ namespace mix
 	*	address - Address of memory to be written to.
 	*	w - Word to write to memory.
 	*/
-	void Machine::store_in_memory(int address, const Word& w)
+	void Machine::memory_cell(int address, const Word& w)
 	{
 		if (address < 0 || mem_size <= address) {
 			throw std::invalid_argument{"Address out of bounds"};

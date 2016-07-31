@@ -61,7 +61,7 @@ namespace mix
 		Word memory_cell(int) const;
 
 		// Mutators.
-		void store_in_memory(int, const Word&);
+		void memory_cell(int, const Word&);
 		void index_register(int, const Half_word&);
 		void accumulator(const Word&);
 		void extension_register(const Word&);
@@ -97,16 +97,19 @@ namespace mix
 		std::map<Op_class, Base_operation> ops;
 
 		// Operation maps.
+		std::map<Op_code, Operation> math_ops;
 		std::map<Op_code, Operation> load_ops;
 		std::map<Op_code, Operation> store_ops;
 
 		// Initialization functions.
 		void init_ops();
+		void init_math_ops();
 		void init_load_ops();
 		void init_store_ops();
 
 		// Base operation functions.
 		Op_class get_op_class(Op_code) const;
+		void execute_arithmetic(Op_code);
 		void execute_load(Op_code);
 		void execute_load_negative(Op_code);
 		void execute_store(Op_code);
