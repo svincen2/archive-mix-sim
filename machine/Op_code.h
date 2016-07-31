@@ -8,6 +8,12 @@ namespace mix
 	// Mix assembly language op codes.
 	enum Op_code : Byte
 	{
+		// Arithmetic instructions.
+		ADD = 1,
+		SUB,
+		MUL,
+		DIV,
+
 		// Load operations.
 		LDA = 8,
 		LD1, LD2, LD3, LD4, LD5, LD6,
@@ -22,7 +28,8 @@ namespace mix
 		STA,
 		ST1, ST2, ST3, ST4, ST5, ST6,
 		STX,
-		STJ
+		STJ,
+		STZ
 	};
 }
 #endif
