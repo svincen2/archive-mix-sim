@@ -5,7 +5,7 @@ namespace mix
 {
 	enum class Op_class
 	{
-		LOAD, LOAD_NEG, STORE
+		MATH, LOAD, LOAD_NEG, STORE
 	};
 }
 #endif
