@@ -80,7 +80,7 @@ SCENARIO("Program counter")
 	{
 		Machine machine{};
 		Word inst{Sign::Plus, {0, 0, 0, 0, Op_code::LDA}};
-		machine.store_in_memory(0, inst);
+		machine.memory_cell(0, inst);
 		WHEN("The first instruction is executed")
 		{
 			machine.execute_next_instruction();
@@ -100,7 +100,7 @@ SCENARIO("Loading memory")
 		Word w{Sign::Minus, {1, 2, 3, 4, 5}};
 		WHEN("Memory address 0 is loaded with the word")
 		{
-			machine.store_in_memory(0, w);
+			machine.memory_cell(0, w);
 			THEN("The word is copied to memory cell")
 			{
 				Word mem{machine.memory_cell(0)};
@@ -119,8 +119,8 @@ SCENARIO("Dumping memory", "[A]")
 		const int last_mem_address{static_cast<int>(Machine::mem_size) - 1};
 		Word first{Sign::Minus, {1, 2, 3, 4, 5}};
 		Word last{Sign::Minus, {6, 7, 8, 9, 0}};
-		machine.store_in_memory(0, first);
-		machine.store_in_memory(last_mem_address, last);
+		machine.memory_cell(0, first);
+		machine.memory_cell(last_mem_address, last);
 		WHEN("Memory is dumped to a stream")
 		{
 			std::stringstream ss{};
@@ -257,7 +257,7 @@ SCENARIO("Getting contents of memory with a field spec")
 	{
 		Machine machine{};
 		Word some_data{Sign::Minus, {1, 2, 3, 4, 5}};
-		machine.store_in_memory(0, some_data);
+		machine.memory_cell(0, some_data);
 		WHEN("Getting field (0:5) of memory cell 0")
 		{
 			Field_spec fs{0, 5};
@@ -287,11 +287,11 @@ SCENARIO("Executing load instructions")
 	{
 		Machine machine{};
 		Word some_data{Sign::Minus, {1, 2, 3, 4, 5}};
-		machine.store_in_memory(1, some_data);
+		machine.memory_cell(1, some_data);
 		WHEN("Executing a LDA instruction")
 		{
 			Word inst{Sign::Plus, {0, 1, 0, 5, Op_code::LDA}};
-			machine.store_in_memory(0, inst);
+			machine.memory_cell(0, inst);
 			machine.execute_next_instruction();
 			THEN("The accumulator is loaded")
 			{
@@ -303,7 +303,7 @@ SCENARIO("Executing load instructions")
 		WHEN("Executing a LDX instruction")
 		{
 			Word inst{Sign::Plus, {0, 1, 0, 3, Op_code::LDX}};
-			machine.store_in_memory(0, inst);
+			machine.memory_cell(0, inst);
 			machine.execute_next_instruction();
 			THEN("The extension register is loaded")
 			{
@@ -315,7 +315,7 @@ SCENARIO("Executing load instructions")
 		WHEN("Executing LD1 instructions")
 		{
 			Word inst{Sign::Plus, {0, 1, 0, 28, Op_code::LD1}};
-			machine.store_in_memory(0, inst);
+			machine.memory_cell(0, inst);
 			machine.execute_next_instruction();
 			THEN("Index register 1 is loaded")
 			{
@@ -327,7 +327,7 @@ SCENARIO("Executing load instructions")
 		WHEN("Executing LD6 instructions")
 		{
 			Word inst{Sign::Plus, {0, 1, 0, 5, Op_code::LD6}};
-			machine.store_in_memory(0, inst);
+			machine.memory_cell(0, inst);
 			machine.execute_next_instruction();
 			THEN("Index register 6 is loaded")
 			{
@@ -344,11 +344,11 @@ SCENARIO("Executing load negative operations")
 	GIVEN("A mix machine with some data in memory cell 1")
 	{
 		Machine machine{};
-		machine.store_in_memory(1, {Sign::Plus, {1, 2, 3, 4, 5}});
+		machine.memory_cell(1, {Sign::Plus, {1, 2, 3, 4, 5}});
 		WHEN("Executing a LDAN instruction with field that contains sign")
 		{
 			const Word inst{Sign::Plus, {0, 1, 0, 5, Op_code::LDAN}};
-			machine.store_in_memory(0, inst);
+			machine.memory_cell(0, inst);
 			machine.execute_next_instruction();
 			THEN("Accumulator is loaded, and sign is negated")
 			{
@@ -360,7 +360,7 @@ SCENARIO("Executing load negative operations")
 		WHEN("Executing a LDXN instruction with field with no sign")
 		{
 			const Word inst{Sign::Plus, {0, 1, 0, 13, Op_code::LDXN}};
-			machine.store_in_memory(0, inst);
+			machine.memory_cell(0, inst);
 			machine.execute_next_instruction();
 			THEN("Extension register is loaded, and sign is not negated")
 			{
@@ -381,7 +381,7 @@ SCENARIO("Executing store instructions")
 		{
 			machine.accumulator({Sign::Minus, {1, 2, 3, 4, 5}});
 			const Word inst{Sign::Plus, {0, 1, 0, 5, Op_code::STA}};
-			machine.store_in_memory(0, inst);
+			machine.memory_cell(0, inst);
 			machine.execute_next_instruction();
 			THEN("The contents of the accumulator are stored into memory")
 			{
@@ -392,10 +392,10 @@ SCENARIO("Executing store instructions")
 		}
 		WHEN("Executing a ST1 instruction")
 		{
-			machine.store_in_memory(1, {Sign::Plus, {1, 2, 3, 4, 5}});
+			machine.memory_cell(1, {Sign::Plus, {1, 2, 3, 4, 5}});
 			machine.index_register(1, {Sign::Minus, {1, 2}});
 			const Word inst{Sign::Plus, {0, 1, 0, 3, Op_code::ST1}};
-			machine.store_in_memory(0, inst);
+			machine.memory_cell(0, inst);
 			machine.execute_next_instruction();
 			THEN("The contents of index register 1 are stored in memory")
 			{
@@ -406,10 +406,10 @@ SCENARIO("Executing store instructions")
 		}
 		WHEN("Executing a STJ instruction")
 		{
-			machine.store_in_memory(1, {Sign::Plus, {1, 2, 3, 4, 5}});
+			machine.memory_cell(1, {Sign::Plus, {1, 2, 3, 4, 5}});
 			machine.jump_register({Sign::Plus, {6, 7}});
 			const Word inst{Sign::Plus, {0, 1, 0, 2, Op_code::STJ}};
-			machine.store_in_memory(0, inst);
+			machine.memory_cell(0, inst);
 			machine.execute_next_instruction();
 			THEN("The contents of the jump register are stored in memory")
 			{
@@ -420,16 +420,52 @@ SCENARIO("Executing store instructions")
 		}
 		WHEN("Executing a STX instruction")
 		{
-			machine.store_in_memory(1, {Sign::Minus, {1, 2, 3, 4, 5}});
+			machine.memory_cell(1, {Sign::Minus, {1, 2, 3, 4, 5}});
 			machine.extension_register({Sign::Plus, {6, 7, 8, 9, 0}});
 			const Word inst{Sign::Plus, {0, 1, 0, 27, Op_code::STX}};
-			machine.store_in_memory(0, inst);
+			machine.memory_cell(0, inst);
 			machine.execute_next_instruction();
 			THEN("The contents of the extension register are stored in memory")
 			{
 				const Word mem{machine.memory_cell(1)};
 				REQUIRE(mem.sign() == Sign::Minus);
 				require_bytes_are(mem, {1, 2, 0, 4, 5});
+			}
+		}
+		WHEN("Executing a STZ instruction")
+		{
+			machine.memory_cell(1, {Sign::Minus, {1, 2, 3, 4, 5}});
+			const Word inst{Sign::Plus, {0, 1, 0, 4, Op_code::STZ}};
+			machine.memory_cell(0, inst);
+			machine.execute_next_instruction();
+			THEN("The specified field of memory are cleared to 0")
+			{
+				const Word mem{machine.memory_cell(1)};
+				REQUIRE(mem.sign() == Sign::Plus);
+				require_bytes_are(mem, {0, 0, 0, 0, 5});
+			}
+		}
+	}
+}
+
+SCENARIO("Addition")
+{
+	GIVEN("A mix machine with some data in memory cell 1 and accumulator")
+	{
+		Machine machine{};
+		machine.memory_cell(1, {Sign::Plus, {1, 2, 3, 4, 5}});
+		machine.accumulator({Sign::Plus, {0, 0, 0, 1, 0}});
+		WHEN("Adding field (0:5) of memory cell 1")
+		{
+			const Word inst{Sign::Plus, {0, 1, 0, 5, Op_code::ADD}};
+			const int accum_before{machine.accumulator().to_int()};
+			machine.execute_next_instruction();
+			THEN("The accumulator contains result of addition")
+			{
+				const Word accum{machine.accumulator()};
+				const int mem{machine.memory_cell(1).to_int()};
+				REQUIRE(accum.sign() == Sign::Plus);
+				REQUIRE(accum.to_int() == (accum_before + mem));
 			}
 		}
 	}
