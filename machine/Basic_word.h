@@ -66,6 +66,7 @@ namespace mix
 		void rotate_left(int);
 
 		// Clear all bytes.
+		void clear();
 		void clear_bytes();
 
 		// Range copy.
@@ -326,6 +327,18 @@ namespace mix
 		// Left-fill with 0s.
 		for (int j = 1; j <= i; ++j)
 			byte(j) = 0;
+	}
+
+	/*
+	* Clear the word to +0.
+	* Template parameters:
+	*	N - Number of bytes in the word.
+	*/
+	template<unsigned int N>
+	void Basic_word<N>::clear()
+	{
+		sign_byte = Sign::Plus;
+		clear_bytes();
 	}
 
 	/*
