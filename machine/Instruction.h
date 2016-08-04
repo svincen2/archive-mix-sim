@@ -12,6 +12,7 @@ namespace mix
 	const Field_spec ADDRESS_FIELD{0, 2};
 	const unsigned int INDEX_SPEC{3};
 	const unsigned int FIELD_SPEC{4};
+	const unsigned int MODIFICATION{4};
 	const unsigned int OP_CODE{5};
 
 	// Functions for accessing named parts of a word.
@@ -39,6 +40,22 @@ namespace mix
 	{
 		return static_cast<Op_code>(bw.byte(OP_CODE));
 	}
+
+	template<unsigned int N>
+	int get_modification(const Basic_word<N>& bw)
+	{
+		return bw.byte(MODIFICATION);
+	}
+
+	/*** New instruction ***/
+	struct Instruction
+	{
+		int address;
+		int index_spec;
+		Field_spec field;
+		int modification;
+		Op_code op_code;
+	};
 }
 #endif
 
