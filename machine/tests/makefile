@@ -2,7 +2,9 @@ include_dir = ../../include
 test_suite = tests.o
 tests = Sign_test.o Basic_word_test.o Machine_test.o Field_spec_test.o \
 		Instruction_test.o
-dependancies = ../Machine.o ../Sign.o ../Field_spec.o
+dependancies = ../Machine.o ../Sign.o ../Field_spec.o ../Load_operation.o \
+			   ../Op_code.o ../Op_factory.o ../Load_neg_operation.o \
+			   ../Store_operation.o ../Math_operation.o
 compile = g++ -std=c++11 -I$(include_dir) -c
 link = g++ -std=c++11 -I$(include_dir) -o
 proj_name = tests
