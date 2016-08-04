@@ -5,14 +5,10 @@
 
 namespace mix
 {
-	// Mix assembly language op codes.
 	enum Op_code : Byte
 	{
-		// Arithmetic instructions.
-		ADD = 1,
-		SUB,
-		MUL,
-		DIV,
+		// Arithmetic operations.
+		ADD = 1, SUB, MUL, DIV,
 
 		// Load operations.
 		LDA = 8,
@@ -31,6 +27,11 @@ namespace mix
 		STJ,
 		STZ
 	};
+
+	bool is_math_op(Op_code);
+	bool is_load_op(Op_code);
+	bool is_load_neg_op(Op_code);
+	bool is_store_op(Op_code);
 }
 #endif
 
