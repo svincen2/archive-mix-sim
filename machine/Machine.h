@@ -3,7 +3,7 @@
 
 #include "Basic_word.h"
 #include "Field_spec.h"
-#include "Op_class.h"
+#include "Instruction.h"
 #include "Op_code.h"
 #include "Sign.h"
 #include "Word.h"
@@ -45,9 +45,10 @@ namespace mix
 		void execute_next_instruction();
 		int read_address(const Word&) const;
 		void dump_memory(std::ostream*) const;
+		Instruction decode(const Word&) const;
 
 		// Executing instructions.
-		const Word memory_contents(int, const Field_spec&) const;
+		const Word memory_content(int, const Field_spec&) const;
 
 
 		// Accessors.
@@ -84,38 +85,6 @@ namespace mix
 
 		// Memory.
 		std::vector<Word> memory;
-
-		// Operation buffers.
-		Word instruction_buffer;
-		Word content_buffer;
-
-		// Operation aliases.
-		using Base_operation = void (Machine::*)(Op_code);
-		using Operation = std::function<void()>;
-
-		// Op class operation map.
-		std::map<Op_class, Base_operation> ops;
-
-		// Operation maps.
-		std::map<Op_code, Operation> math_ops;
-		std::map<Op_code, Operation> load_ops;
-		std::map<Op_code, Operation> store_ops;
-
-		// Initialization functions.
-		void init_ops();
-		void init_math_ops();
-		void init_load_ops();
-		void init_store_ops();
-
-		// Base operation functions.
-		Op_class get_op_class(Op_code) const;
-		void execute_arithmetic(Op_code);
-		void execute_load(Op_code);
-		void execute_load_negative(Op_code);
-		void execute_store(Op_code);
-
-		// Operation helpers.
-		void buffer_reg_content(const Word&);
 
 		// Validations.
 		void check_arguments(const std::vector<std::string>&) const;

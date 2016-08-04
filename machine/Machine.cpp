@@ -1,7 +1,7 @@
-#include "Instruction.h"
 #include "Machine.h"
-#include "Op_code.h"
+#include "Op_factory.h"
 #include <fstream>
+#include <memory>
 
 namespace mix
 {
@@ -20,88 +20,8 @@ namespace mix
 		  accum{},
 		  exten{},
 		  index(num_index_registers),
-		  memory(mem_size),
-		  instruction_buffer{},
-		  content_buffer{},
-		  load_ops{},
-		  store_ops{},
-		  ops{}
+		  memory(mem_size)
 	{
-		init_ops();
-	}
-
-	/*
-	* Initialize operations.
-	*/
-	void Machine::init_ops()
-	{
-		ops[Op_class::MATH] = &Machine::execute_arithmetic;
-		ops[Op_class::LOAD] = &Machine::execute_load;
-		ops[Op_class::LOAD_NEG] = &Machine::execute_load_negative;
-		ops[Op_class::STORE] = &Machine::execute_store;
-		init_math_ops();
-		init_load_ops();
-		init_store_ops();
-	}
-
-	/*
-	* Initialize arithmetic operations map.
-	*/
-	void Machine::init_math_ops()
-	{
-
-	}
-
-	/*
-	* Initialize load operations map.
-	*/
-	void Machine::init_load_ops()
-	{
-		load_ops[Op_code::LDA] = [this](){ accum = content_buffer; };
-		load_ops[Op_code::LD1] = [this](){ index[0] = content_buffer; };
-		load_ops[Op_code::LD2] = [this](){ index[1] = content_buffer; };
-		load_ops[Op_code::LD3] = [this](){ index[2] = content_buffer; };
-		load_ops[Op_code::LD4] = [this](){ index[3] = content_buffer; };
-		load_ops[Op_code::LD5] = [this](){ index[4] = content_buffer; };
-		load_ops[Op_code::LD6] = [this](){ index[5] = content_buffer; };
-		load_ops[Op_code::LDX] = [this](){ exten = content_buffer; };
-	}
-
-	/*
-	* Initialize store operations map.
-	*/
-	void Machine::init_store_ops()
-	{
-		store_ops[Op_code::STA] = [this](){ buffer_reg_content(accum); };
-		store_ops[Op_code::ST1] = [this](){ buffer_reg_content(index[0]); };
-		store_ops[Op_code::ST2] = [this](){ buffer_reg_content(index[1]); };
-		store_ops[Op_code::ST3] = [this](){ buffer_reg_content(index[2]); };
-		store_ops[Op_code::ST4] = [this](){ buffer_reg_content(index[3]); };
-		store_ops[Op_code::ST5] = [this](){ buffer_reg_content(index[4]); };
-		store_ops[Op_code::ST6] = [this](){ buffer_reg_content(index[5]); };
-		store_ops[Op_code::STX] = [this](){ buffer_reg_content(exten); };
-		store_ops[Op_code::STJ] = [this](){ buffer_reg_content(jump); };
-		store_ops[Op_code::STZ] = [this](){ content_buffer.clear(); };
-	}
-
-	/*
-	* Read the necessary number of bytes from the rightmost bytes of
-	* the given register, left shifting if necessary into the field
-	* specified by the instruction in the instruction buffer.
-	* Parameters:
-	*	reg - Register to get contents.
-	*/
-	void Machine::buffer_reg_content(const Word& reg)
-	{
-		Field_spec field{get_field_spec(instruction_buffer)};
-		if (field.contains_sign()) {
-			content_buffer = reg.rightmost_with_sign(field.bytes());
-		}
-		else {
-			content_buffer = reg.rightmost_bytes(field.bytes());
-		}
-		int shift_amount{static_cast<int>(Word::num_bytes) - field.right};
-		content_buffer.shift_left(shift_amount);
 	}
 
 	/*
@@ -180,97 +100,26 @@ namespace mix
 	*/
 	void Machine::execute_next_instruction()
 	{
-		// Fetch next instruction and increment program counter.
-		instruction_buffer = memory_cell(pc++);
-
-		// Decode.
-		Op_code op_code{get_op_code(instruction_buffer)};
-		Op_class op_class{get_op_class(op_code)};
+		// Fetch, decode, and increment program counter.
+		const Instruction next{decode(memory_cell(pc++))};
 
 		// Execute.
-		Base_operation base_op = ops[op_class];
-		(this->*base_op)(op_code);
+		std::unique_ptr<Operation> op{Op_factory::make(next.op_code)};
+		op->execute(this, next);
 	}
 
 	/*
-	* Return the class of operation, such as LOAD or STORE.
-	* Parameters:
-	*	op_code - Operation code.
+	* Decode the word as an instruction.
 	*/
-	Op_class Machine::get_op_class(Op_code op_code) const
+	Instruction Machine::decode(const Word& word) const
 	{
-		Op_class op_class{};
-		if (op_code < Op_code::LDA) {
-			op_class = Op_class::MATH;
-		}
-		else if (op_code <= Op_code::LDX) {
-			op_class = Op_class::LOAD;
-		}
-		else if (op_code <= Op_code::LDXN) {
-			op_class = Op_class::LOAD_NEG;
-		}
-		else if (op_code <= Op_code::STZ) {
-			op_class = Op_class::STORE;
-		}
-		return op_class;
-	}
-
-	/*
-	* Execute the arithmetic operations specified by the instruction buffer.
-	* Parameters:
-	*	op - Operation code.
-	*/
-	void Machine::execute_arithmetic(Op_code op)
-	{
-		int address{read_addres(instruction_buffer)};
-		Field_spec field{get_field_spec(instruction_buffer)};
-		content_buffer = memory_cell(address).to_int(field);
-		math_ops[op]();
-	}
-
-	/*
-	* Execute the load operation specified by the given instruction buffer.
-	* Parameters:
-	*	op - Operation code.
-	*/
-	void Machine::execute_load(Op_code op)
-	{
-		int address{read_address(instruction_buffer)};
-		Field_spec field{get_field_spec(instruction_buffer)};
-		content_buffer = memory_contents(address, field);
-		load_ops[op]();
-	}
-
-	/*
-	* Execute the load negative operation specified by the given
-	* instruction buffer.
-	* Parameters:
-	*	op - Operation code.
-	*/
-	void Machine::execute_load_negative(Op_code op)
-	{
-		int address{read_address(instruction_buffer)};
-		Field_spec field{get_field_spec(instruction_buffer)};
-		content_buffer = memory_contents(address, field);
-		if (field.contains_sign()) {
-			content_buffer.negate();
-		}
-		// Offset into regular load ops range.
-		op = static_cast<Op_code>(op - Op_code::LDA);
-		load_ops[op]();
-	}
-
-	/*
-	* Execute the store operation specified by the given instruction buffer.
-	* Parameters:
-	*	op - Operation code.
-	*/
-	void Machine::execute_store(Op_code op)
-	{
-		store_ops[op](); // Store the content of the desired register.
-		int address{read_address(instruction_buffer)};
-		Field_spec field{get_field_spec(instruction_buffer)};
-		memory[address].copy_range(content_buffer, field);
+		return Instruction{
+			read_address(word),
+			get_index_spec(word),
+			get_field_spec(word),
+			get_modification(word),
+			get_op_code(word)
+		};
 	}
 
 	/*
@@ -297,7 +146,7 @@ namespace mix
 	*	address - Address of memory cell.
 	*	field - Field of memory cell to get.
 	*/
-	const Word Machine::memory_contents(int address,
+	const Word Machine::memory_content(int address,
 										const Field_spec& field) const
 	{
 		return memory_cell(address).field_aligned_right(field);

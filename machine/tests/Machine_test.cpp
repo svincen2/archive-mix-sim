@@ -261,7 +261,7 @@ SCENARIO("Getting contents of memory with a field spec")
 		WHEN("Getting field (0:5) of memory cell 0")
 		{
 			Field_spec fs{0, 5};
-			Word contents{machine.memory_contents(0, fs)};
+			Word contents{machine.memory_content(0, fs)};
 			THEN("The whole memory cell is returned")
 			{
 				REQUIRE(contents.sign() == Sign::Minus);
@@ -271,7 +271,7 @@ SCENARIO("Getting contents of memory with a field spec")
 		WHEN("Getting field (0:2) of memory cell 0")
 		{
 			Field_spec fs{0, 2};
-			Word contents{machine.memory_contents(0, fs)};
+			Word contents{machine.memory_content(0, fs)};
 			THEN("The bytes [1, 2] are shifted to [4, 5]")
 			{
 				REQUIRE(contents.sign() == Sign::Minus);
@@ -458,6 +458,7 @@ SCENARIO("Addition")
 		WHEN("Adding field (0:5) of memory cell 1")
 		{
 			const Word inst{Sign::Plus, {0, 1, 0, 5, Op_code::ADD}};
+			machine.memory_cell(0, inst);
 			const int accum_before{machine.accumulator().to_int()};
 			machine.execute_next_instruction();
 			THEN("The accumulator contains result of addition")
