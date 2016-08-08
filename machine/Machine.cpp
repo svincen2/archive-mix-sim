@@ -21,7 +21,8 @@ namespace mix
 		  accum{},
 		  exten{},
 		  index(num_index_registers),
-		  memory(mem_size)
+		  memory(mem_size),
+		  program_finished{false}
 	{
 	}
 
@@ -91,7 +92,11 @@ namespace mix
 	*/
 	void Machine::run_program()
 	{
-
+		pc = 0; // Start program counter at first memory cell.
+		program_finished = false;
+		while (!program_finished) {
+			execute_next_instruction();
+		}
 	}
 
 	/*

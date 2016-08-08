@@ -86,6 +86,9 @@ namespace mix
 		// Memory.
 		std::vector<Word> memory;
 
+		// End of program flag.
+		bool program_finished;
+
 		// Validations.
 		void check_arguments(const std::vector<std::string>&) const;
 		void check_program_input_stream(std::istream*) const;
