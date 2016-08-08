@@ -178,16 +178,6 @@ namespace mix
 	}
 
 	/*
-	* Dumps the contents of memory into the given stream.
-	*/
-	void Machine::dump_memory(std::ostream* stream) const
-	{
-		for (int i = 0; i < mem_size; ++i) {
-			*stream << memory[i];
-		}
-	}
-
-	/*
 	* Returns the contents of the index register with the given number.
 	* Index register number must be in range [1, 6].
 	* Parameters:
@@ -200,16 +190,36 @@ namespace mix
 	}
 
 	/*
+	* Dumps the contents of memory into the given stream.
+	*/
+	void Machine::dump_memory(std::ostream* stream) const
+	{
+		for (int i = 0; i < mem_size; ++i) {
+			*stream << memory[i];
+		}
+	}
+
+	/*
 	* Returns the contents of memory at the given address.
 	* Parameters:
 	*	address - Memory address, in range [0, mem_size].
 	*/
 	Word Machine::memory_cell(int address) const
 	{
+		check_memory_cell_address(address);
+		return memory[address];
+	}
+
+	/*
+	* Checks that the given memory cell address is valid.
+	* Parameters:
+	*	address - Memory cell address to check.
+	*/
+	void Machine::check_memory_cell_address(int address) const
+	{
 		if (address < 0 || mem_size <= address) {
 			throw std::invalid_argument{"Address out of bounds"};
 		}
-		return memory[address];
 	}
 
 	/*
@@ -220,9 +230,7 @@ namespace mix
 	*/
 	void Machine::memory_cell(int address, const Word& w)
 	{
-		if (address < 0 || mem_size <= address) {
-			throw std::invalid_argument{"Address out of bounds"};
-		}
+		check_memory_cell_address(address);
 		memory[address] = w;
 	}
 

@@ -90,6 +90,7 @@ namespace mix
 		void check_arguments(const std::vector<std::string>&) const;
 		void check_program_input_stream(std::istream*) const;
 		void check_index_register_number(int) const;
+		void check_memory_cell_address(int) const;
 	};
 }
 #endif
