@@ -1,6 +1,7 @@
 #include "Machine.h"
 #include "Op_factory.h"
 #include <fstream>
+#include <iterator>
 #include <memory>
 
 namespace mix
@@ -58,16 +59,14 @@ namespace mix
 	{
 		check_program_input_stream(program);
 		int curr_address{0};
-		Word next_instruction{};
-		while (*program) {
-			*program >> next_instruction;
-			if (!next_instruction.is_valid()) {
+		std::istream_iterator<Word> instruction_iter{*program};
+		std::istream_iterator<Word> eof{};
+		while (instruction_iter != eof) {
+			if (!instruction_iter->is_valid()) {
 				throw Invalid_basic_word{};
 			}
-			memory[curr_address++] = next_instruction;
-			if (program->peek() == EOF) {
-				break;
-			}
+			memory[curr_address++] = *instruction_iter;
+			++instruction_iter;
 		}
 	}
 
@@ -146,8 +145,9 @@ namespace mix
 	*	address - Address of memory cell.
 	*	field - Field of memory cell to get.
 	*/
-	const Word Machine::memory_content(int address,
-										const Field_spec& field) const
+	const Word Machine::memory_content(
+			int address,
+			const Field_spec& field) const
 	{
 		return memory_cell(address).field_aligned_right(field);
 	}
