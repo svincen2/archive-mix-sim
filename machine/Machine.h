@@ -62,11 +62,12 @@ namespace mix
 		Word memory_cell(int) const;
 
 		// Mutators.
-		void memory_cell(int, const Word&);
-		void index_register(int, const Half_word&);
+		void overflow_bit(Bit);
+		void jump_register(const Half_word&);
 		void accumulator(const Word&);
 		void extension_register(const Word&);
-		void jump_register(const Half_word&);
+		void index_register(int, const Half_word&);
+		void memory_cell(int, const Word&);
 
 
 	private:
