@@ -751,3 +751,76 @@ SCENARIO("Right-most bytes with sign")
 		}
 	}
 }
+
+SCENARIO("Int max")
+{
+	WHEN("Asking for the maximum integer value of a basic word")
+	{
+		int max{Basic_word<5>::int_max()};
+		THEN("The returned value is accurate")
+		{
+			REQUIRE(max == static_cast<int>(std::pow(2, 30)) - 1);
+		}
+	}
+}
+
+SCENARIO("Int min")
+{
+	WHEN("Asking for the minimum integer value of a basic word")
+	{
+		int min{Basic_word<5>::int_min()};
+		THEN("The returned value is accurate")
+		{
+			REQUIRE(min == -(static_cast<int>(std::pow(2, 30)) - 1));
+		}
+	}
+}
+
+SCENARIO("Constructing from an int")
+{
+	GIVEN("An integer value")
+	{
+		WHEN("Constructing a basic word from a positive int")
+		{
+			int value{2000};
+			Basic_word<5> bw{value};
+			THEN("The appropriate word is constructed")
+			{
+				REQUIRE(bw.sign() == Sign::Plus);
+				require_bytes_are(bw, {0, 0, 0, 31, 16});
+			}
+		}
+		WHEN("Constructing a basic word from a negative int")
+		{
+			int value{-2000};
+			Basic_word<5> bw{value};
+			THEN("The appropriate word is constructed")
+			{
+				REQUIRE(bw.sign() == Sign::Minus);
+				require_bytes_are(bw, {0, 0, 0, 31, 16});
+			}
+		}
+		WHEN("Constructing from an int which is too large")
+		{
+			int value{Basic_word<5>::int_max() + 1};
+			THEN("An invalid argument exception is thrown")
+			{
+				REQUIRE_THROWS_AS(
+					Basic_word<5>{value},
+					std::invalid_argument
+				);
+			}
+		}
+		WHEN("Constructing from a negative int which is too large")
+		{
+			int value{-(Basic_word<5>::int_max() + 1)};
+			THEN("An invalid argument exception is thrown")
+			{
+				REQUIRE_THROWS_AS(
+					Basic_word<5>{value},
+					std::invalid_argument
+				);
+			}
+		}
+	}
+}
