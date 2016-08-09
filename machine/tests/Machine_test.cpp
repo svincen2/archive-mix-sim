@@ -455,10 +455,10 @@ SCENARIO("Addition")
 		Machine machine{};
 		machine.memory_cell(1, {Sign::Plus, {1, 2, 3, 4, 5}});
 		machine.accumulator({Sign::Plus, {0, 0, 0, 1, 0}});
+		const Word inst{Sign::Plus, {0, 1, 0, 5, Op_code::ADD}};
+		machine.memory_cell(0, inst);
 		WHEN("Adding field (0:5) of memory cell 1")
 		{
-			const Word inst{Sign::Plus, {0, 1, 0, 5, Op_code::ADD}};
-			machine.memory_cell(0, inst);
 			const int accum_before{machine.accumulator().to_int()};
 			machine.execute_next_instruction();
 			THEN("The accumulator contains result of addition")
@@ -467,6 +467,54 @@ SCENARIO("Addition")
 				const int mem{machine.memory_cell(1).to_int()};
 				REQUIRE(accum.sign() == Sign::Plus);
 				REQUIRE(accum.to_int() == (accum_before + mem));
+			}
+		}
+		WHEN("Addition results in overflow")
+		{
+			machine.accumulator({Word::int_max()});
+			machine.execute_next_instruction();
+			THEN("The accumulator contains remainder, and overflow is on")
+			{
+				const Word accum{machine.accumulator()};
+				REQUIRE(accum.sign() == Sign::Plus);
+				require_bytes_are(accum, {1, 2, 3, 4, 5});
+				REQUIRE(machine.overflow_bit() == Machine::Bit::On);
+			}
+		}
+	}
+}
+
+SCENARIO("Subtraction")
+{
+	GIVEN("A mix machine with some data in memory cell 1 and accumulator")
+	{
+		Machine machine{};
+		machine.memory_cell(1, {Sign::Plus, {1, 2, 3, 4, 5}});
+		machine.accumulator({Sign::Plus, {6, 7, 8, 9, 0}});
+		const Word inst{Sign::Plus, {0, 1, 0, 5, Op_code::SUB}};
+		machine.memory_cell(0, inst);
+		WHEN("Subtracting field (0:5) of memory cell 1")
+		{
+			const int accum_before{machine.accumulator().to_int()};
+			machine.execute_next_instruction();
+			THEN("The accumulator contains the result of subtraction")
+			{
+				const Word accum{machine.accumulator()};
+				const int mem{machine.memory_cell(1).to_int()};
+				REQUIRE(accum.sign() == Sign::Plus);
+				REQUIRE(accum.to_int() == (accum_before - mem));
+			}
+		}
+		WHEN("Subtraction results in overflow")
+		{
+			machine.accumulator({Word::int_min()});
+			machine.execute_next_instruction();
+			THEN("The accumulator contains remainder, and overflow is on")
+			{
+				const Word accum{machine.accumulator()};
+				REQUIRE(accum.sign() == Sign::Minus);
+				require_bytes_are(accum, {1, 2, 3, 4, 5});
+				REQUIRE(machine.overflow_bit() == Machine::Bit::On);
 			}
 		}
 	}
