@@ -158,6 +158,16 @@ namespace mix
 	}
 
 	/*
+	* Set the overflow bit to the given bit.
+	* Parameters:
+	*	b - New state of overflow bit.
+	*/
+	void Machine::overflow_bit(Bit b)
+	{
+		overflow = b;
+	}
+
+	/*
 	* Load the index register specified by the given register number
 	* with the given half word.
 	* Parameters:
