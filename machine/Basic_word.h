@@ -5,6 +5,7 @@
 #include "Field_spec.h"
 #include "Sign.h"
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <vector>
 
@@ -27,6 +28,7 @@ namespace mix
 		Basic_word(Sign s = Sign::Plus, std::vector<Byte> vb = {});
 		Basic_word(const Basic_word&);
 		Basic_word(Basic_word&&);
+		Basic_word(int);
 
 
 		/* Operators. */
@@ -93,6 +95,9 @@ namespace mix
 		Basic_word leftmost_with_sign(int) const;
 		Basic_word rightmost_with_sign(int) const;
 
+		static int int_max();
+		static int int_min();
+
 
 	private:
 		// Implementation.
@@ -154,6 +159,36 @@ namespace mix
 	Basic_word<N>::Basic_word(Basic_word&& bw)
 		: sign_byte{bw.sign_byte}, bytes{std::move(bw.bytes)}
 	{
+	}
+
+	/*
+	* Construct from the given integer.
+	* Template parameters:
+	*	N - Number of bytes of this given word.
+	* Parameters:
+	*	n - Integer value to construct a basic word from.
+	*/
+	template<unsigned int N>
+	Basic_word<N>::Basic_word(int n)
+		: sign_byte{Sign::Plus}, bytes(N)
+	{
+		if (std::abs(n) > int_max()) {
+			std::stringstream message{};
+			message << "In Basic_word(int), int is too big: " << n;
+			throw std::invalid_argument{message.str()};
+		}
+		if (n < 0) {
+			sign() = Sign::Minus;
+		}
+		// Convert from base-10 to basic word base.
+		int base{static_cast<int>(std::pow(2, BYTE_SIZE))};
+		int index{N};
+		int val{std::abs(n)};
+		while (val > 0) {
+			Byte b = static_cast<Byte>(val % base);
+			byte(index--) = b;
+			val /= base;
+		}
 	}
 
 
@@ -765,6 +800,33 @@ namespace mix
 
 		bw = temp;
 		return is;
+	}
+
+	/*
+	* Returns the maximum integer value this basic word can represent.
+	* Template parameters:
+	*	N - Number of bytes of this basic word.
+	*/
+	template<unsigned int N>
+	int Basic_word<N>::int_max()
+	{
+		int max{};
+		for (int i = 0; i < num_bytes; ++i) {
+			max <<= BYTE_SIZE;
+			max += BYTE_MAX;
+		}
+		return max;
+	}
+
+	/*
+	* Returns the minimum integer value this basic word can represent.
+	* Template parameters:
+	*	N - Number of bytes of this basic word.
+	*/
+	template<unsigned int N>
+	int Basic_word<N>::int_min()
+	{
+		return -int_max();
 	}
 }
 #endif
