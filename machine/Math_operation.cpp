@@ -33,37 +33,65 @@ namespace mix
 	}
 
 	/*
-	*
+	* Execute the given addition operation using the given machine.
+	* Parameters:
+	*	mix_machine - Mix machine used to execute the operation.
+	*	inst - Instruction to execute.
 	*/
-	void Math_operation::execute_add(Machine* mix_machine,
-									 const Instruction& inst) const
+	void Math_operation::execute_add(
+			Machine* mix_machine,
+			const Instruction& inst) const
+	{
+		int accum{mix_machine->accumulator().to_int(inst.field)};
+		accum += mix_machine->memory_cell(inst.address).to_int(inst.field);
+		if (accum > Word::int_max()) {
+			accum -= Word::int_max();
+			mix_machine->overflow_bit(Machine::Bit::On);
+		}
+		mix_machine->accumulator(accum);
+	}
+
+	/*
+	* Execute the given subtraction operation using the given machine.
+	* Parameters:
+	*	mix_machine - Mix machine used to execute the operation.
+	*	inst - Instruction to execute.
+	*/
+	void Math_operation::execute_sub(
+			Machine* mix_machine,
+			const Instruction& inst) const
+	{
+		int accum{mix_machine->accumulator().to_int(inst.field)};
+		accum -= mix_machine->memory_cell(inst.address).to_int(inst.field);
+		if (accum < Word::int_min()) {
+			accum += Word::int_max();
+			mix_machine->overflow_bit(Machine::Bit::On);
+		}
+		mix_machine->accumulator(accum);
+	}
+
+	/*
+	* Execute the given multiplication operation using the given machine.
+	* Parameters:
+	*	mix_machine - Mix machine used to execute the operation.
+	*	inst - Instruction to execute.
+	*/
+	void Math_operation::execute_mul(
+			Machine* mix_machine,
+			const Instruction& inst) const
 	{
 
 	}
 
 	/*
-	*
+	* Execute the given division operation using the given machine.
+	* Parameters:
+	*	mix_machine - Mix machine used to execute the operation.
+	*	inst - Instruction to execute.
 	*/
-	void Math_operation::execute_sub(Machine* mix_machine,
-									 const Instruction& inst) const
-	{
-
-	}
-
-	/*
-	*
-	*/
-	void Math_operation::execute_mul(Machine* mix_machine,
-									 const Instruction& inst) const
-	{
-
-	}
-
-	/*
-	*
-	*/
-	void Math_operation::execute_div(Machine* mix_machine,
-									 const Instruction& inst) const
+	void Math_operation::execute_div(
+			Machine* mix_machine,
+			const Instruction& inst) const
 	{
 
 	}
